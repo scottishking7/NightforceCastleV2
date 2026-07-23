@@ -1,8 +1,47 @@
-def search_vault():
+def view_ideas():
 
     print()
-    print("🔎 SEARCH THE VAULT")
-    print("------------------")
+    print("📚 IDEAS")
+    print("---------")
+    print()
+
+    with open("vault.txt", "r") as file:
+
+        ideas = file.readlines()
+
+    if len(ideas) == 0:
+
+        print("Vault is empty.")
+
+    else:
+
+        number = 1
+
+        for idea in ideas:
+
+            print(f"{number}. 💡 {idea.strip()}")
+            number += 1
+
+    input("\nPress Enter to continue...")
+
+
+def add_idea():
+
+    print()
+    idea = input("Enter new idea: ")
+
+    with open("vault.txt", "a") as file:
+
+        file.write(f"\n{idea}")
+
+    print("\n✅ Idea added!")
+
+    input("\nPress Enter to continue...")
+
+
+def search_ideas():
+
+    print()
 
     search = input("Search for: ").lower()
 
@@ -20,9 +59,55 @@ def search_vault():
                 found = True
 
     if not found:
-        print("❌ No matching ideas found.")
+
+        print("❌ Nothing found.")
+
+    input("\nPress Enter to continue...")
+
+
+def delete_idea():
+
+    with open("vault.txt", "r") as file:
+
+        ideas = file.readlines()
 
     print()
+
+    number = 1
+
+    for idea in ideas:
+
+        print(f"{number}. 💡 {idea.strip()}")
+        number += 1
+
+    print()
+
+    choice = input("Delete which idea? ")
+
+    if not choice.isdigit():
+
+        print("❌ Invalid choice.")
+        input("\nPress Enter to continue...")
+        return
+
+    choice = int(choice)
+
+    if choice < 1 or choice > len(ideas):
+
+        print("❌ Invalid choice.")
+        input("\nPress Enter to continue...")
+        return
+
+    deleted = ideas.pop(choice - 1)
+
+    with open("vault.txt", "w") as file:
+
+        file.writelines(ideas)
+
+    print()
+    print(f"✅ Deleted: {deleted.strip()}")
+
+    input("\nPress Enter to continue...")
 
 
 def vault_room():
@@ -32,55 +117,41 @@ def vault_room():
         print()
         print("📚 NIGHTFORCE MEMORY VAULT")
         print("-------------------------")
-        print()
         print("1 - View Ideas")
         print("2 - Add Idea")
         print("3 - Search Ideas")
-        print("4 - Return")
+        print("4 - Delete Idea")
+        print("5 - Return to Castle")
+        print("6 - Exit Castle")
         print()
 
         choice = input("Choose: ")
 
-        print()
-
         if choice == "1":
 
-            with open("vault.txt", "r") as file:
-
-                number = 1
-
-                for line in file:
-                    print(f"{number}. 💡 {line.strip()}")
-                    number += 1
-
-            print()
+            view_ideas()
 
         elif choice == "2":
 
-            idea = input("Enter your new idea: ")
-
-            with open("vault.txt", "a+") as file:
-
-                file.seek(0)
-                content = file.read()
-
-                if content and not content.endswith("\n"):
-                    file.write("\n")
-
-                file.write(idea + "\n")
-
-            print()
-            print("✅ Idea added!")
-            print()
+            add_idea()
 
         elif choice == "3":
 
-            search_vault()
+            search_ideas()
 
         elif choice == "4":
 
-            return
+            delete_idea()
+
+        elif choice == "5":
+
+            return True
+
+        elif choice == "6":
+
+            return False
 
         else:
 
-            print("❌ Unknown option.")
+            print("\n❌ Unknown option.")
+            input("\nPress Enter to continue...")
