@@ -1,6 +1,7 @@
 from castle.banner import show_banner
 from castle.menu import show_menu
 from castle.vault import vault_room
+from castle.image_builder import image_builder
 
 
 def show_commander():
@@ -21,7 +22,7 @@ while running:
     show_commander()
     show_menu()
 
-    choice = input("Select option (1-4): ")
+    choice = input("Select option (1-5): ")
 
     print()
 
@@ -32,7 +33,7 @@ while running:
 
     elif choice == "2":
 
-        print("🎮 GTA Character Studio coming soon!")
+        print("🚗 GTA Character Studio coming soon!")
         input("\nPress Enter to continue...")
 
     elif choice == "3":
@@ -40,6 +41,10 @@ while running:
         running = vault_room()
 
     elif choice == "4":
+
+        image_builder()
+
+    elif choice == "5":
 
         print("👋 Goodbye Commander!")
         running = False
