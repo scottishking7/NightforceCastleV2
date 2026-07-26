@@ -1,25 +1,15 @@
 from castle.banner import show_banner
+from castle.dashboard import show_dashboard
 from castle.menu import show_menu
 from castle.vault import vault_room
 from castle.image_builder import image_builder
-
-
-def show_commander():
-
-    with open("commander.txt", "r") as file:
-        commander = file.read().strip()
-
-    print()
-    print(f"👑 Commander: {commander}")
-    print()
-
 
 running = True
 
 while running:
 
     show_banner()
-    show_commander()
+    show_dashboard()
     show_menu()
 
     choice = input("Select option (1-5): ")
@@ -38,7 +28,7 @@ while running:
 
     elif choice == "3":
 
-        running = vault_room()
+        vault_room()
 
     elif choice == "4":
 
@@ -51,5 +41,5 @@ while running:
 
     else:
 
-        print("❌ Unknown option.")
+        print("❌ Invalid option.")
         input("\nPress Enter to continue...")
