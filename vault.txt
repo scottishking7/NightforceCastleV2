@@ -21,3 +21,8 @@ A premium collectible action figure of charles hoskinson, themed around Midnight
 IMAGE PROMPT
 A premium collectible action figure of charles, themed around privacy. Premium retail packaging, realistic plastic materials, sharp readable packaging text, cinematic studio lighting, toy-commercial quality, ultra-detailed sculpt, 8K Ultra HD, aspect ratio 16.9.
 ========================================
+
+========================================
+IMAGE PROMPT
+A photorealistic 8K Ultra HD image of charles, themed around midnight. Cinematic lighting, highly detailed, realistic textures, sharp focus, professional photography, aspect ratio 4:5.
+========================================

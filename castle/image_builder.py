@@ -1,4 +1,5 @@
 from castle.image_styles import styles
+from castle.image_options import aspect_ratios
 
 
 def image_builder():
@@ -19,13 +20,31 @@ def image_builder():
 
     choice = input("Choose style (1-8): ")
 
+    print()
+
     if choice == "8":
 
         custom = input("Describe your custom style: ")
-
         subject = input("Subject: ")
         theme = input("Theme: ")
-        aspect = input("Aspect Ratio: ")
+
+        print()
+        print("Choose Aspect Ratio")
+        print()
+
+        for key in aspect_ratios:
+            print(f"{key} - {aspect_ratios[key]['name']}")
+
+        print()
+
+        aspect_choice = input("Choose (1-4): ")
+
+        if aspect_choice not in aspect_ratios:
+            print("❌ Invalid aspect ratio.")
+            input("\nPress Enter to return...")
+            return
+
+        aspect = aspect_ratios[aspect_choice]["value"]
 
         prompt = (
             f"A {custom} image featuring {subject}, themed around {theme}. "
@@ -36,7 +55,24 @@ def image_builder():
 
         subject = input("Subject: ")
         theme = input("Theme: ")
-        aspect = input("Aspect Ratio: ")
+
+        print()
+        print("Choose Aspect Ratio")
+        print()
+
+        for key in aspect_ratios:
+            print(f"{key} - {aspect_ratios[key]['name']}")
+
+        print()
+
+        aspect_choice = input("Choose (1-4): ")
+
+        if aspect_choice not in aspect_ratios:
+            print("❌ Invalid aspect ratio.")
+            input("\nPress Enter to return...")
+            return
+
+        aspect = aspect_ratios[aspect_choice]["value"]
 
         prompt = styles[choice]["template"].format(
             subject=subject,
@@ -64,7 +100,6 @@ def image_builder():
     if save.lower() == "y":
 
         with open("vault.txt", "a") as file:
-
             file.write("\n")
             file.write("========================================\n")
             file.write("IMAGE PROMPT\n")
