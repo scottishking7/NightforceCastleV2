@@ -4,6 +4,11 @@ from castle.image_options import aspect_ratios
 
 def image_builder():
 
+    resolutions = {
+        "1": "4K Ultra HD",
+        "2": "8K Ultra HD"
+    }
+
     print()
     print("🖼️ IMAGE PROMPT BUILDER")
     print("-----------------------")
@@ -28,51 +33,59 @@ def image_builder():
         subject = input("Subject: ")
         theme = input("Theme: ")
 
-        print()
-        print("Choose Aspect Ratio")
-        print()
-
-        for key in aspect_ratios:
-            print(f"{key} - {aspect_ratios[key]['name']}")
-
-        print()
-
-        aspect_choice = input("Choose (1-4): ")
-
-        if aspect_choice not in aspect_ratios:
-            print("❌ Invalid aspect ratio.")
-            input("\nPress Enter to return...")
-            return
-
-        aspect = aspect_ratios[aspect_choice]["value"]
-
-        prompt = (
-            f"A {custom} image featuring {subject}, themed around {theme}. "
-            f"8K Ultra HD, highly detailed, aspect ratio {aspect}."
-        )
-
     elif choice in styles:
 
         subject = input("Subject: ")
         theme = input("Theme: ")
 
-        print()
-        print("Choose Aspect Ratio")
-        print()
+    else:
 
-        for key in aspect_ratios:
-            print(f"{key} - {aspect_ratios[key]['name']}")
+        print("❌ Invalid choice.")
+        input("\nPress Enter to return...")
+        return
 
-        print()
+    print()
+    print("Choose Aspect Ratio")
+    print()
 
-        aspect_choice = input("Choose (1-4): ")
+    for key in aspect_ratios:
+        print(f"{key} - {aspect_ratios[key]['name']}")
 
-        if aspect_choice not in aspect_ratios:
-            print("❌ Invalid aspect ratio.")
-            input("\nPress Enter to return...")
-            return
+    print()
 
-        aspect = aspect_ratios[aspect_choice]["value"]
+    aspect_choice = input("Choose (1-4): ")
+
+    if aspect_choice not in aspect_ratios:
+        print("❌ Invalid aspect ratio.")
+        input("\nPress Enter to return...")
+        return
+
+    aspect = aspect_ratios[aspect_choice]["value"]
+
+    print()
+    print("Choose Resolution")
+    print()
+    print("1 - 4K Ultra HD")
+    print("2 - 8K Ultra HD")
+    print()
+
+    resolution_choice = input("Choose (1-2): ")
+
+    if resolution_choice not in resolutions:
+        print("❌ Invalid resolution.")
+        input("\nPress Enter to return...")
+        return
+
+    resolution = resolutions[resolution_choice]
+
+    if choice == "8":
+
+        prompt = (
+            f"A {custom} image featuring {subject}, themed around {theme}. "
+            f"{resolution}, highly detailed, aspect ratio {aspect}."
+        )
+
+    else:
 
         prompt = styles[choice]["template"].format(
             subject=subject,
@@ -80,11 +93,8 @@ def image_builder():
             aspect=aspect
         )
 
-    else:
-
-        print("❌ Invalid choice.")
-        input("\nPress Enter to return...")
-        return
+        prompt = prompt.replace("8K Ultra HD", resolution)
+        prompt = prompt.replace("8K,", f"{resolution},")
 
     print()
     print("=" * 70)
