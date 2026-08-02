@@ -1,6 +1,6 @@
 from castle.image_styles import styles
 from castle.image_options import aspect_ratios
-
+from castle.prompt_builder import display_title, build_prompt
 
 def image_builder():
 

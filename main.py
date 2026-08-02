@@ -4,6 +4,8 @@ from castle.menu import show_menu
 from castle.vault import vault_room
 from castle.image_builder import image_builder
 from castle.settings import settings_room
+from castle.social_studio import social_studio
+
 
 running = True
 
@@ -13,7 +15,7 @@ while running:
     show_dashboard()
     show_menu()
 
-    choice = input("Select option (1-6): ")
+    choice = input("Select option (1-7): ")
 
     print()
 
@@ -37,14 +39,18 @@ while running:
 
     elif choice == "5":
 
-        settings_room()
+        social_studio()
 
     elif choice == "6":
+
+        settings_room()
+
+    elif choice == "7":
 
         print("👋 Goodbye Commander!")
         running = False
 
     else:
 
-        print("❌ Invalid option.")
+        print("❌ Invalid choice.")
         input("\nPress Enter to continue...")
