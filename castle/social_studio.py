@@ -16,19 +16,15 @@ def social_studio():
         print()
 
         if choice == "1":
-
             linkedin_post()
 
         elif choice == "2":
-
             x_post()
 
         elif choice == "3":
-
             return
 
         else:
-
             print("❌ Invalid choice.")
             input("\nPress Enter to continue...")
 
