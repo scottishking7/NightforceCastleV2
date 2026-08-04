@@ -112,3 +112,12 @@ It's what happens when the technology moves from speculation into real-world use
 
 That's where things get interesting. 👀
 ========================================
+
+========================================
+RESEARCH REQUEST
+========================================
+QUESTION: What is selective disclosure in Midnight?
+SOURCE: Midnight Network
+URL: https://midnight.network
+STATUS: Ready for research engine
+========================================
