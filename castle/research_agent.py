@@ -1,5 +1,10 @@
+
 from castle.research_sources import trusted_sources
-from castle.research_engine import run_research, search_documentation
+from castle.research_engine import (
+    run_research,
+    search_documentation,
+    build_research_result
+)
 
 
 def research_agent():
@@ -155,30 +160,68 @@ they reveal and to whom they reveal it.
         question
     )
 
+    research_result = build_research_result(
+        question,
+        "Midnight Documentation",
+        "https://docs.midnight.network",
+        results
+    )
+
     print()
-    print("SEARCH RESULTS")
+    print("=" * 70)
+    print("RESEARCH RESULT")
     print("=" * 70)
     print()
 
-    if not results:
+    print("QUESTION")
+    print(research_result["question"])
+    print()
+
+    print("SOURCE")
+    print(research_result["source"])
+    print(research_result["url"])
+    print()
+
+    print("TRUSTED SOURCE")
+    print(
+        "YES ✓"
+        if research_result["trusted"]
+        else "NO ✗"
+    )
+    print()
+
+    print("STATUS")
+    print(research_result["status"])
+    print()
+
+    print("RELEVANT INFORMATION")
+    print("-" * 70)
+
+    if not research_result["results"]:
 
         print("No matching documentation found.")
 
     else:
 
-        for number, result in enumerate(results, start=1):
+        for number, result in enumerate(
+            research_result["results"],
+            start=1
+        ):
 
+            print()
             print(
                 f"{number}. {result['entry']}"
             )
 
+            print()
             print(
-                f"   Score: {result['score']}"
+                f"   Relevance Score: {result['score']}"
             )
 
-            print()
+    print()
+    print("-" * 70)
 
-    input("Press Enter to continue...")
+    input("\nPress Enter to continue...")
 
 
 def show_trusted_sources():

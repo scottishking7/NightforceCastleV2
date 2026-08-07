@@ -145,6 +145,8 @@ def fetch_source(source_url):
             "message": str(error),
             "source_type": source_type
         }
+
+
 def search_documentation(content, query, limit=5):
 
     if not content:
@@ -194,6 +196,26 @@ def search_documentation(content, query, limit=5):
     )
 
     return results[:limit]
+
+
+def build_research_result(
+    question,
+    source_name,
+    source_url,
+    search_results
+):
+
+    result = {
+        "question": question,
+        "source": source_name,
+        "url": source_url,
+        "trusted": is_trusted_source(source_url),
+        "status": "READY",
+        "results": search_results
+    }
+
+    return result
+
 
 def run_research(question, source_name, source_url):
 
