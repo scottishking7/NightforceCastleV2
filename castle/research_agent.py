@@ -1,4 +1,5 @@
 from castle.research_sources import trusted_sources
+from castle.research_engine import run_research, search_documentation
 
 
 def research_agent():
@@ -12,7 +13,8 @@ def research_agent():
         print("1 - Midnight Research")
         print("2 - Trusted Sources")
         print("3 - Saved Research")
-        print("4 - Return")
+        print("4 - Documentation Search")
+        print("5 - Return")
         print()
 
         choice = input("Choose: ")
@@ -34,6 +36,10 @@ def research_agent():
 
         elif choice == "4":
 
+            documentation_search()
+
+        elif choice == "5":
+
             return
 
         else:
@@ -45,16 +51,19 @@ def research_agent():
 def midnight_research():
 
     print()
-    print("🌙 MIDNIGHT RESEARCH")
-    print("--------------------")
+    print("=" * 70)
+    print("MIDNIGHT RESEARCH")
+    print("=" * 70)
     print()
 
-    question = input("What do you want to research? ").strip()
+    question = input(
+        "What would you like Castle to research? "
+    ).strip()
 
     if not question:
 
         print()
-        print("❌ Research question cannot be empty.")
+        print("No research question entered.")
         input("\nPress Enter to continue...")
         return
 
@@ -66,60 +75,118 @@ def midnight_research():
 
         print(f"{key} - {source['name']}")
 
-    print("4 - Return")
     print()
 
     source_choice = input("Choose: ")
 
-    if source_choice == "4":
-        return
+    source = trusted_sources.get(source_choice)
 
-    if source_choice not in trusted_sources:
+    if not source:
 
         print()
-        print("❌ Invalid source.")
+        print("❌ Invalid source selection.")
         input("\nPress Enter to continue...")
         return
 
-    source = trusted_sources[source_choice]
+    print()
+    print("Research request prepared...")
+    print()
 
-    print()
-    print("=" * 70)
-    print("RESEARCH REQUEST")
-    print("=" * 70)
-    print()
     print("QUESTION:")
     print(question)
     print()
+
     print("SOURCE:")
     print(source["name"])
-    print()
-    print("URL:")
     print(source["url"])
     print()
+
+    result = run_research(
+        question,
+        source["name"],
+        source["url"]
+    )
+
     print("STATUS:")
-    print("⏳ Ready for research engine")
+    print(result["status"])
+    print()
+
+    input("Press Enter to continue...")
+
+
+def documentation_search():
+
     print()
     print("=" * 70)
+    print("DOCUMENTATION SEARCH")
+    print("=" * 70)
+    print()
 
-    save = input("\nSave this research request? (y/n): ")
+    documentation = """
+Selective disclosure allows users to prove information
+without revealing unnecessary private information.
 
-    if save.lower() == "y":
+Zero knowledge proofs allow a user to prove something
+without revealing the underlying secret information.
 
-        save_research_request(
-            question,
-            source["name"],
-            source["url"]
-        )
+Midnight provides privacy-preserving smart contracts.
 
-    input("\nPress Enter to continue...")
+Compact is the smart contract language used by Midnight.
+
+Midnight is designed to provide programmable privacy.
+
+Privacy can allow users to control what information
+they reveal and to whom they reveal it.
+"""
+
+    question = input(
+        "Search documentation for: "
+    ).strip()
+
+    if not question:
+
+        print()
+        print("No search entered.")
+        input("\nPress Enter to continue...")
+        return
+
+    results = search_documentation(
+        documentation,
+        question
+    )
+
+    print()
+    print("SEARCH RESULTS")
+    print("=" * 70)
+    print()
+
+    if not results:
+
+        print("No matching documentation found.")
+
+    else:
+
+        for number, result in enumerate(results, start=1):
+
+            print(
+                f"{number}. {result['entry']}"
+            )
+
+            print(
+                f"   Score: {result['score']}"
+            )
+
+            print()
+
+    input("Press Enter to continue...")
 
 
 def show_trusted_sources():
 
     print()
-    print("🔐 TRUSTED SOURCES")
-    print("------------------")
+    print("=" * 70)
+    print("TRUSTED SOURCES")
+    print("=" * 70)
     print()
 
     for key, source in trusted_sources.items():
@@ -128,46 +195,4 @@ def show_trusted_sources():
         print(f"    {source['url']}")
         print()
 
-    print("4 - Return")
-    print()
-
-    choice = input("Choose: ")
-
-    if choice in trusted_sources:
-
-        source = trusted_sources[choice]
-
-        print()
-        print(f"NAME: {source['name']}")
-        print(f"URL:  {source['url']}")
-        print()
-
-        input("Press Enter to continue...")
-
-    elif choice == "4":
-
-        return
-
-    else:
-
-        print()
-        print("❌ Invalid choice.")
-        input("\nPress Enter to continue...")
-
-
-def save_research_request(question, source_name, source_url):
-
-    with open("vault.txt", "a", encoding="utf-8") as file:
-
-        file.write("\n")
-        file.write("========================================\n")
-        file.write("RESEARCH REQUEST\n")
-        file.write("========================================\n")
-        file.write(f"QUESTION: {question}\n")
-        file.write(f"SOURCE: {source_name}\n")
-        file.write(f"URL: {source_url}\n")
-        file.write("STATUS: Ready for research engine\n")
-        file.write("========================================\n")
-
-    print()
-    print("✅ Research request saved to Memory Vault!")
+    input("Press Enter to continue...")
