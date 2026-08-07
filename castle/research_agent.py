@@ -1,10 +1,14 @@
 
+
 from castle.research_sources import trusted_sources
 from castle.research_engine import (
     run_research,
     search_documentation,
     build_research_result
 )
+
+
+RESEARCH_VAULT = "research_vault.txt"
 
 
 def research_agent():
@@ -36,8 +40,7 @@ def research_agent():
 
         elif choice == "3":
 
-            print("🚧 Saved Research coming soon!")
-            input("\nPress Enter to continue...")
+            saved_research()
 
         elif choice == "4":
 
@@ -220,6 +223,110 @@ they reveal and to whom they reveal it.
 
     print()
     print("-" * 70)
+
+    if research_result["results"]:
+
+        print()
+        save = input(
+            "Save this research to the Research Vault? (y/n): "
+        ).strip().lower()
+
+        if save == "y":
+
+            save_research(research_result)
+
+    input("\nPress Enter to continue...")
+
+
+def save_research(research_result):
+
+    with open(
+        RESEARCH_VAULT,
+        "a",
+        encoding="utf-8"
+    ) as file:
+
+        file.write("\n")
+        file.write("=" * 70 + "\n")
+        file.write("NIGHTFORCE CASTLE RESEARCH\n")
+        file.write("=" * 70 + "\n")
+
+        file.write(
+            f"QUESTION: {research_result['question']}\n"
+        )
+
+        file.write(
+            f"SOURCE: {research_result['source']}\n"
+        )
+
+        file.write(
+            f"URL: {research_result['url']}\n"
+        )
+
+        file.write(
+            f"TRUSTED: {research_result['trusted']}\n"
+        )
+
+        file.write(
+            f"STATUS: {research_result['status']}\n"
+        )
+
+        file.write("\nRELEVANT INFORMATION:\n")
+        file.write("-" * 70 + "\n")
+
+        for number, result in enumerate(
+            research_result["results"],
+            start=1
+        ):
+
+            file.write(
+                f"{number}. {result['entry']}\n"
+            )
+
+            file.write(
+                f"   Relevance Score: {result['score']}\n"
+            )
+
+        file.write("=" * 70 + "\n")
+
+    print()
+    print("✅ Research saved to the Research Vault.")
+
+
+def saved_research():
+
+    print()
+    print("=" * 70)
+    print("SAVED RESEARCH")
+    print("=" * 70)
+    print()
+
+    try:
+
+        with open(
+            RESEARCH_VAULT,
+            "r",
+            encoding="utf-8"
+        ) as file:
+
+            content = file.read()
+
+        if not content.strip():
+
+            print("No saved research yet.")
+
+        else:
+
+            print(content)
+
+    except FileNotFoundError:
+
+        print("No saved research yet.")
+        print()
+        print(
+            "Research will appear here after you save"
+        )
+        print("your first research result.")
 
     input("\nPress Enter to continue...")
 
