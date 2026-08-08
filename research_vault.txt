@@ -13,3 +13,19 @@ RELEVANT INFORMATION:
 1. Selective disclosure allows users to prove information
    Relevance Score: 2
 ======================================================================
+
+======================================================================
+NIGHTFORCE CASTLE RESEARCH
+======================================================================
+QUESTION: selective disclosure
+SOURCE: Midnight Documentation
+URL: https://docs.midnight.network
+TRUSTED: True
+STATUS: READY
+CACHE: LOCAL COPY
+
+RELEVANT INFORMATION:
+----------------------------------------------------------------------
+1. Selective disclosure allows users to prove information
+   Relevance Score: 2
+======================================================================

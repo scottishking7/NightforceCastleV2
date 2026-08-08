@@ -1,0 +1,14 @@
+MIDNIGHT DOCUMENTATION TEST
+
+Selective disclosure allows users to prove information
+without revealing unnecessary private information.
+
+Zero knowledge proofs allow a user to prove something
+without revealing the underlying secret information.
+
+Midnight provides privacy-preserving smart contracts.
+
+Compact is the smart contract language used by Midnight.
+
+Privacy allows users to control what information
+they reveal and to whom they reveal it.

@@ -1,14 +1,15 @@
 
-
 from castle.research_sources import trusted_sources
 from castle.research_engine import (
     run_research,
     search_documentation,
-    build_research_result
+    build_research_result,
+    load_cached_source
 )
 
 
 RESEARCH_VAULT = "research_vault.txt"
+MIDNIGHT_CACHE = "midnight_docs.txt"
 
 
 def research_agent():
@@ -130,22 +131,43 @@ def documentation_search():
     print("=" * 70)
     print()
 
-    documentation = """
-Selective disclosure allows users to prove information
-without revealing unnecessary private information.
+    cached = load_cached_source(
+        MIDNIGHT_CACHE
+    )
 
-Zero knowledge proofs allow a user to prove something
-without revealing the underlying secret information.
+    if cached["status"] != "SUCCESS":
 
-Midnight provides privacy-preserving smart contracts.
+        print(
+            "Castle could not find the local Midnight documentation cache."
+        )
 
-Compact is the smart contract language used by Midnight.
+        print()
+        print(
+            "Cache status:"
+        )
 
-Midnight is designed to provide programmable privacy.
+        print(
+            cached["status"]
+        )
 
-Privacy can allow users to control what information
-they reveal and to whom they reveal it.
-"""
+        print()
+        print(
+            cached["message"]
+        )
+
+        print()
+        print(
+            "The documentation must be cached before it can be searched."
+        )
+
+        input("\nPress Enter to continue...")
+        return
+
+    print(
+        "Local Midnight documentation loaded."
+    )
+
+    print()
 
     question = input(
         "Search documentation for: "
@@ -159,7 +181,7 @@ they reveal and to whom they reveal it.
         return
 
     results = search_documentation(
-        documentation,
+        cached["content"],
         question
     )
 
@@ -191,10 +213,15 @@ they reveal and to whom they reveal it.
         if research_result["trusted"]
         else "NO ✗"
     )
+
     print()
 
     print("STATUS")
     print(research_result["status"])
+    print()
+
+    print("CACHE")
+    print("LOCAL COPY")
     print()
 
     print("RELEVANT INFORMATION")
@@ -227,13 +254,16 @@ they reveal and to whom they reveal it.
     if research_result["results"]:
 
         print()
+
         save = input(
             "Save this research to the Research Vault? (y/n): "
         ).strip().lower()
 
         if save == "y":
 
-            save_research(research_result)
+            save_research(
+                research_result
+            )
 
     input("\nPress Enter to continue...")
 
@@ -271,8 +301,17 @@ def save_research(research_result):
             f"STATUS: {research_result['status']}\n"
         )
 
-        file.write("\nRELEVANT INFORMATION:\n")
-        file.write("-" * 70 + "\n")
+        file.write(
+            "CACHE: LOCAL COPY\n"
+        )
+
+        file.write(
+            "\nRELEVANT INFORMATION:\n"
+        )
+
+        file.write(
+            "-" * 70 + "\n"
+        )
 
         for number, result in enumerate(
             research_result["results"],
@@ -287,10 +326,14 @@ def save_research(research_result):
                 f"   Relevance Score: {result['score']}\n"
             )
 
-        file.write("=" * 70 + "\n")
+        file.write(
+            "=" * 70 + "\n"
+        )
 
     print()
-    print("✅ Research saved to the Research Vault.")
+    print(
+        "✅ Research saved to the Research Vault."
+    )
 
 
 def saved_research():
@@ -322,11 +365,16 @@ def saved_research():
     except FileNotFoundError:
 
         print("No saved research yet.")
+
         print()
+
         print(
             "Research will appear here after you save"
         )
-        print("your first research result.")
+
+        print(
+            "your first research result."
+        )
 
     input("\nPress Enter to continue...")
 
@@ -341,8 +389,16 @@ def show_trusted_sources():
 
     for key, source in trusted_sources.items():
 
-        print(f"{key} - {source['name']}")
-        print(f"    {source['url']}")
+        print(
+            f"{key} - {source['name']}"
+        )
+
+        print(
+            f"    {source['url']}"
+        )
+
         print()
 
-    input("Press Enter to continue...")
+    input(
+        "Press Enter to continue..."
+    )

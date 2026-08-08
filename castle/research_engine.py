@@ -1,8 +1,12 @@
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from html.parser import HTMLParser
+from pathlib import Path
 
 from castle.research_sources import trusted_sources
+
+
+CACHE_DIR = Path("castle") / "research_cache"
 
 
 class TextExtractor(HTMLParser):
@@ -145,6 +149,71 @@ def fetch_source(source_url):
             "message": str(error),
             "source_type": source_type
         }
+
+
+def cache_source(source_url, cache_name):
+
+    if not is_trusted_source(source_url):
+
+        return {
+            "status": "BLOCKED",
+            "message": "Source is not in the trusted source library.",
+            "cache_file": ""
+        }
+
+    result = fetch_source(source_url)
+
+    if result["status"] != "SUCCESS":
+
+        return {
+            "status": result["status"],
+            "message": result["message"],
+            "cache_file": ""
+        }
+
+    CACHE_DIR.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    cache_file = CACHE_DIR / cache_name
+
+    cache_file.write_text(
+        result["content"],
+        encoding="utf-8"
+    )
+
+    return {
+        "status": "CACHED",
+        "message": "Trusted documentation saved to Castle's local cache.",
+        "cache_file": str(cache_file),
+        "source": source_url,
+        "source_type": result["source_type"]
+    }
+
+
+def load_cached_source(cache_name):
+
+    cache_file = CACHE_DIR / cache_name
+
+    if not cache_file.exists():
+
+        return {
+            "status": "NOT_FOUND",
+            "content": "",
+            "message": "No cached documentation found."
+        }
+
+    content = cache_file.read_text(
+        encoding="utf-8"
+    )
+
+    return {
+        "status": "SUCCESS",
+        "content": content,
+        "message": "Cached documentation loaded successfully.",
+        "cache_file": str(cache_file)
+    }
 
 
 def search_documentation(content, query, limit=5):
