@@ -4,7 +4,8 @@ from castle.research_engine import (
     run_research,
     search_documentation,
     build_research_result,
-    load_cached_source
+    load_cached_source,
+    cache_source
 )
 
 
@@ -24,7 +25,8 @@ def research_agent():
         print("2 - Trusted Sources")
         print("3 - Saved Research")
         print("4 - Documentation Search")
-        print("5 - Return")
+        print("5 - Cache Manager")
+        print("6 - Return")
         print()
 
         choice = input("Choose: ")
@@ -48,6 +50,10 @@ def research_agent():
             documentation_search()
 
         elif choice == "5":
+
+            cache_manager()
+
+        elif choice == "6":
 
             return
 
@@ -142,22 +148,15 @@ def documentation_search():
         )
 
         print()
-        print(
-            "Cache status:"
-        )
+        print("Cache status:")
+        print(cached["status"])
 
-        print(
-            cached["status"]
-        )
+        print()
+        print(cached["message"])
 
         print()
         print(
-            cached["message"]
-        )
-
-        print()
-        print(
-            "The documentation must be cached before it can be searched."
+            "Use Cache Manager to create or refresh the cache."
         )
 
         input("\nPress Enter to continue...")
@@ -264,6 +263,173 @@ def documentation_search():
             save_research(
                 research_result
             )
+
+    input("\nPress Enter to continue...")
+
+
+def cache_manager():
+
+    while True:
+
+        print()
+        print("=" * 70)
+        print("CACHE MANAGER")
+        print("=" * 70)
+        print()
+
+        print("1 - Cache Midnight Documentation")
+        print("2 - Check Cache Status")
+        print("3 - Return")
+        print()
+
+        choice = input("Choose: ")
+
+        print()
+
+        if choice == "1":
+
+            cache_midnight_documentation()
+
+        elif choice == "2":
+
+            cache_status()
+
+        elif choice == "3":
+
+            return
+
+        else:
+
+            print("❌ Invalid choice.")
+            input("\nPress Enter to continue...")
+
+
+def cache_midnight_documentation():
+
+    print()
+    print("=" * 70)
+    print("CACHE MIDNIGHT DOCUMENTATION")
+    print("=" * 70)
+    print()
+
+    source = trusted_sources.get("2")
+
+    if not source:
+
+        print("Midnight Documentation source not found.")
+        input("\nPress Enter to continue...")
+        return
+
+    print(
+        "Source:"
+    )
+
+    print(
+        source["name"]
+    )
+
+    print(
+        source["url"]
+    )
+
+    print()
+    print(
+        "Castle will attempt to retrieve the trusted documentation."
+    )
+
+    print()
+
+    result = cache_source(
+        source["url"],
+        MIDNIGHT_CACHE
+    )
+
+    print(
+        "STATUS:"
+    )
+
+    print(
+        result["status"]
+    )
+
+    print()
+
+    print(
+        result["message"]
+    )
+
+    if result.get("cache_file"):
+
+        print()
+
+        print(
+            "CACHE FILE:"
+        )
+
+        print(
+            result["cache_file"]
+        )
+
+    input("\nPress Enter to continue...")
+
+
+def cache_status():
+
+    print()
+    print("=" * 70)
+    print("CACHE STATUS")
+    print("=" * 70)
+    print()
+
+    cached = load_cached_source(
+        MIDNIGHT_CACHE
+    )
+
+    print(
+        "STATUS:"
+    )
+
+    print(
+        cached["status"]
+    )
+
+    print()
+
+    print(
+        cached["message"]
+    )
+
+    if cached["status"] == "SUCCESS":
+
+        print()
+        print(
+            "CACHE:"
+        )
+
+        print(
+            MIDNIGHT_CACHE
+        )
+
+        print()
+
+        print(
+            "DOCUMENTATION AVAILABLE:"
+        )
+
+        print(
+            "YES ✓"
+        )
+
+    else:
+
+        print()
+        print(
+            "DOCUMENTATION AVAILABLE:"
+        )
+
+        print(
+            "NO ✗"
+        )
 
     input("\nPress Enter to continue...")
 
