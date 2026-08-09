@@ -59,7 +59,7 @@ def research_agent():
 
         else:
 
-            print("❌ Invalid choice.")
+            print("Invalid choice.")
             input("\nPress Enter to continue...")
 
 
@@ -86,27 +86,67 @@ def midnight_research():
     print("Choose Research Source")
     print()
 
-    for key, source in trusted_sources.items():
-
-        print(f"{key} - {source['name']}")
-
+    print("1 - Midnight Network")
+    print("2 - Midnight Documentation")
+    print("3 - Midnight Documentation Index")
+    print("4 - Cardano")
+    print("5 - Return")
     print()
 
-    source_choice = input("Choose: ")
+    source_choice = input("Choose: ").strip()
 
-    source = trusted_sources.get(source_choice)
+    if source_choice == "5":
+
+        return
+
+    if source_choice == "1":
+
+        source = trusted_sources.get("1")
+
+    elif source_choice == "2":
+
+        source = trusted_sources.get("2")
+
+    elif source_choice == "4":
+
+        source = trusted_sources.get("3")
+
+    elif source_choice == "3":
+
+        source = trusted_sources.get("2")
+
+    else:
+
+        print()
+        print("Invalid source selection.")
+        input("\nPress Enter to continue...")
+        return
 
     if not source:
 
         print()
-        print("❌ Invalid source selection.")
+        print("Selected trusted source is unavailable.")
         input("\nPress Enter to continue...")
         return
 
     print()
-    print("Research request prepared...")
-    print()
 
+    if source_choice in ("2", "3"):
+
+        research_from_cache(
+            question,
+            source
+        )
+
+        return
+
+    result = run_research(
+        question,
+        source["name"],
+        source["url"]
+    )
+
+    print()
     print("QUESTION:")
     print(question)
     print()
@@ -116,17 +156,121 @@ def midnight_research():
     print(source["url"])
     print()
 
-    result = run_research(
+    print("STATUS:")
+    print(result["status"])
+    print()
+
+    print(
+        "This source is currently configured for trusted-source research."
+    )
+
+    input("\nPress Enter to continue...")
+
+
+def research_from_cache(question, source):
+
+    cached = load_cached_source(
+        MIDNIGHT_CACHE
+    )
+
+    if cached["status"] != "SUCCESS":
+
+        print()
+        print("CACHE STATUS:")
+        print(cached["status"])
+        print()
+
+        print(cached["message"])
+        print()
+
+        print(
+            "Castle could not perform the research from the local cache."
+        )
+
+        input("\nPress Enter to continue...")
+        return
+
+    results = search_documentation(
+        cached["content"],
+        question
+    )
+
+    result = build_research_result(
         question,
         source["name"],
-        source["url"]
+        source["url"],
+        results
     )
+
+    print()
+    print("=" * 70)
+    print("STRUCTURED RESEARCH RESULT")
+    print("=" * 70)
+    print()
+
+    print("QUESTION:")
+    print(result["question"])
+    print()
+
+    print("SOURCE:")
+    print(result["source"])
+    print(result["url"])
+    print()
+
+    print("TRUSTED:")
+    print(
+        "YES ✓"
+        if result["trusted"]
+        else "NO ✗"
+    )
+    print()
 
     print("STATUS:")
     print(result["status"])
     print()
 
-    input("Press Enter to continue...")
+    print("EVIDENCE:")
+    print("-" * 70)
+
+    if not result["results"]:
+
+        print()
+        print("No matching information found in the local documentation.")
+
+    else:
+
+        for number, item in enumerate(
+            result["results"],
+            start=1
+        ):
+
+            print()
+            print(
+                f"{number}. {item['entry']}"
+            )
+
+            print(
+                f"   Score: {item['score']}"
+            )
+
+    print()
+    print("-" * 70)
+
+    if result["results"]:
+
+        print()
+
+        save_choice = input(
+            "Save this research to the Research Vault? (y/n): "
+        ).strip().lower()
+
+        if save_choice == "y":
+
+            save_research(
+                result
+            )
+
+    input("\nPress Enter to continue...")
 
 
 def documentation_search():
@@ -144,29 +288,14 @@ def documentation_search():
     if cached["status"] != "SUCCESS":
 
         print(
-            "Castle could not find the local Midnight documentation cache."
+            "No local Midnight documentation cache is available."
         )
-
-        print()
-        print("Cache status:")
-        print(cached["status"])
 
         print()
         print(cached["message"])
 
-        print()
-        print(
-            "Use Cache Manager to create or refresh the cache."
-        )
-
         input("\nPress Enter to continue...")
         return
-
-    print(
-        "Local Midnight documentation loaded."
-    )
-
-    print()
 
     question = input(
         "Search documentation for: "
@@ -184,87 +313,33 @@ def documentation_search():
         question
     )
 
-    research_result = build_research_result(
-        question,
-        "Midnight Documentation",
-        "https://docs.midnight.network",
-        results
-    )
-
     print()
-    print("=" * 70)
-    print("RESEARCH RESULT")
+    print("SEARCH RESULTS")
     print("=" * 70)
     print()
 
-    print("QUESTION")
-    print(research_result["question"])
-    print()
-
-    print("SOURCE")
-    print(research_result["source"])
-    print(research_result["url"])
-    print()
-
-    print("TRUSTED SOURCE")
-    print(
-        "YES ✓"
-        if research_result["trusted"]
-        else "NO ✗"
-    )
-
-    print()
-
-    print("STATUS")
-    print(research_result["status"])
-    print()
-
-    print("CACHE")
-    print("LOCAL COPY")
-    print()
-
-    print("RELEVANT INFORMATION")
-    print("-" * 70)
-
-    if not research_result["results"]:
+    if not results:
 
         print("No matching documentation found.")
 
     else:
 
         for number, result in enumerate(
-            research_result["results"],
+            results,
             start=1
         ):
 
-            print()
             print(
                 f"{number}. {result['entry']}"
             )
 
-            print()
             print(
-                f"   Relevance Score: {result['score']}"
+                f"   Score: {result['score']}"
             )
 
-    print()
-    print("-" * 70)
+            print()
 
-    if research_result["results"]:
-
-        print()
-
-        save = input(
-            "Save this research to the Research Vault? (y/n): "
-        ).strip().lower()
-
-        if save == "y":
-
-            save_research(
-                research_result
-            )
-
-    input("\nPress Enter to continue...")
+    input("Press Enter to continue...")
 
 
 def cache_manager():
@@ -282,7 +357,7 @@ def cache_manager():
         print("3 - Return")
         print()
 
-        choice = input("Choose: ")
+        choice = input("Choose: ").strip()
 
         print()
 
@@ -300,7 +375,7 @@ def cache_manager():
 
         else:
 
-            print("❌ Invalid choice.")
+            print("Invalid choice.")
             input("\nPress Enter to continue...")
 
 
@@ -316,11 +391,14 @@ def cache_midnight_documentation():
 
     if not source:
 
-        print("Midnight Documentation source not found.")
+        print(
+            "Midnight Documentation source is unavailable."
+        )
+
         input("\nPress Enter to continue...")
         return
 
-    print("Source:")
+    print("SOURCE:")
     print(source["name"])
     print(source["url"])
     print()
@@ -417,17 +495,6 @@ def cache_status():
             metadata_result["status"]
         )
 
-        if metadata_result["status"] == "METADATA_MISSING":
-
-            print()
-            print(
-                "ℹ️ This cache predates the metadata system."
-            )
-
-            print(
-                "A future refresh will create fresh metadata."
-            )
-
     else:
 
         print("DOCUMENTATION AVAILABLE:")
@@ -500,7 +567,7 @@ def save_research(research_result):
 
     print()
     print(
-        "✅ Research saved to the Research Vault."
+        "Research saved to the Research Vault."
     )
 
 
