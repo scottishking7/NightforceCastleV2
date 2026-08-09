@@ -1,11 +1,11 @@
-
 from castle.research_sources import trusted_sources
 from castle.research_engine import (
     run_research,
     search_documentation,
     build_research_result,
     load_cached_source,
-    cache_source
+    cache_source,
+    get_cache_metadata
 )
 
 
@@ -320,19 +320,11 @@ def cache_midnight_documentation():
         input("\nPress Enter to continue...")
         return
 
-    print(
-        "Source:"
-    )
-
-    print(
-        source["name"]
-    )
-
-    print(
-        source["url"]
-    )
-
+    print("Source:")
+    print(source["name"])
+    print(source["url"])
     print()
+
     print(
         "Castle will attempt to retrieve the trusted documentation."
     )
@@ -344,31 +336,17 @@ def cache_midnight_documentation():
         MIDNIGHT_CACHE
     )
 
-    print(
-        "STATUS:"
-    )
-
-    print(
-        result["status"]
-    )
-
+    print("STATUS:")
+    print(result["status"])
     print()
 
-    print(
-        result["message"]
-    )
+    print(result["message"])
 
     if result.get("cache_file"):
 
         print()
-
-        print(
-            "CACHE FILE:"
-        )
-
-        print(
-            result["cache_file"]
-        )
+        print("CACHE FILE:")
+        print(result["cache_file"])
 
     input("\nPress Enter to continue...")
 
@@ -385,51 +363,75 @@ def cache_status():
         MIDNIGHT_CACHE
     )
 
-    print(
-        "STATUS:"
+    metadata_result = get_cache_metadata(
+        MIDNIGHT_CACHE
     )
 
-    print(
-        cached["status"]
-    )
-
+    print("STATUS:")
+    print(cached["status"])
     print()
 
-    print(
-        cached["message"]
-    )
+    print(cached["message"])
+    print()
 
     if cached["status"] == "SUCCESS":
 
-        print()
-        print(
-            "CACHE:"
+        metadata = metadata_result.get(
+            "metadata",
+            {}
         )
 
-        print(
-            MIDNIGHT_CACHE
-        )
-
+        print("DOCUMENTATION AVAILABLE:")
+        print("YES ✓")
         print()
 
+        print("CACHE FILE:")
         print(
-            "DOCUMENTATION AVAILABLE:"
+            metadata.get(
+                "cache_file",
+                cached.get(
+                    "cache_file",
+                    MIDNIGHT_CACHE
+                )
+            )
+        )
+        print()
+
+        print("SIZE:")
+        print(
+            f"{metadata.get('size_bytes', 0)} bytes"
+        )
+        print()
+
+        print("LAST UPDATED:")
+        print(
+            metadata.get(
+                "updated_at",
+                "Unknown"
+            )
+        )
+        print()
+
+        print("METADATA STATUS:")
+        print(
+            metadata_result["status"]
         )
 
-        print(
-            "YES ✓"
-        )
+        if metadata_result["status"] == "METADATA_MISSING":
+
+            print()
+            print(
+                "ℹ️ This cache predates the metadata system."
+            )
+
+            print(
+                "A future refresh will create fresh metadata."
+            )
 
     else:
 
-        print()
-        print(
-            "DOCUMENTATION AVAILABLE:"
-        )
-
-        print(
-            "NO ✗"
-        )
+        print("DOCUMENTATION AVAILABLE:")
+        print("NO ✗")
 
     input("\nPress Enter to continue...")
 

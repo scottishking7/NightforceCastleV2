@@ -2,6 +2,8 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from html.parser import HTMLParser
 from pathlib import Path
+from datetime import datetime
+import json
 
 from castle.research_sources import trusted_sources
 
@@ -151,6 +153,37 @@ def fetch_source(source_url):
         }
 
 
+def create_cache_metadata(cache_file, source_url=None):
+
+    metadata_file = cache_file.with_suffix(
+        cache_file.suffix + ".json"
+    )
+
+    if source_url is None:
+
+        source_url = "https://docs.midnight.network"
+
+    metadata = {
+        "source": source_url,
+        "source_type": get_source_type(source_url),
+        "cache_file": str(cache_file),
+        "size_bytes": cache_file.stat().st_size,
+        "updated_at": datetime.fromtimestamp(
+            cache_file.stat().st_mtime
+        ).astimezone().isoformat()
+    }
+
+    metadata_file.write_text(
+        json.dumps(
+            metadata,
+            indent=4
+        ),
+        encoding="utf-8"
+    )
+
+    return metadata
+
+
 def cache_source(source_url, cache_name):
 
     if not is_trusted_source(source_url):
@@ -183,12 +216,33 @@ def cache_source(source_url, cache_name):
         encoding="utf-8"
     )
 
+    metadata_file = cache_file.with_suffix(
+        cache_file.suffix + ".json"
+    )
+
+    metadata = {
+        "source": source_url,
+        "source_type": result["source_type"],
+        "cache_file": str(cache_file),
+        "size_bytes": cache_file.stat().st_size,
+        "updated_at": datetime.now().astimezone().isoformat()
+    }
+
+    metadata_file.write_text(
+        json.dumps(
+            metadata,
+            indent=4
+        ),
+        encoding="utf-8"
+    )
+
     return {
         "status": "CACHED",
         "message": "Trusted documentation saved to Castle's local cache.",
         "cache_file": str(cache_file),
         "source": source_url,
-        "source_type": result["source_type"]
+        "source_type": result["source_type"],
+        "metadata_file": str(metadata_file)
     }
 
 
@@ -214,6 +268,67 @@ def load_cached_source(cache_name):
         "message": "Cached documentation loaded successfully.",
         "cache_file": str(cache_file)
     }
+
+
+def get_cache_metadata(cache_name):
+
+    cache_file = CACHE_DIR / cache_name
+
+    metadata_file = cache_file.with_suffix(
+        cache_file.suffix + ".json"
+    )
+
+    if not cache_file.exists():
+
+        return {
+            "status": "NOT_FOUND",
+            "message": "No cached documentation found.",
+            "metadata": {}
+        }
+
+    if not metadata_file.exists():
+
+        try:
+
+            metadata = create_cache_metadata(
+                cache_file
+            )
+
+            return {
+                "status": "REPAIRED",
+                "message": "Cache metadata was missing and has been rebuilt from the local cache.",
+                "metadata": metadata
+            }
+
+        except Exception as error:
+
+            return {
+                "status": "METADATA_ERROR",
+                "message": str(error),
+                "metadata": {}
+            }
+
+    try:
+
+        metadata = json.loads(
+            metadata_file.read_text(
+                encoding="utf-8"
+            )
+        )
+
+        return {
+            "status": "SUCCESS",
+            "message": "Cache metadata loaded successfully.",
+            "metadata": metadata
+        }
+
+    except Exception as error:
+
+        return {
+            "status": "METADATA_ERROR",
+            "message": str(error),
+            "metadata": {}
+        }
 
 
 def search_documentation(content, query, limit=5):
@@ -286,7 +401,11 @@ def build_research_result(
     return result
 
 
-def run_research(question, source_name, source_url):
+def run_research(
+    question,
+    source_name,
+    source_url
+):
 
     result = {
         "question": question,
