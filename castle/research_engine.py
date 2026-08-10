@@ -42,9 +42,64 @@ STOP_WORDS = {
 }
 
 
+RESEARCH_CONCEPTS = {
+    "privacy": {
+        "privacy",
+        "private",
+        "privacy-preserving",
+        "privacy-preserving",
+        "confidential",
+        "confidentiality",
+    },
+
+    "disclosure": {
+        "disclosure",
+        "disclose",
+        "disclosing",
+        "selective",
+    },
+
+    "protection": {
+        "protect",
+        "protection",
+        "protected",
+        "security",
+        "secure",
+    },
+
+    "identity": {
+        "identity",
+        "identities",
+        "credential",
+        "credentials",
+    },
+
+    "verification": {
+        "verify",
+        "verification",
+        "verified",
+        "prove",
+        "proof",
+        "proofs",
+    },
+
+    "smart_contracts": {
+        "smart",
+        "contract",
+        "contracts",
+        "compact",
+    },
+}
+
+
 def normalise_text(text):
 
     text = text.lower()
+
+    text = text.replace(
+        "privacy-preserving",
+        "privacy preserving"
+    )
 
     text = re.sub(
         r"[^a-z0-9\s]",
@@ -103,6 +158,21 @@ def word_variants(word):
         )
 
     return variants
+
+
+def get_concepts_for_word(word):
+
+    concepts = []
+
+    for concept, words in RESEARCH_CONCEPTS.items():
+
+        if word in words:
+
+            concepts.append(
+                concept
+            )
+
+    return concepts
 
 
 class TextExtractor(HTMLParser):
@@ -497,6 +567,18 @@ def search_documentation(
 
         return []
 
+    query_concepts = set()
+
+    for query_word in query_tokens:
+
+        for concept in get_concepts_for_word(
+            query_word
+        ):
+
+            query_concepts.add(
+                concept
+            )
+
     results = []
 
     for line in content.splitlines():
@@ -521,6 +603,7 @@ def search_documentation(
 
         score = 0
         matched_words = []
+        matched_concepts = []
 
         for query_word in query_tokens:
 
@@ -539,10 +622,39 @@ def search_documentation(
 
             if matched:
 
-                score += 2
+                score += 1
+
                 matched_words.append(
                     query_word
                 )
+
+        line_concepts = set()
+
+        for line_word in line_tokens:
+
+            for concept in get_concepts_for_word(
+                line_word
+            ):
+
+                line_concepts.add(
+                    concept
+                )
+
+        shared_concepts = (
+            query_concepts
+            & line_concepts
+        )
+
+        if shared_concepts:
+
+            score += (
+                len(shared_concepts)
+                * 1
+            )
+
+            matched_concepts = sorted(
+                shared_concepts
+            )
 
         query_phrase = normalise_text(
             query
@@ -573,14 +685,16 @@ def search_documentation(
                 {
                     "score": score,
                     "entry": line,
-                    "matched_words": matched_words
+                    "matched_words": matched_words,
+                    "matched_concepts": matched_concepts
                 }
             )
 
     results.sort(
         key=lambda item: (
             item["score"],
-            len(item["matched_words"])
+            len(item["matched_words"]),
+            len(item["matched_concepts"])
         ),
         reverse=True
     )
