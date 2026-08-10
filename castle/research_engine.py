@@ -4,11 +4,105 @@ from html.parser import HTMLParser
 from pathlib import Path
 from datetime import datetime
 import json
+import re
 
 from castle.research_sources import trusted_sources
 
 
 CACHE_DIR = Path("castle") / "research_cache"
+
+
+STOP_WORDS = {
+    "a",
+    "an",
+    "and",
+    "are",
+    "as",
+    "at",
+    "be",
+    "by",
+    "can",
+    "does",
+    "for",
+    "from",
+    "how",
+    "in",
+    "is",
+    "it",
+    "of",
+    "on",
+    "or",
+    "that",
+    "the",
+    "this",
+    "to",
+    "what",
+    "why",
+    "with",
+}
+
+
+def normalise_text(text):
+
+    text = text.lower()
+
+    text = re.sub(
+        r"[^a-z0-9\s]",
+        " ",
+        text
+    )
+
+    text = re.sub(
+        r"\s+",
+        " ",
+        text
+    )
+
+    return text.strip()
+
+
+def tokenise(text):
+
+    normalised = normalise_text(text)
+
+    return [
+        word
+        for word in normalised.split()
+        if word and word not in STOP_WORDS
+    ]
+
+
+def word_variants(word):
+
+    variants = {
+        word
+    }
+
+    if word.endswith("ies") and len(word) > 4:
+
+        variants.add(
+            word[:-3] + "y"
+        )
+
+    if word.endswith("ing") and len(word) > 5:
+
+        variants.add(
+            word[:-3]
+        )
+
+    if word.endswith("ed") and len(word) > 4:
+
+        variants.add(
+            word[:-2]
+        )
+
+    if word.endswith("s") and len(word) > 3:
+
+        variants.add(
+            word[:-1]
+        )
+
+    return variants
 
 
 class TextExtractor(HTMLParser):
@@ -22,13 +116,21 @@ class TextExtractor(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
 
-        if tag in ("script", "style", "noscript"):
+        if tag in (
+            "script",
+            "style",
+            "noscript"
+        ):
 
             self.ignore = True
 
     def handle_endtag(self, tag):
 
-        if tag in ("script", "style", "noscript"):
+        if tag in (
+            "script",
+            "style",
+            "noscript"
+        ):
 
             self.ignore = False
 
@@ -44,7 +146,9 @@ class TextExtractor(HTMLParser):
 
     def get_text(self):
 
-        return " ".join(self.parts)
+        return " ".join(
+            self.parts
+        )
 
 
 def is_trusted_source(source_url):
@@ -80,10 +184,14 @@ def fetch_source(source_url):
         return {
             "status": "BLOCKED",
             "content": "",
-            "message": "Source is not in the trusted source library."
+            "message": (
+                "Source is not in the trusted source library."
+            )
         }
 
-    source_type = get_source_type(source_url)
+    source_type = get_source_type(
+        source_url
+    )
 
     try:
 
@@ -94,7 +202,10 @@ def fetch_source(source_url):
             }
         )
 
-        with urlopen(request, timeout=15) as response:
+        with urlopen(
+            request,
+            timeout=15
+        ) as response:
 
             content = response.read().decode(
                 "utf-8",
@@ -112,7 +223,9 @@ def fetch_source(source_url):
         return {
             "status": "SUCCESS",
             "content": content,
-            "message": "Trusted source retrieved successfully.",
+            "message": (
+                "Trusted source retrieved successfully."
+            ),
             "source_type": source_type
         }
 
@@ -123,14 +236,19 @@ def fetch_source(source_url):
             return {
                 "status": "RATE_LIMITED",
                 "content": "",
-                "message": "The trusted source is temporarily rate limiting Castle.",
+                "message": (
+                    "The trusted source is temporarily "
+                    "rate limiting Castle."
+                ),
                 "source_type": source_type
             }
 
         return {
             "status": "HTTP_ERROR",
             "content": "",
-            "message": f"HTTP error {error.code}: {error.reason}",
+            "message": (
+                f"HTTP error {error.code}: {error.reason}"
+            ),
             "source_type": source_type
         }
 
@@ -139,7 +257,9 @@ def fetch_source(source_url):
         return {
             "status": "CONNECTION_ERROR",
             "content": "",
-            "message": f"Connection error: {error.reason}",
+            "message": (
+                f"Connection error: {error.reason}"
+            ),
             "source_type": source_type
         }
 
@@ -153,7 +273,10 @@ def fetch_source(source_url):
         }
 
 
-def create_cache_metadata(cache_file, source_url=None):
+def create_cache_metadata(
+    cache_file,
+    source_url=None
+):
 
     metadata_file = cache_file.with_suffix(
         cache_file.suffix + ".json"
@@ -161,11 +284,15 @@ def create_cache_metadata(cache_file, source_url=None):
 
     if source_url is None:
 
-        source_url = "https://docs.midnight.network"
+        source_url = (
+            "https://docs.midnight.network"
+        )
 
     metadata = {
         "source": source_url,
-        "source_type": get_source_type(source_url),
+        "source_type": get_source_type(
+            source_url
+        ),
         "cache_file": str(cache_file),
         "size_bytes": cache_file.stat().st_size,
         "updated_at": datetime.fromtimestamp(
@@ -184,17 +311,24 @@ def create_cache_metadata(cache_file, source_url=None):
     return metadata
 
 
-def cache_source(source_url, cache_name):
+def cache_source(
+    source_url,
+    cache_name
+):
 
     if not is_trusted_source(source_url):
 
         return {
             "status": "BLOCKED",
-            "message": "Source is not in the trusted source library.",
+            "message": (
+                "Source is not in the trusted source library."
+            ),
             "cache_file": ""
         }
 
-    result = fetch_source(source_url)
+    result = fetch_source(
+        source_url
+    )
 
     if result["status"] != "SUCCESS":
 
@@ -238,7 +372,10 @@ def cache_source(source_url, cache_name):
 
     return {
         "status": "CACHED",
-        "message": "Trusted documentation saved to Castle's local cache.",
+        "message": (
+            "Trusted documentation saved "
+            "to Castle's local cache."
+        ),
         "cache_file": str(cache_file),
         "source": source_url,
         "source_type": result["source_type"],
@@ -255,7 +392,9 @@ def load_cached_source(cache_name):
         return {
             "status": "NOT_FOUND",
             "content": "",
-            "message": "No cached documentation found."
+            "message": (
+                "No cached documentation found."
+            )
         }
 
     content = cache_file.read_text(
@@ -265,7 +404,9 @@ def load_cached_source(cache_name):
     return {
         "status": "SUCCESS",
         "content": content,
-        "message": "Cached documentation loaded successfully.",
+        "message": (
+            "Cached documentation loaded successfully."
+        ),
         "cache_file": str(cache_file)
     }
 
@@ -282,7 +423,9 @@ def get_cache_metadata(cache_name):
 
         return {
             "status": "NOT_FOUND",
-            "message": "No cached documentation found.",
+            "message": (
+                "No cached documentation found."
+            ),
             "metadata": {}
         }
 
@@ -296,7 +439,10 @@ def get_cache_metadata(cache_name):
 
             return {
                 "status": "REPAIRED",
-                "message": "Cache metadata was missing and has been rebuilt from the local cache.",
+                "message": (
+                    "Cache metadata was missing and "
+                    "has been rebuilt from the local cache."
+                ),
                 "metadata": metadata
             }
 
@@ -318,7 +464,9 @@ def get_cache_metadata(cache_name):
 
         return {
             "status": "SUCCESS",
-            "message": "Cache metadata loaded successfully.",
+            "message": (
+                "Cache metadata loaded successfully."
+            ),
             "metadata": metadata
         }
 
@@ -331,19 +479,21 @@ def get_cache_metadata(cache_name):
         }
 
 
-def search_documentation(content, query, limit=5):
+def search_documentation(
+    content,
+    query,
+    limit=5
+):
 
     if not content:
 
         return []
 
-    query_words = [
-        word.lower()
-        for word in query.split()
-        if word.strip()
-    ]
+    query_tokens = tokenise(
+        query
+    )
 
-    if not query_words:
+    if not query_tokens:
 
         return []
 
@@ -357,25 +507,81 @@ def search_documentation(content, query, limit=5):
 
             continue
 
-        line_lower = line.lower()
+        line_tokens = tokenise(
+            line
+        )
+
+        if not line_tokens:
+
+            continue
+
+        line_normalised = normalise_text(
+            line
+        )
 
         score = 0
+        matched_words = []
 
-        for word in query_words:
+        for query_word in query_tokens:
 
-            if word in line_lower:
+            variants = word_variants(
+                query_word
+            )
 
-                score += 1
+            matched = False
+
+            for variant in variants:
+
+                if variant in line_tokens:
+
+                    matched = True
+                    break
+
+            if matched:
+
+                score += 2
+                matched_words.append(
+                    query_word
+                )
+
+        query_phrase = normalise_text(
+            query
+        )
+
+        if (
+            query_phrase
+            and query_phrase in line_normalised
+        ):
+
+            score += 4
+
+        if len(query_tokens) > 1:
+
+            matched_count = len(
+                set(matched_words)
+            )
+
+            if matched_count == len(
+                set(query_tokens)
+            ):
+
+                score += 3
 
         if score > 0:
 
-            results.append({
-                "score": score,
-                "entry": line
-            })
+            results.append(
+                {
+                    "score": score,
+                    "entry": line,
+                    "matched_words": matched_words
+                }
+            )
 
     results.sort(
-        key=lambda item: item["score"],
+        key=lambda item: (
+            item["score"],
+            len(item["matched_words"])
+        ),
         reverse=True
     )
 
@@ -393,7 +599,9 @@ def build_research_result(
         "question": question,
         "source": source_name,
         "url": source_url,
-        "trusted": is_trusted_source(source_url),
+        "trusted": is_trusted_source(
+            source_url
+        ),
         "status": "READY",
         "results": search_results
     }
@@ -411,7 +619,9 @@ def run_research(
         "question": question,
         "source": source_name,
         "url": source_url,
-        "source_type": get_source_type(source_url),
+        "source_type": get_source_type(
+            source_url
+        ),
         "status": "READY"
     }
 
