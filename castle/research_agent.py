@@ -222,6 +222,25 @@ def research_from_cache(question, source):
     input("\nPress Enter to continue...")
 
 
+def classify_evidence(item):
+
+    score = item.get("score", 0)
+    matched_concepts = item.get(
+        "matched_concepts",
+        []
+    )
+
+    if score >= 3:
+
+        return "PRIMARY EVIDENCE"
+
+    if matched_concepts:
+
+        return "RELATED EVIDENCE"
+
+    return "CONTEXT"
+
+
 def display_research_report(result):
 
     print()
@@ -272,13 +291,22 @@ def display_research_report(result):
         start=1
     ):
 
+        evidence_type = classify_evidence(
+            item
+        )
+
         print()
         print(
-            f"{number}. {item['entry']}"
+            f"{number}. {evidence_type}"
         )
 
         print(
-            f"   Relevance Score: {item['score']}"
+            f"   {item['entry']}"
+        )
+
+        print(
+            f"   Relevance Score: "
+            f"{item['score']}"
         )
 
         if item.get("matched_words"):
@@ -302,11 +330,45 @@ def display_research_report(result):
     print()
     print("-" * 70)
 
+    primary_count = 0
+    related_count = 0
+    context_count = 0
+
+    for item in result["results"]:
+
+        evidence_type = classify_evidence(
+            item
+        )
+
+        if evidence_type == "PRIMARY EVIDENCE":
+
+            primary_count += 1
+
+        elif evidence_type == "RELATED EVIDENCE":
+
+            related_count += 1
+
+        else:
+
+            context_count += 1
+
     print()
     print("REPORT SUMMARY:")
     print(
         f"{len(result['results'])} "
         "relevant evidence entries found."
+    )
+
+    print(
+        f"Primary Evidence: {primary_count}"
+    )
+
+    print(
+        f"Related Evidence: {related_count}"
+    )
+
+    print(
+        f"Context: {context_count}"
     )
 
 
@@ -620,8 +682,13 @@ def save_research(research_result):
             start=1
         ):
 
+            evidence_type = classify_evidence(
+                result
+            )
+
             file.write(
                 f"{number}. "
+                f"[{evidence_type}] "
                 f"{result['entry']}\n"
             )
 
