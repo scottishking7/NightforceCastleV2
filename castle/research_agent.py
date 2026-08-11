@@ -8,7 +8,6 @@ from castle.research_engine import (
     get_cache_metadata
 )
 
-
 RESEARCH_VAULT = "research_vault.txt"
 MIDNIGHT_CACHE = "midnight_docs.txt"
 
@@ -29,7 +28,7 @@ def research_agent():
         print("6 - Return")
         print()
 
-        choice = input("Choose: ")
+        choice = input("Choose: ").strip()
 
         print()
 
@@ -107,13 +106,13 @@ def midnight_research():
 
         source = trusted_sources.get("2")
 
-    elif source_choice == "4":
-
-        source = trusted_sources.get("3")
-
     elif source_choice == "3":
 
         source = trusted_sources.get("2")
+
+    elif source_choice == "4":
+
+        source = trusted_sources.get("3")
 
     else:
 
@@ -161,7 +160,8 @@ def midnight_research():
     print()
 
     print(
-        "This source is currently configured for trusted-source research."
+        "This source is currently configured "
+        "for trusted-source research."
     )
 
     input("\nPress Enter to continue...")
@@ -184,7 +184,8 @@ def research_from_cache(question, source):
         print()
 
         print(
-            "Castle could not perform the research from the local cache."
+            "Castle could not perform the research "
+            "from the local cache."
         )
 
         input("\nPress Enter to continue...")
@@ -202,9 +203,30 @@ def research_from_cache(question, source):
         results
     )
 
+    display_research_report(result)
+
+    if result["results"]:
+
+        print()
+
+        save_choice = input(
+            "Save this research to the Research Vault? (y/n): "
+        ).strip().lower()
+
+        if save_choice == "y":
+
+            save_research(
+                result
+            )
+
+    input("\nPress Enter to continue...")
+
+
+def display_research_report(result):
+
     print()
     print("=" * 70)
-    print("STRUCTURED RESEARCH RESULT")
+    print("RESEARCH REPORT")
     print("=" * 70)
     print()
 
@@ -229,48 +251,63 @@ def research_from_cache(question, source):
     print(result["status"])
     print()
 
-    print("EVIDENCE:")
+    print("KEY FINDINGS:")
     print("-" * 70)
 
     if not result["results"]:
 
         print()
-        print("No matching information found in the local documentation.")
+        print(
+            "No matching information found "
+            "in the local documentation."
+        )
 
-    else:
+        print()
+        print("-" * 70)
 
-        for number, item in enumerate(
-            result["results"],
-            start=1
-        ):
+        return
 
-            print()
+    for number, item in enumerate(
+        result["results"],
+        start=1
+    ):
+
+        print()
+        print(
+            f"{number}. {item['entry']}"
+        )
+
+        print(
+            f"   Relevance Score: {item['score']}"
+        )
+
+        if item.get("matched_words"):
+
             print(
-                f"{number}. {item['entry']}"
+                "   Matched Terms: "
+                + ", ".join(
+                    item["matched_words"]
+                )
             )
 
+        if item.get("matched_concepts"):
+
             print(
-                f"   Score: {item['score']}"
+                "   Matched Concepts: "
+                + ", ".join(
+                    item["matched_concepts"]
+                )
             )
 
     print()
     print("-" * 70)
 
-    if result["results"]:
-
-        print()
-
-        save_choice = input(
-            "Save this research to the Research Vault? (y/n): "
-        ).strip().lower()
-
-        if save_choice == "y":
-
-            save_research(
-                result
-            )
-
-    input("\nPress Enter to continue...")
+    print()
+    print("REPORT SUMMARY:")
+    print(
+        f"{len(result['results'])} "
+        "relevant evidence entries found."
+    )
 
 
 def documentation_search():
@@ -288,7 +325,8 @@ def documentation_search():
     if cached["status"] != "SUCCESS":
 
         print(
-            "No local Midnight documentation cache is available."
+            "No local Midnight documentation "
+            "cache is available."
         )
 
         print()
@@ -320,7 +358,9 @@ def documentation_search():
 
     if not results:
 
-        print("No matching documentation found.")
+        print(
+            "No matching documentation found."
+        )
 
     else:
 
@@ -336,6 +376,24 @@ def documentation_search():
             print(
                 f"   Score: {result['score']}"
             )
+
+            if result.get("matched_words"):
+
+                print(
+                    "   Matched Terms: "
+                    + ", ".join(
+                        result["matched_words"]
+                    )
+                )
+
+            if result.get("matched_concepts"):
+
+                print(
+                    "   Matched Concepts: "
+                    + ", ".join(
+                        result["matched_concepts"]
+                    )
+                )
 
             print()
 
@@ -404,7 +462,8 @@ def cache_midnight_documentation():
     print()
 
     print(
-        "Castle will attempt to retrieve the trusted documentation."
+        "Castle will attempt to retrieve "
+        "the trusted documentation."
     )
 
     print()
@@ -473,12 +532,14 @@ def cache_status():
                 )
             )
         )
+
         print()
 
         print("SIZE:")
         print(
             f"{metadata.get('size_bytes', 0)} bytes"
         )
+
         print()
 
         print("LAST UPDATED:")
@@ -488,6 +549,7 @@ def cache_status():
                 "Unknown"
             )
         )
+
         print()
 
         print("METADATA STATUS:")
@@ -517,23 +579,28 @@ def save_research(research_result):
         file.write("=" * 70 + "\n")
 
         file.write(
-            f"QUESTION: {research_result['question']}\n"
+            f"QUESTION: "
+            f"{research_result['question']}\n"
         )
 
         file.write(
-            f"SOURCE: {research_result['source']}\n"
+            f"SOURCE: "
+            f"{research_result['source']}\n"
         )
 
         file.write(
-            f"URL: {research_result['url']}\n"
+            f"URL: "
+            f"{research_result['url']}\n"
         )
 
         file.write(
-            f"TRUSTED: {research_result['trusted']}\n"
+            f"TRUSTED: "
+            f"{research_result['trusted']}\n"
         )
 
         file.write(
-            f"STATUS: {research_result['status']}\n"
+            f"STATUS: "
+            f"{research_result['status']}\n"
         )
 
         file.write(
@@ -554,12 +621,34 @@ def save_research(research_result):
         ):
 
             file.write(
-                f"{number}. {result['entry']}\n"
+                f"{number}. "
+                f"{result['entry']}\n"
             )
 
             file.write(
-                f"   Relevance Score: {result['score']}\n"
+                f"   Relevance Score: "
+                f"{result['score']}\n"
             )
+
+            if result.get("matched_words"):
+
+                file.write(
+                    "   Matched Terms: "
+                    + ", ".join(
+                        result["matched_words"]
+                    )
+                    + "\n"
+                )
+
+            if result.get("matched_concepts"):
+
+                file.write(
+                    "   Matched Concepts: "
+                    + ", ".join(
+                        result["matched_concepts"]
+                    )
+                    + "\n"
+                )
 
         file.write(
             "=" * 70 + "\n"
@@ -604,11 +693,8 @@ def saved_research():
         print()
 
         print(
-            "Research will appear here after you save"
-        )
-
-        print(
-            "your first research result."
+            "Research will appear here after "
+            "you save your first research result."
         )
 
     input("\nPress Enter to continue...")
