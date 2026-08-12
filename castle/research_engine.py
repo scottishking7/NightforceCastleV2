@@ -47,7 +47,6 @@ RESEARCH_CONCEPTS = {
         "privacy",
         "private",
         "privacy-preserving",
-        "privacy-preserving",
         "confidential",
         "confidentiality",
     },
@@ -581,7 +580,10 @@ def search_documentation(
 
     results = []
 
-    for line in content.splitlines():
+    for line_number, line in enumerate(
+        content.splitlines(),
+        start=1
+    ):
 
         line = line.strip()
 
@@ -683,6 +685,7 @@ def search_documentation(
 
             results.append(
                 {
+                    "line_number": line_number,
                     "score": score,
                     "entry": line,
                     "matched_words": matched_words,
@@ -702,12 +705,77 @@ def search_documentation(
     return results[:limit]
 
 
+def attach_evidence_provenance(
+    search_results,
+    source_name,
+    source_url,
+    cache_file
+):
+
+    enriched_results = []
+
+    for number, item in enumerate(
+        search_results,
+        start=1
+    ):
+
+        enriched_item = dict(item)
+
+        enriched_item["evidence_id"] = (
+            f"E{number:03d}"
+        )
+
+        enriched_item["source"] = (
+            source_name
+        )
+
+        enriched_item["source_url"] = (
+            source_url
+        )
+
+        enriched_item["cache_file"] = (
+            cache_file
+        )
+
+        enriched_item["provenance"] = {
+            "evidence_id": (
+                f"E{number:03d}"
+            ),
+            "source": source_name,
+            "source_url": source_url,
+            "cache_file": cache_file,
+            "cache_line": item.get(
+                "line_number"
+            )
+        }
+
+        enriched_results.append(
+            enriched_item
+        )
+
+    return enriched_results
+
+
 def build_research_result(
     question,
     source_name,
     source_url,
-    search_results
+    search_results,
+    cache_file=None
 ):
+
+    if cache_file is None:
+
+        cache_file = str(
+            CACHE_DIR / "midnight_docs.txt"
+        )
+
+    enriched_results = attach_evidence_provenance(
+        search_results,
+        source_name,
+        source_url,
+        cache_file
+    )
 
     result = {
         "question": question,
@@ -717,7 +785,8 @@ def build_research_result(
             source_url
         ),
         "status": "READY",
-        "results": search_results
+        "cache_file": cache_file,
+        "results": enriched_results
     }
 
     return result
