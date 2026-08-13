@@ -809,3 +809,233 @@ def run_research(
     }
 
     return result
+def parse_research_vault(
+    vault_file="research_vault.txt"
+):
+
+    vault_path = Path(vault_file)
+
+    if not vault_path.exists():
+
+        return {
+            "status": "NOT_FOUND",
+            "message": "Research Vault not found.",
+            "records": []
+        }
+
+    content = vault_path.read_text(
+        encoding="utf-8"
+    )
+
+    if not content.strip():
+
+        return {
+            "status": "EMPTY",
+            "message": "Research Vault is empty.",
+            "records": []
+        }
+
+    raw_records = content.split(
+        "======================================================================"
+    )
+
+    records = []
+
+    for raw_record in raw_records:
+
+        raw_record = raw_record.strip()
+
+        if not raw_record:
+            continue
+
+        lines = [
+            line.strip()
+            for line in raw_record.splitlines()
+            if line.strip()
+        ]
+
+        question = ""
+        source = ""
+        url = ""
+        trusted = ""
+        status = ""
+        cache = ""
+        evidence = []
+
+        for line in lines:
+
+            if line.startswith(
+                "QUESTION:"
+            ):
+
+                question = line[
+                    len("QUESTION:"):
+                ].strip()
+
+            elif line.startswith(
+                "SOURCE:"
+            ):
+
+                source = line[
+                    len("SOURCE:"):
+                ].strip()
+
+            elif line.startswith(
+                "URL:"
+            ):
+
+                url = line[
+                    len("URL:"):
+                ].strip()
+
+            elif line.startswith(
+                "TRUSTED:"
+            ):
+
+                trusted = line[
+                    len("TRUSTED:"):
+                ].strip()
+
+            elif line.startswith(
+                "STATUS:"
+            ):
+
+                status = line[
+                    len("STATUS:"):
+                ].strip()
+
+            elif line.startswith(
+                "CACHE:"
+            ):
+
+                cache = line[
+                    len("CACHE:"):
+                ].strip()
+
+        if not question:
+            continue
+
+        records.append(
+            {
+                "question": question,
+                "source": source,
+                "url": url,
+                "trusted": trusted,
+                "status": status,
+                "cache": cache,
+                "evidence": evidence,
+                "legacy": (
+                    "EVIDENCE:"
+                    not in raw_record
+                ),
+                "raw": raw_record
+            }
+        )
+
+    return {
+        "status": "SUCCESS",
+        "message": (
+            f"{len(records)} research "
+            "records loaded."
+        ),
+        "records": records
+    }
+
+
+def search_research_history(
+    query,
+    vault_file="research_vault.txt",
+    limit=10
+):
+
+    if not query or not query.strip():
+
+        return []
+
+    vault = parse_research_vault(
+        vault_file
+    )
+
+    if vault["status"] != "SUCCESS":
+
+        return []
+
+    query_words = [
+        word.lower()
+        for word in query.split()
+        if word.strip()
+    ]
+
+    results = []
+
+    for record in vault["records"]:
+
+        searchable_text = " ".join(
+            [
+                record.get(
+                    "question",
+                    ""
+                ),
+                record.get(
+                    "source",
+                    ""
+                ),
+                record.get(
+                    "url",
+                    ""
+                ),
+                record.get(
+                    "raw",
+                    ""
+                )
+            ]
+        ).lower()
+
+        matched_words = []
+
+        for word in query_words:
+
+            if word in searchable_text:
+
+                matched_words.append(
+                    word
+                )
+
+        if not matched_words:
+            continue
+
+        results.append(
+            {
+                "question": record[
+                    "question"
+                ],
+                "source": record[
+                    "source"
+                ],
+                "url": record[
+                    "url"
+                ],
+                "status": record[
+                    "status"
+                ],
+                "legacy": record[
+                    "legacy"
+                ],
+                "score": len(
+                    matched_words
+                ),
+                "matched_words": (
+                    matched_words
+                )
+            }
+        )
+
+    results.sort(
+        key=lambda item: (
+            item["score"],
+            item["question"]
+        ),
+        reverse=True
+    )
+
+    return results[:limit]
