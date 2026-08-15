@@ -6,8 +6,11 @@ from castle.research_engine import (
     build_research_result,
     load_cached_source,
     cache_source,
-    get_cache_metadata
+    get_cache_metadata,
+    parse_research_vault,
+    search_research_history
 )
+
 
 
 RESEARCH_VAULT = "research_vault.txt"
