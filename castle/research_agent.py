@@ -12,7 +12,6 @@ from castle.research_engine import (
 )
 
 
-
 RESEARCH_VAULT = "research_vault.txt"
 MIDNIGHT_CACHE = "midnight_docs.txt"
 
@@ -27,7 +26,7 @@ def research_agent():
         print()
         print("1 - Midnight Research")
         print("2 - Trusted Sources")
-        print("3 - Saved Research")
+        print("3 - Research History")
         print("4 - Documentation Search")
         print("5 - Cache Manager")
         print("6 - Return")
@@ -97,9 +96,7 @@ def midnight_research():
     print("5 - Return")
     print()
 
-    source_choice = input(
-        "Choose: "
-    ).strip()
+    source_choice = input("Choose: ").strip()
 
     if source_choice == "5":
 
@@ -210,19 +207,10 @@ def research_from_cache(
         question,
         source["name"],
         source["url"],
-        results,
-        cached.get(
-            "cache_file",
-            str(
-                "castle/research_cache/"
-                + MIDNIGHT_CACHE
-            )
-        )
+        results
     )
 
-    display_research_report(
-        result
-    )
+    display_research_report(result)
 
     if result["results"]:
 
@@ -242,20 +230,20 @@ def research_from_cache(
 
 
 def classify_evidence(
-    item
+    result
 ):
 
-    concepts = item.get(
+    concepts = result.get(
         "matched_concepts",
         []
     )
 
-    score = item.get(
+    score = result.get(
         "score",
         0
     )
 
-    if score >= 3:
+    if "privacy" in concepts and score >= 3:
 
         return "PRIMARY EVIDENCE"
 
@@ -313,41 +301,43 @@ def display_research_report(
 
         return
 
-    evidence_counts = {
+    counts = {
         "PRIMARY EVIDENCE": 0,
         "RELATED EVIDENCE": 0,
         "CONTEXT": 0
     }
 
-    for item in result["results"]:
+    for number, item in enumerate(
+        result["results"],
+        start=1
+    ):
 
         evidence_type = classify_evidence(
             item
         )
 
-        evidence_counts[
-            evidence_type
-        ] += 1
+        counts[evidence_type] += 1
 
         print()
+
         print(
             f"{item.get('evidence_id', 'E???')} "
             f"{evidence_type}"
         )
 
         print(
-            f"   {item['entry']}"
+            item["entry"]
         )
 
         print(
-            f"   Relevance Score: "
+            f"Relevance Score: "
             f"{item['score']}"
         )
 
         if item.get("matched_words"):
 
             print(
-                "   Matched Terms: "
+                "Matched Terms: "
                 + ", ".join(
                     item["matched_words"]
                 )
@@ -356,7 +346,7 @@ def display_research_report(
         if item.get("matched_concepts"):
 
             print(
-                "   Matched Concepts: "
+                "Matched Concepts: "
                 + ", ".join(
                     item["matched_concepts"]
                 )
@@ -367,31 +357,19 @@ def display_research_report(
             {}
         )
 
-        print(
-            "   Source Line: "
-            + str(
-                provenance.get(
-                    "cache_line",
-                    item.get(
-                        "line_number",
-                        "Unknown"
-                    )
-                )
-            )
-        )
+        if provenance.get("cache_line"):
 
-        print(
-            "   Cache: "
-            + str(
-                provenance.get(
-                    "cache_file",
-                    result.get(
-                        "cache_file",
-                        "Unknown"
-                    )
-                )
+            print(
+                f"Source Line: "
+                f"{provenance['cache_line']}"
             )
-        )
+
+        if provenance.get("cache_file"):
+
+            print(
+                f"Cache: "
+                f"{provenance['cache_file']}"
+            )
 
     print()
     print("-" * 70)
@@ -405,30 +383,18 @@ def display_research_report(
     )
 
     print(
-        "Primary Evidence: "
-        + str(
-            evidence_counts[
-                "PRIMARY EVIDENCE"
-            ]
-        )
+        f"Primary Evidence: "
+        f"{counts['PRIMARY EVIDENCE']}"
     )
 
     print(
-        "Related Evidence: "
-        + str(
-            evidence_counts[
-                "RELATED EVIDENCE"
-            ]
-        )
+        f"Related Evidence: "
+        f"{counts['RELATED EVIDENCE']}"
     )
 
     print(
-        "Context: "
-        + str(
-            evidence_counts[
-                "CONTEXT"
-            ]
-        )
+        f"Context: "
+        f"{counts['CONTEXT']}"
     )
 
 
@@ -486,16 +452,14 @@ def documentation_search():
 
     else:
 
-        for result in results:
+        for number, result in enumerate(
+            results,
+            start=1
+        ):
 
             print(
-                f"{result.get('evidence_id', 'E???')}. "
+                f"{number}. "
                 f"{result['entry']}"
-            )
-
-            print(
-                f"   Line: "
-                f"{result.get('line_number', 'Unknown')}"
             )
 
             print(
@@ -536,23 +500,12 @@ def cache_manager():
         print("=" * 70)
         print()
 
-        print(
-            "1 - Cache Midnight Documentation"
-        )
-
-        print(
-            "2 - Check Cache Status"
-        )
-
-        print(
-            "3 - Return"
-        )
-
+        print("1 - Cache Midnight Documentation")
+        print("2 - Check Cache Status")
+        print("3 - Return")
         print()
 
-        choice = input(
-            "Choose: "
-        ).strip()
+        choice = input("Choose: ").strip()
 
         print()
 
@@ -582,9 +535,7 @@ def cache_midnight_documentation():
     print("=" * 70)
     print()
 
-    source = trusted_sources.get(
-        "2"
-    )
+    source = trusted_sources.get("2")
 
     if not source:
 
@@ -657,20 +608,11 @@ def cache_status():
             {}
         )
 
-        print(
-            "DOCUMENTATION AVAILABLE:"
-        )
-
-        print(
-            "YES ✓"
-        )
-
+        print("DOCUMENTATION AVAILABLE:")
+        print("YES ✓")
         print()
 
-        print(
-            "CACHE FILE:"
-        )
-
+        print("CACHE FILE:")
         print(
             metadata.get(
                 "cache_file",
@@ -683,20 +625,14 @@ def cache_status():
 
         print()
 
-        print(
-            "SIZE:"
-        )
-
+        print("SIZE:")
         print(
             f"{metadata.get('size_bytes', 0)} bytes"
         )
 
         print()
 
-        print(
-            "LAST UPDATED:"
-        )
-
+        print("LAST UPDATED:")
         print(
             metadata.get(
                 "updated_at",
@@ -706,23 +642,15 @@ def cache_status():
 
         print()
 
-        print(
-            "METADATA STATUS:"
-        )
-
+        print("METADATA STATUS:")
         print(
             metadata_result["status"]
         )
 
     else:
 
-        print(
-            "DOCUMENTATION AVAILABLE:"
-        )
-
-        print(
-            "NO ✗"
-        )
+        print("DOCUMENTATION AVAILABLE:")
+        print("NO ✗")
 
     input("\nPress Enter to continue...")
 
@@ -828,9 +756,7 @@ def save_research(
                 f"{provenance.get('cache_file', 'Unknown')}\n"
             )
 
-            if result.get(
-                "matched_words"
-            ):
+            if result.get("matched_words"):
 
                 file.write(
                     "   Matched Terms: "
@@ -840,9 +766,7 @@ def save_research(
                     + "\n"
                 )
 
-            if result.get(
-                "matched_concepts"
-            ):
+            if result.get("matched_concepts"):
 
                 file.write(
                     "   Matched Concepts: "
@@ -865,46 +789,206 @@ def save_research(
 
 def saved_research():
 
-    print()
-    print("=" * 70)
-    print("SAVED RESEARCH")
-    print("=" * 70)
-    print()
+    while True:
 
-    try:
+        print()
+        print("=" * 70)
+        print("RESEARCH HISTORY")
+        print("=" * 70)
+        print()
 
-        with open(
-            RESEARCH_VAULT,
-            "r",
-            encoding="utf-8"
-        ) as file:
+        print("1 - Search Previous Research")
+        print("2 - View All Research")
+        print("3 - Return")
+        print()
 
-            content = file.read()
+        choice = input(
+            "Choose: "
+        ).strip()
 
-        if not content.strip():
+        print()
 
-            print(
-                "No saved research yet."
-            )
+        if choice == "1":
+
+            search_saved_research()
+
+        elif choice == "2":
+
+            view_all_saved_research()
+
+        elif choice == "3":
+
+            return
 
         else:
 
-            print(content)
+            print("Invalid choice.")
+            input("\nPress Enter to continue...")
 
-    except FileNotFoundError:
+
+def search_saved_research():
+
+    print()
+    print("=" * 70)
+    print("SEARCH PREVIOUS RESEARCH")
+    print("=" * 70)
+    print()
+
+    query = input(
+        "Search previous research for: "
+    ).strip()
+
+    if not query:
+
+        print()
+        print("No search entered.")
+        input("\nPress Enter to continue...")
+        return
+
+    results = search_research_history(
+        query,
+        RESEARCH_VAULT
+    )
+
+    print()
+    print("HISTORY RESULTS")
+    print("=" * 70)
+    print()
+
+    if not results:
 
         print(
-            "No saved research yet."
+            "No previous research matched "
+            "your search."
+        )
+
+    else:
+
+        print(
+            f"{len(results)} previous research "
+            "record(s) found."
         )
 
         print()
 
+        for number, result in enumerate(
+            results,
+            start=1
+        ):
+
+            print(
+                f"{number}. "
+                f"{result['question']}"
+            )
+
+            print(
+                f"   Source: "
+                f"{result['source']}"
+            )
+
+            print(
+                f"   Score: "
+                f"{result['score']}"
+            )
+
+            if result.get("matched_words"):
+
+                print(
+                    "   Matched Terms: "
+                    + ", ".join(
+                        result["matched_words"]
+                    )
+                )
+
+            print(
+                "   Record Type: "
+                + (
+                    "Legacy"
+                    if result["legacy"]
+                    else "Structured"
+                )
+            )
+
+            print()
+
+    input(
+        "Press Enter to continue..."
+    )
+
+
+def view_all_saved_research():
+
+    print()
+    print("=" * 70)
+    print("ALL SAVED RESEARCH")
+    print("=" * 70)
+    print()
+
+    result = parse_research_vault(
+        RESEARCH_VAULT
+    )
+
+    if result["status"] != "SUCCESS":
+
         print(
-            "Research will appear here after "
-            "you save your first research result."
+            result["message"]
         )
 
-    input("\nPress Enter to continue...")
+        input(
+            "\nPress Enter to continue..."
+        )
+
+        return
+
+    records = result["records"]
+
+    if not records:
+
+        print("No saved research yet.")
+
+        input(
+            "\nPress Enter to continue..."
+        )
+
+        return
+
+    print(
+        f"{len(records)} research "
+        "record(s) found."
+    )
+
+    print()
+
+    for number, record in enumerate(
+        records,
+        start=1
+    ):
+
+        print(
+            f"{number}. "
+            f"{record['question']}"
+        )
+
+        print(
+            f"   Source: "
+            f"{record['source']}"
+        )
+
+        print(
+            "   Record Type: "
+            + (
+                "Legacy"
+                if record["legacy"]
+                else "Structured"
+            )
+        )
+
+        print()
+
+
+    input(
+        "Press Enter to continue..."
+    )
 
 
 def show_trusted_sources():
