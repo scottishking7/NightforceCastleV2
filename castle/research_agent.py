@@ -799,7 +799,8 @@ def saved_research():
 
         print("1 - Search Previous Research")
         print("2 - View All Research")
-        print("3 - Return")
+        print("3 - Open Research Record")
+        print("4 - Return")
         print()
 
         choice = input(
@@ -817,6 +818,10 @@ def saved_research():
             view_all_saved_research()
 
         elif choice == "3":
+
+            open_saved_research()
+
+        elif choice == "4":
 
             return
 
@@ -985,6 +990,207 @@ def view_all_saved_research():
 
         print()
 
+
+    input(
+        "Press Enter to continue..."
+    )
+
+
+def open_saved_research():
+
+    print()
+    print("=" * 70)
+    print("OPEN RESEARCH RECORD")
+    print("=" * 70)
+    print()
+
+    result = parse_research_vault(
+        RESEARCH_VAULT
+    )
+
+    if result["status"] != "SUCCESS":
+
+        print(
+            result["message"]
+        )
+
+        input(
+            "\nPress Enter to continue..."
+        )
+
+        return
+
+    records = result["records"]
+
+    if not records:
+
+        print("No saved research yet.")
+
+        input(
+            "\nPress Enter to continue..."
+        )
+
+        return
+
+    print(
+        f"{len(records)} research "
+        "record(s) available."
+    )
+
+    print()
+
+    for number, record in enumerate(
+        records,
+        start=1
+    ):
+
+        print(
+            f"{number}. "
+            f"{record['question']}"
+        )
+
+        print(
+            f"   Source: "
+            f"{record['source']}"
+        )
+
+        print()
+
+    selection = input(
+        "Open record number: "
+    ).strip()
+
+    try:
+
+        number = int(selection)
+
+    except ValueError:
+
+        print()
+        print("Invalid record number.")
+        input("\nPress Enter to continue...")
+        return
+
+    if number < 1 or number > len(records):
+
+        print()
+        print("Invalid record number.")
+        input("\nPress Enter to continue...")
+        return
+
+    record = records[number - 1]
+
+    print()
+    print("=" * 70)
+    print("RESEARCH RECORD")
+    print("=" * 70)
+    print()
+
+    print("QUESTION:")
+    print(
+        record.get(
+            "question",
+            "Unknown"
+        )
+    )
+    print()
+
+    print("SOURCE:")
+    print(
+        record.get(
+            "source",
+            "Unknown"
+        )
+    )
+    print()
+
+    if record.get("url"):
+
+        print("URL:")
+        print(record["url"])
+        print()
+
+    if record.get("trusted") is not None:
+
+        print("TRUSTED:")
+        print(record["trusted"])
+        print()
+
+    if record.get("status"):
+
+        print("STATUS:")
+        print(record["status"])
+        print()
+
+    if record.get("cache_file"):
+
+        print("CACHE:")
+        print(record["cache_file"])
+        print()
+
+    print("RECORD TYPE:")
+    print(
+        "Legacy"
+        if record.get("legacy")
+        else "Structured"
+    )
+    print()
+
+    evidence = record.get(
+        "results",
+        record.get(
+            "evidence",
+            []
+        )
+    )
+
+    if evidence:
+
+        print("EVIDENCE:")
+        print("-" * 70)
+        print()
+
+        for item in evidence:
+
+            if isinstance(item, dict):
+
+                print(
+                    f"{item.get('evidence_id', 'E???')} "
+                    f"{item.get('entry', 'Unknown evidence')}"
+                )
+
+                if item.get("score") is not None:
+
+                    print(
+                        f"   Relevance Score: "
+                        f"{item['score']}"
+                    )
+
+                provenance = item.get(
+                    "provenance",
+                    {}
+                )
+
+                if provenance.get("cache_line"):
+
+                    print(
+                        f"   Source Line: "
+                        f"{provenance['cache_line']}"
+                    )
+
+                if provenance.get("cache_file"):
+
+                    print(
+                        f"   Cache: "
+                        f"{provenance['cache_file']}"
+                    )
+
+                print()
+
+            else:
+
+                print(item)
+                print()
 
     input(
         "Press Enter to continue..."
