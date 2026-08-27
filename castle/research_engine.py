@@ -861,12 +861,58 @@ def parse_research_vault(
         status = ""
         cache = ""
         evidence = []
+        in_evidence = False
+        current_evidence = None
 
         for line in lines:
 
             if line.startswith(
+                "RELEVANT INFORMATION:"
+            ):
+
+                in_evidence = True
+                continue
+
+            if in_evidence:
+
+                match = re.match(
+                    r"^(\d+)\.\s+(.*)$",
+                    line
+                )
+
+                if match:
+
+                    current_evidence = {
+                        "number": match.group(1),
+                        "entry": match.group(2).strip(),
+                        "score": ""
+                    }
+
+                    evidence.append(
+                        current_evidence
+                    )
+
+                    continue
+
+                if line.startswith(
+                    "Relevance Score:"
+                ):
+
+                    if current_evidence is not None:
+
+                        current_evidence[
+                            "score"
+                        ] = line[
+                            len("Relevance Score:"):
+                        ].strip()
+
+                    continue
+
+            if line.startswith(
                 "QUESTION:"
             ):
+
+                in_evidence = False
 
                 question = line[
                     len("QUESTION:"):
