@@ -16,7 +16,7 @@ while running:
     show_dashboard()
     show_menu()
 
-    choice = input("Select option (1-8): ")
+    choice = input("Select option (1-7): ")
 
     print()
 
@@ -27,35 +27,30 @@ while running:
 
     elif choice == "2":
 
-        print("🚗 GTA Character Studio coming soon!")
-        input("\nPress Enter to continue...")
+        vault_room()
 
     elif choice == "3":
 
-        vault_room()
+        image_builder()
 
     elif choice == "4":
 
-        image_builder()
+        social_studio()
 
     elif choice == "5":
 
-        social_studio()
+        research_agent()
 
     elif choice == "6":
 
-        research_agent()
-
-    elif choice == "7":
-
         settings_room()
 
-    elif choice == "8":
+    elif choice == "7":
 
         print("👋 Goodbye Commander!")
         running = False
 
     else:
 
-        print("❌ Invalid choice.")
+        print("❌ Invalid option.")
         input("\nPress Enter to continue...")
