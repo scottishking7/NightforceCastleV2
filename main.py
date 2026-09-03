@@ -6,6 +6,7 @@ from castle.image_builder import image_builder
 from castle.settings import settings_room
 from castle.social_studio import social_studio
 from castle.research_agent import research_agent
+from castle.trading_bot import trading_bot
 
 
 running = True
@@ -22,8 +23,7 @@ while running:
 
     if choice == "1":
 
-        print("🎭 Meme Workshop coming soon!")
-        input("\nPress Enter to continue...")
+        trading_bot()
 
     elif choice == "2":
 

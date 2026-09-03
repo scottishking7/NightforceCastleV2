@@ -1,6 +1,6 @@
 def show_menu():
 
-    print("1 - 🎭 Meme Workshop")
+    print("1 - 📈 MT5 Trading Bot")
     print("2 - 📚 Memory Vault")
     print("3 - 🖼️ Image Prompt Builder")
     print("4 - ✨ Social Studio")
