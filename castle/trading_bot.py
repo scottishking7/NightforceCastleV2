@@ -3,6 +3,11 @@ import MetaTrader5 as mt5
 
 MT5_PATH = r"C:\Program Files\MetaTrader 5\terminal64.exe"
 
+DEFAULT_SYMBOL = "EURUSD"
+DEFAULT_RISK_PERCENT = 1.0
+DEFAULT_MAX_LOT = 0.10
+DEFAULT_STOP_LOSS_POINTS = 200
+
 
 def trading_bot():
 
@@ -17,7 +22,8 @@ def trading_bot():
         print("1 - MT5 Connection Status")
         print("2 - Account Information")
         print("3 - Market Price")
-        print("4 - Return")
+        print("4 - Risk Settings")
+        print("5 - Return")
         print()
 
         choice = input("Choose: ")
@@ -37,6 +43,10 @@ def trading_bot():
             show_market_price()
 
         elif choice == "4":
+
+            show_risk_settings()
+
+        elif choice == "5":
 
             return
 
@@ -132,13 +142,13 @@ def show_market_price():
     print("=" * 70)
     print()
 
-    symbol = input("Enter symbol (example: EURUSD): ").strip().upper()
+    symbol = input(
+        f"Enter symbol (default {DEFAULT_SYMBOL}): "
+    ).strip().upper()
 
     if not symbol:
 
-        print("❌ No symbol entered.")
-        input("\nPress Enter to continue...")
-        return
+        symbol = DEFAULT_SYMBOL
 
     initialized = mt5.initialize(MT5_PATH)
 
@@ -183,6 +193,49 @@ def show_market_price():
         print("Last:", tick.last)
 
     mt5.shutdown()
+
+    print()
+    input("Press Enter to continue...")
+
+
+def show_risk_settings():
+
+    print("=" * 70)
+    print("TRADING RISK SETTINGS")
+    print("=" * 70)
+    print()
+
+    print("Trading mode: DEMO / SIMULATION")
+    print("Live order execution: DISABLED")
+    print()
+
+    print(
+        "Default symbol:",
+        DEFAULT_SYMBOL
+    )
+
+    print(
+        "Risk per trade:",
+        f"{DEFAULT_RISK_PERCENT}%"
+    )
+
+    print(
+        "Maximum lot size:",
+        DEFAULT_MAX_LOT
+    )
+
+    print(
+        "Required stop-loss:",
+        f"{DEFAULT_STOP_LOSS_POINTS} points"
+    )
+
+    print()
+
+    print("Safety rules:")
+    print("✓ Live order execution is not implemented")
+    print("✓ Risk is capped by the maximum lot setting")
+    print("✓ Stop-loss is required for future trade logic")
+    print("✓ Strategy signals will be added separately")
 
     print()
     input("Press Enter to continue...")
