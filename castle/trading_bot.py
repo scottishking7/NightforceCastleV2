@@ -1,5 +1,5 @@
 import MetaTrader5 as mt5
-
+from castle.signal_engine import calculate_signal
 
 MT5_PATH = r"C:\Program Files\MetaTrader 5\terminal64.exe"
 
@@ -22,8 +22,9 @@ def trading_bot():
         print("1 - MT5 Connection Status")
         print("2 - Account Information")
         print("3 - Market Price")
-        print("4 - Risk Settings")
-        print("5 - Return")
+        print("4 - Trading Signal")
+        print("5 - Risk Settings")
+        print("6 - Return")
         print()
 
         choice = input("Choose: ")
@@ -44,11 +45,17 @@ def trading_bot():
 
         elif choice == "4":
 
-            show_risk_settings()
+            show_trading_signal()
 
         elif choice == "5":
 
+            show_risk_settings()
+
+        elif choice == "6":
+
             return
+
+
 
         else:
 
@@ -240,7 +247,67 @@ def show_risk_settings():
     print()
     input("Press Enter to continue...")
 
+def show_trading_signal():
 
+    print("=" * 70)
+    print("MT5 TRADING SIGNAL")
+    print("=" * 70)
+    print()
+
+    symbol = input(
+        f"Enter symbol (default {DEFAULT_SYMBOL}): "
+    ).strip().upper()
+
+    if not symbol:
+        symbol = DEFAULT_SYMBOL
+
+    initialized = mt5.initialize(MT5_PATH)
+
+    if not initialized:
+        print("Unable to connect to MT5.")
+        print("Last Error:", mt5.last_error())
+        print()
+        input("Press Enter to continue...")
+        return
+
+    symbol_info = mt5.symbol_info(symbol)
+
+    if symbol_info is None:
+        print(f"Symbol not found: {symbol}")
+        print("Last Error:", mt5.last_error())
+        mt5.shutdown()
+        print()
+        input("Press Enter to continue...")
+        return
+
+    if not symbol_info.visible:
+        mt5.symbol_select(symbol, True)
+
+    result = calculate_signal(symbol)
+
+    print()
+    print("Symbol:", symbol)
+    print("Timeframe: M15")
+    print()
+    print("Signal:", result.get("signal"))
+    print()
+    print("Reason:")
+    print(result.get("reason"))
+
+    if result.get("price") is not None:
+        print()
+        print("Current Price:", result.get("price"))
+        print("10-Candle Average:", result.get("short_average"))
+        print("30-Candle Average:", result.get("long_average"))
+
+    print()
+    print("WARNING: SIGNAL ONLY")
+    print("NO ORDER HAS BEEN CREATED.")
+    print()
+
+    mt5.shutdown()
+
+    input("Press Enter to continue...")
 if __name__ == "__main__":
 
     trading_bot()
