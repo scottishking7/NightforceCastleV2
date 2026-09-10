@@ -1,5 +1,6 @@
 import MetaTrader5 as mt5
 
+MIN_AVERAGE_SEPARATION_POINTS = 20
 
 def calculate_signal(symbol="EURUSD"):
 
@@ -22,8 +23,12 @@ def calculate_signal(symbol="EURUSD"):
     short_average = sum(closes[-10:]) / 10
     long_average = sum(closes[-30:]) / 30
     current_price = closes[-1]
-
-    if short_average > long_average and current_price > short_average:
+    average_separation_points = abs(short_average - long_average) / 0.00001
+    if (
+    short_average > long_average
+    and current_price > short_average
+    and average_separation_points >= MIN_AVERAGE_SEPARATION_POINTS
+):
 
         return {
             "signal": "BUY",
@@ -36,7 +41,11 @@ def calculate_signal(symbol="EURUSD"):
             "long_average": long_average
         }
 
-    if short_average < long_average and current_price < short_average:
+    if (
+    short_average < long_average
+    and current_price < short_average
+    and average_separation_points >= MIN_AVERAGE_SEPARATION_POINTS
+):
 
         return {
             "signal": "SELL",
