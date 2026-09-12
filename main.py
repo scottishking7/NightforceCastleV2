@@ -7,6 +7,7 @@ from castle.settings import settings_room
 from castle.social_studio import social_studio
 from castle.research_agent import research_agent
 from castle.trading_bot import trading_bot
+from castle.midnight_radio import midnight_radio
 
 
 running = True
@@ -17,7 +18,7 @@ while running:
     show_dashboard()
     show_menu()
 
-    choice = input("Select option (1-7): ")
+    choice = input("Select option (1-8): ")
 
     print()
 
@@ -43,14 +44,17 @@ while running:
 
     elif choice == "6":
 
-        settings_room()
+        midnight_radio()
 
     elif choice == "7":
+
+        settings_room()
+
+    elif choice == "8":
 
         print("👋 Goodbye Commander!")
         running = False
 
     else:
 
-        print("❌ Invalid option.")
-        input("\nPress Enter to continue...")
+        print("Invalid option.")
