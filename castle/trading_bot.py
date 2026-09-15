@@ -1,4 +1,4 @@
-import MetaTrader5 as mt5
+﻿import MetaTrader5 as mt5
 from castle.signal_engine import calculate_signal
 
 MT5_PATH = r"C:\Program Files\MetaTrader 5\terminal64.exe"
@@ -55,18 +55,15 @@ def trading_bot():
 
             return
 
-
-
         else:
 
-            print("❌ Invalid option.")
-            input("\nPress Enter to continue...")
+            print("Invalid choice.")
 
 
 def show_connection_status():
 
     print("=" * 70)
-    print("MT5 CONNECTION")
+    print("MT5 CONNECTION STATUS")
     print("=" * 70)
     print()
 
@@ -113,9 +110,9 @@ def show_account_information():
 
     if not initialized:
 
-        print("❌ Unable to connect to MT5.")
-        print("Last Error:", mt5.last_error())
+        print("Could not connect to MetaTrader 5.")
         print()
+
         input("Press Enter to continue...")
         return
 
@@ -125,16 +122,13 @@ def show_account_information():
 
         print("Login:", account.login)
         print("Server:", account.server)
-        print("Currency:", account.currency)
         print("Balance:", account.balance)
         print("Equity:", account.equity)
-        print("Margin:", account.margin)
-        print("Free Margin:", account.margin_free)
+        print("Currency:", account.currency)
 
     else:
 
-        print("❌ Unable to read account information.")
-        print("Last Error:", mt5.last_error())
+        print("Could not retrieve account information.")
 
     mt5.shutdown()
 
@@ -161,94 +155,37 @@ def show_market_price():
 
     if not initialized:
 
-        print("❌ Unable to connect to MT5.")
-        print("Last Error:", mt5.last_error())
         print()
+        print("Could not connect to MetaTrader 5.")
+        print()
+
         input("Press Enter to continue...")
         return
 
-    symbol_info = mt5.symbol_info(symbol)
+    symbol_info = mt5.symbol_info_tick(symbol)
 
-    if symbol_info is None:
-
-        print(f"❌ Symbol not found: {symbol}")
-        print("Last Error:", mt5.last_error())
-
-        mt5.shutdown()
+    if symbol_info:
 
         print()
-        input("Press Enter to continue...")
-        return
-
-    if not symbol_info.visible:
-
-        mt5.symbol_select(symbol, True)
-
-    tick = mt5.symbol_info_tick(symbol)
-
-    if tick is None:
-
-        print(f"❌ Unable to read market price for {symbol}.")
-        print("Last Error:", mt5.last_error())
+        print("Symbol:", symbol)
+        print("Bid:", symbol_info.bid)
+        print("Ask:", symbol_info.ask)
+        print()
 
     else:
 
         print()
-        print("Symbol:", symbol)
-        print("Bid:", tick.bid)
-        print("Ask:", tick.ask)
-        print("Last:", tick.last)
+        print("Could not retrieve market price.")
+        print()
 
     mt5.shutdown()
 
-    print()
     input("Press Enter to continue...")
 
-
-def show_risk_settings():
-
-    print("=" * 70)
-    print("TRADING RISK SETTINGS")
-    print("=" * 70)
-    print()
-
-    print("Trading mode: DEMO / SIMULATION")
-    print("Live order execution: DISABLED")
-    print()
-
-    print(
-        "Default symbol:",
-        DEFAULT_SYMBOL
-    )
-
-    print(
-        "Risk per trade:",
-        f"{DEFAULT_RISK_PERCENT}%"
-    )
-
-    print(
-        "Maximum lot size:",
-        DEFAULT_MAX_LOT
-    )
-
-    print(
-        "Required stop-loss:",
-        f"{DEFAULT_STOP_LOSS_POINTS} points"
-    )
-
-    print()
-
-    print("Safety rules:")
-    print("✓ Live order execution is not implemented")
-    print("✓ Risk is capped by the maximum lot setting")
-    print("✓ Stop-loss is required for future trade logic")
-    print("✓ Strategy signals will be added separately")
-
-    print()
-    input("Press Enter to continue...")
 
 def show_trading_signal():
 
+    print()
     print("=" * 70)
     print("MT5 TRADING SIGNAL")
     print("=" * 70)
@@ -259,29 +196,41 @@ def show_trading_signal():
     ).strip().upper()
 
     if not symbol:
+
         symbol = DEFAULT_SYMBOL
 
-    initialized = mt5.initialize(MT5_PATH)
+    if not mt5.initialize(MT5_PATH):
 
-    if not initialized:
-        print("Unable to connect to MT5.")
-        print("Last Error:", mt5.last_error())
         print()
+        print("Could not connect to MetaTrader 5.")
+        print()
+
         input("Press Enter to continue...")
         return
 
     symbol_info = mt5.symbol_info(symbol)
 
     if symbol_info is None:
-        print(f"Symbol not found: {symbol}")
-        print("Last Error:", mt5.last_error())
-        mt5.shutdown()
+
         print()
+        print(f"Symbol not found: {symbol}")
+        print()
+
+        mt5.shutdown()
         input("Press Enter to continue...")
         return
 
     if not symbol_info.visible:
-        mt5.symbol_select(symbol, True)
+
+        if not mt5.symbol_select(symbol, True):
+
+            print()
+            print(f"Could not select symbol: {symbol}")
+            print()
+
+            mt5.shutdown()
+            input("Press Enter to continue...")
+            return
 
     result = calculate_signal(symbol)
 
@@ -289,16 +238,23 @@ def show_trading_signal():
     print("Symbol:", symbol)
     print("Timeframe: M15")
     print()
-    print("Signal:", result.get("signal"))
+
+    print("Signal:", result["signal"])
     print()
     print("Reason:")
-    print(result.get("reason"))
+    print(result["reason"])
+    print()
 
     if result.get("price") is not None:
-        print()
-        print("Current Price:", result.get("price"))
-        print("10-Candle Average:", result.get("short_average"))
-        print("30-Candle Average:", result.get("long_average"))
+
+        print("Current Price:", result["price"])
+        print("10-Candle Average:", result["short_average"])
+        print("30-Candle Average:", result["long_average"])
+        print(
+            "Separation:",
+            round(result["average_separation_points"], 1),
+            "points"
+        )
 
     print()
     print("WARNING: SIGNAL ONLY")
@@ -308,6 +264,34 @@ def show_trading_signal():
     mt5.shutdown()
 
     input("Press Enter to continue...")
+
+
+def show_risk_settings():
+
+    print("=" * 70)
+    print("MT5 TRADING RISK SETTINGS")
+    print("=" * 70)
+    print()
+
+    print("Trading mode: DEMO / SIMULATION")
+    print("Live order execution: DISABLED")
+    print()
+    print("Default symbol:", DEFAULT_SYMBOL)
+    print("Risk per trade:", DEFAULT_RISK_PERCENT, "%")
+    print("Maximum lot size:", DEFAULT_MAX_LOT)
+    print("Required stop-loss:", DEFAULT_STOP_LOSS_POINTS, "points")
+    print()
+
+    print("Safety rules:")
+    print("✓ Live order execution is not implemented")
+    print("✓ Risk is capped by the maximum lot setting")
+    print("✓ Stop-loss is required for future trade logic")
+    print("✓ Strategy signals will be added separately")
+    print()
+
+    input("Press Enter to continue...")
+
+
 if __name__ == "__main__":
 
     trading_bot()

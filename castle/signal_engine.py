@@ -2,6 +2,7 @@ import MetaTrader5 as mt5
 
 MIN_AVERAGE_SEPARATION_POINTS = 20
 
+
 def calculate_signal(symbol="EURUSD"):
 
     rates = mt5.copy_rates_from_pos(
@@ -23,12 +24,16 @@ def calculate_signal(symbol="EURUSD"):
     short_average = sum(closes[-10:]) / 10
     long_average = sum(closes[-30:]) / 30
     current_price = closes[-1]
-    average_separation_points = abs(short_average - long_average) / 0.00001
+
+    average_separation_points = (
+        abs(short_average - long_average) / 0.00001
+    )
+
     if (
-    short_average > long_average
-    and current_price > short_average
-    and average_separation_points >= MIN_AVERAGE_SEPARATION_POINTS
-):
+        short_average > long_average
+        and current_price > short_average
+        and average_separation_points >= MIN_AVERAGE_SEPARATION_POINTS
+    ):
 
         return {
             "signal": "BUY",
@@ -38,14 +43,15 @@ def calculate_signal(symbol="EURUSD"):
             ),
             "price": current_price,
             "short_average": short_average,
-            "long_average": long_average
+            "long_average": long_average,
+            "average_separation_points": average_separation_points
         }
 
     if (
-    short_average < long_average
-    and current_price < short_average
-    and average_separation_points >= MIN_AVERAGE_SEPARATION_POINTS
-):
+        short_average < long_average
+        and current_price < short_average
+        and average_separation_points >= MIN_AVERAGE_SEPARATION_POINTS
+    ):
 
         return {
             "signal": "SELL",
@@ -55,7 +61,8 @@ def calculate_signal(symbol="EURUSD"):
             ),
             "price": current_price,
             "short_average": short_average,
-            "long_average": long_average
+            "long_average": long_average,
+            "average_separation_points": average_separation_points
         }
 
     return {
@@ -66,5 +73,6 @@ def calculate_signal(symbol="EURUSD"):
         ),
         "price": current_price,
         "short_average": short_average,
-        "long_average": long_average
+        "long_average": long_average,
+        "average_separation_points": average_separation_points
     }
