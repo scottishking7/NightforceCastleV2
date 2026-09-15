@@ -344,11 +344,12 @@ def open_mt5_room(root=None):
     price_button = tk.Button(
         room,
         text="MARKET PRICE",
+        command=lambda: show_market_price(root),
         font=("Segoe UI", 13, "bold"),
-        bg=STONE_LIGHT,
-        fg=SILVER,
-        activebackground=PURPLE,
-        activeforeground=WHITE,
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
         relief="flat",
         padx=30,
         pady=14
@@ -810,6 +811,257 @@ def show_account_information(root):
 
     back_button.pack(
         pady=(15, 25)
+    )
+
+
+# ============================================================
+# MARKET PRICE SCREEN
+# ============================================================
+
+def show_market_price(root):
+
+    clear_window(root)
+
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
+    )
+
+    header.pack(fill="x")
+
+    title = tk.Label(
+        header,
+        text="💹 MT5 MARKET PRICE",
+        font=("Segoe UI", 28, "bold"),
+        bg=STONE_DARK,
+        fg=WHITE
+    )
+
+    title.pack(pady=(25, 2))
+
+    subtitle = tk.Label(
+        header,
+        text=f"{DEFAULT_SYMBOL} • LIVE MARKET DATA",
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL
+    )
+
+    subtitle.pack()
+
+    panel = tk.Frame(
+        root,
+        bg=STONE,
+        highlightbackground=PURPLE_DARK,
+        highlightthickness=3
+    )
+
+    panel.pack(
+        padx=45,
+        pady=20,
+        fill="both",
+        expand=True
+    )
+
+    if not mt5.initialize(MT5_PATH):
+
+        error_label = tk.Label(
+            panel,
+            text="MT5 CONNECTION FAILED",
+            font=("Segoe UI", 22, "bold"),
+            bg=STONE,
+            fg=TEAL
+        )
+
+        error_label.pack(pady=(60, 15))
+
+        detail_label = tk.Label(
+            panel,
+            text=f"MT5 error: {mt5.last_error()}",
+            font=("Segoe UI", 11),
+            bg=STONE,
+            fg=SILVER
+        )
+
+        detail_label.pack(pady=10)
+
+        back_button = tk.Button(
+            panel,
+            text="← RETURN TO TRADING COMMAND ROOM",
+            command=lambda: open_mt5_room(root),
+            font=("Segoe UI", 11, "bold"),
+            bg=STONE_DARK,
+            fg=TEAL,
+            activebackground=PURPLE,
+            activeforeground=WHITE,
+            relief="flat",
+            padx=25,
+            pady=10
+        )
+
+        back_button.pack(pady=30)
+
+        return
+
+    symbol_info = mt5.symbol_info_tick(
+        DEFAULT_SYMBOL
+    )
+
+    if symbol_info is None:
+
+        error_label = tk.Label(
+            panel,
+            text="MARKET PRICE UNAVAILABLE",
+            font=("Segoe UI", 22, "bold"),
+            bg=STONE,
+            fg=TEAL
+        )
+
+        error_label.pack(pady=(60, 15))
+
+        detail_label = tk.Label(
+            panel,
+            text=f"MT5 error: {mt5.last_error()}",
+            font=("Segoe UI", 11),
+            bg=STONE,
+            fg=SILVER
+        )
+
+        detail_label.pack(pady=10)
+
+    else:
+
+        bid = float(symbol_info.bid)
+        ask = float(symbol_info.ask)
+        spread = ask - bid
+
+        price_title = tk.Label(
+            panel,
+            text=DEFAULT_SYMBOL,
+            font=("Segoe UI", 26, "bold"),
+            bg=STONE,
+            fg=TEAL
+        )
+
+        price_title.pack(
+            pady=(35, 25)
+        )
+
+        price_frame = tk.Frame(
+            panel,
+            bg=STONE_LIGHT,
+            highlightbackground=PURPLE,
+            highlightthickness=2
+        )
+
+        price_frame.pack(
+            padx=100,
+            fill="x"
+        )
+
+        bid_label = tk.Label(
+            price_frame,
+            text=f"BID\n{bid:.5f}",
+            font=("Segoe UI", 18, "bold"),
+            bg=STONE_LIGHT,
+            fg=WHITE
+        )
+
+        bid_label.grid(
+            row=0,
+            column=0,
+            padx=50,
+            pady=25
+        )
+
+        ask_label = tk.Label(
+            price_frame,
+            text=f"ASK\n{ask:.5f}",
+            font=("Segoe UI", 18, "bold"),
+            bg=STONE_LIGHT,
+            fg=WHITE
+        )
+
+        ask_label.grid(
+            row=0,
+            column=1,
+            padx=50,
+            pady=25
+        )
+
+        spread_label = tk.Label(
+            price_frame,
+            text=f"SPREAD\n{spread:.5f}",
+            font=("Segoe UI", 18, "bold"),
+            bg=STONE_LIGHT,
+            fg=TEAL
+        )
+
+        spread_label.grid(
+            row=0,
+            column=2,
+            padx=50,
+            pady=25
+        )
+
+        price_frame.columnconfigure(
+            0,
+            weight=1
+        )
+
+        price_frame.columnconfigure(
+            1,
+            weight=1
+        )
+
+        price_frame.columnconfigure(
+            2,
+            weight=1
+        )
+
+        status_label = tk.Label(
+            panel,
+            text="✓ MT5 CONNECTED • MARKET DATA RECEIVED",
+            font=("Segoe UI", 11, "bold"),
+            bg=STONE,
+            fg=TEAL
+        )
+
+        status_label.pack(
+            pady=(25, 10)
+        )
+
+        safety_label = tk.Label(
+            panel,
+            text="✓ MARKET DATA ONLY • NO TRADES CREATED",
+            font=("Segoe UI", 10, "bold"),
+            bg=STONE,
+            fg=PURPLE
+        )
+
+        safety_label.pack(
+            pady=10
+        )
+
+    back_button = tk.Button(
+        panel,
+        text="← RETURN TO TRADING COMMAND ROOM",
+        command=lambda: (
+            mt5.shutdown(),
+            open_mt5_room(root)
+        ),
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=25,
+        pady=10
+    )
+
+    back_button.pack(
+        pady=(20, 25)
     )
 
 
