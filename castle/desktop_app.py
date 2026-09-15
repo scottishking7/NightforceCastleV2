@@ -10,6 +10,10 @@ WINDOW_HEIGHT = 700
 MT5_PATH = r"C:\Program Files\MetaTrader 5\terminal64.exe"
 DEFAULT_SYMBOL = "EURUSD"
 
+DEFAULT_RISK_PERCENT = 1.0
+DEFAULT_MAX_LOT = 0.10
+DEFAULT_STOP_LOSS_POINTS = 200
+
 
 # ============================================================
 # COLOUR PALETTE
@@ -54,11 +58,7 @@ def show_great_hall(root):
 
     clear_window(root)
 
-    header = tk.Frame(
-        root,
-        bg=STONE_DARK
-    )
-
+    header = tk.Frame(root, bg=STONE_DARK)
     header.pack(fill="x")
 
     title = tk.Label(
@@ -128,10 +128,7 @@ def show_great_hall(root):
 
     command_text.pack(pady=(0, 18))
 
-    rooms = tk.Frame(
-        hall,
-        bg=STONE
-    )
+    rooms = tk.Frame(hall, bg=STONE)
 
     rooms.pack(
         padx=35,
@@ -212,18 +209,10 @@ def show_great_hall(root):
             name_label.pack(pady=(0, 14))
 
     for column in range(4):
-
-        rooms.columnconfigure(
-            column,
-            weight=1
-        )
+        rooms.columnconfigure(column, weight=1)
 
     for row in range(2):
-
-        rooms.rowconfigure(
-            row,
-            weight=1
-        )
+        rooms.rowconfigure(row, weight=1)
 
     footer = tk.Label(
         hall,
@@ -243,16 +232,11 @@ def show_great_hall(root):
 def open_mt5_room(root=None):
 
     if root is None:
-
         root = tk._default_root
 
     clear_window(root)
 
-    header = tk.Frame(
-        root,
-        bg=STONE_DARK
-    )
-
+    header = tk.Frame(root, bg=STONE_DARK)
     header.pack(fill="x")
 
     title = tk.Label(
@@ -297,7 +281,7 @@ def open_mt5_room(root=None):
         fg=TEAL
     )
 
-    warning.pack(pady=(35, 10))
+    warning.pack(pady=(25, 8))
 
     status = tk.Label(
         room,
@@ -307,7 +291,7 @@ def open_mt5_room(root=None):
         fg=SILVER
     )
 
-    status.pack(pady=(0, 30))
+    status.pack(pady=(0, 20))
 
     signal_button = tk.Button(
         room,
@@ -320,10 +304,10 @@ def open_mt5_room(root=None):
         activeforeground=STONE_DARK,
         relief="flat",
         padx=30,
-        pady=14
+        pady=12
     )
 
-    signal_button.pack(pady=10)
+    signal_button.pack(pady=7)
 
     account_button = tk.Button(
         room,
@@ -336,10 +320,10 @@ def open_mt5_room(root=None):
         activeforeground=STONE_DARK,
         relief="flat",
         padx=30,
-        pady=14
+        pady=12
     )
 
-    account_button.pack(pady=10)
+    account_button.pack(pady=7)
 
     price_button = tk.Button(
         room,
@@ -352,10 +336,26 @@ def open_mt5_room(root=None):
         activeforeground=STONE_DARK,
         relief="flat",
         padx=30,
-        pady=14
+        pady=12
     )
 
-    price_button.pack(pady=10)
+    price_button.pack(pady=7)
+
+    safety_button = tk.Button(
+        room,
+        text="RISK & SAFETY",
+        command=lambda: show_risk_safety(root),
+        font=("Segoe UI", 13, "bold"),
+        bg=STONE_LIGHT,
+        fg=TEAL,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=30,
+        pady=12
+    )
+
+    safety_button.pack(pady=7)
 
     back_button = tk.Button(
         room,
@@ -368,10 +368,10 @@ def open_mt5_room(root=None):
         activeforeground=WHITE,
         relief="flat",
         padx=25,
-        pady=10
+        pady=9
     )
 
-    back_button.pack(pady=(35, 10))
+    back_button.pack(pady=(22, 8))
 
 
 # ============================================================
@@ -382,11 +382,7 @@ def show_trading_signal(root):
 
     clear_window(root)
 
-    header = tk.Frame(
-        root,
-        bg=STONE_DARK
-    )
-
+    header = tk.Frame(root, bg=STONE_DARK)
     header.pack(fill="x")
 
     title = tk.Label(
@@ -465,20 +461,9 @@ def show_trading_signal(root):
 
     result = calculate_signal(DEFAULT_SYMBOL)
 
-    signal = result.get(
-        "signal",
-        "WAIT"
-    )
-
-    strength = result.get(
-        "strength",
-        0
-    )
-
-    strength_level = result.get(
-        "strength_level",
-        "WEAK"
-    )
+    signal = result.get("signal", "WAIT")
+    strength = result.get("strength", 0)
+    strength_level = result.get("strength_level", "WEAK")
 
     signal_label = tk.Label(
         panel,
@@ -488,9 +473,7 @@ def show_trading_signal(root):
         fg=TEAL
     )
 
-    signal_label.pack(
-        pady=(30, 5)
-    )
+    signal_label.pack(pady=(30, 5))
 
     strength_label = tk.Label(
         panel,
@@ -500,18 +483,13 @@ def show_trading_signal(root):
         fg=WHITE
     )
 
-    strength_label.pack(
-        pady=(0, 25)
-    )
+    strength_label.pack(pady=(0, 25))
 
     price = result.get("price")
 
     if price is not None:
-
         price_text = f"Current Price: {price}"
-
     else:
-
         price_text = "Current Price: unavailable"
 
     price_label = tk.Label(
@@ -524,18 +502,9 @@ def show_trading_signal(root):
 
     price_label.pack(pady=4)
 
-    short_average = result.get(
-        "short_average"
-    )
-
-    long_average = result.get(
-        "long_average"
-    )
-
-    separation = result.get(
-        "average_separation_points",
-        0
-    )
+    short_average = result.get("short_average")
+    long_average = result.get("long_average")
+    separation = result.get("average_separation_points", 0)
 
     averages_text = (
         f"10-Candle Average: {short_average}\n"
@@ -552,9 +521,7 @@ def show_trading_signal(root):
         justify="center"
     )
 
-    averages_label.pack(
-        pady=(15, 20)
-    )
+    averages_label.pack(pady=(15, 20))
 
     reason_label = tk.Label(
         panel,
@@ -573,27 +540,18 @@ def show_trading_signal(root):
         fill="x"
     )
 
-    conditions = result.get(
-        "conditions",
-        []
-    )
-
-    conditions_text = "\n".join(
-        conditions
-    )
+    conditions = result.get("conditions", [])
 
     conditions_label = tk.Label(
         panel,
-        text=f"Conditions:\n{conditions_text}",
+        text=f"Conditions:\n{chr(10).join(conditions)}",
         font=("Segoe UI", 10),
         bg=STONE,
         fg=TEAL,
         justify="left"
     )
 
-    conditions_label.pack(
-        pady=(20, 10)
-    )
+    conditions_label.pack(pady=(20, 10))
 
     warning_label = tk.Label(
         panel,
@@ -603,9 +561,7 @@ def show_trading_signal(root):
         fg=PURPLE
     )
 
-    warning_label.pack(
-        pady=10
-    )
+    warning_label.pack(pady=10)
 
     back_button = tk.Button(
         panel,
@@ -624,9 +580,7 @@ def show_trading_signal(root):
         pady=10
     )
 
-    back_button.pack(
-        pady=(15, 25)
-    )
+    back_button.pack(pady=(15, 25))
 
 
 # ============================================================
@@ -637,11 +591,7 @@ def show_account_information(root):
 
     clear_window(root)
 
-    header = tk.Frame(
-        root,
-        bg=STONE_DARK
-    )
-
+    header = tk.Frame(root, bg=STONE_DARK)
     header.pack(fill="x")
 
     title = tk.Label(
@@ -752,9 +702,7 @@ def show_account_information(root):
             fg=TEAL
         )
 
-        account_title.pack(
-            pady=(35, 25)
-        )
+        account_title.pack(pady=(35, 25))
 
         account_text = (
             f"Login: {account.login}\n\n"
@@ -788,9 +736,7 @@ def show_account_information(root):
             fg=PURPLE
         )
 
-        safety_label.pack(
-            pady=20
-        )
+        safety_label.pack(pady=20)
 
     back_button = tk.Button(
         panel,
@@ -809,9 +755,7 @@ def show_account_information(root):
         pady=10
     )
 
-    back_button.pack(
-        pady=(15, 25)
-    )
+    back_button.pack(pady=(15, 25))
 
 
 # ============================================================
@@ -822,11 +766,7 @@ def show_market_price(root):
 
     clear_window(root)
 
-    header = tk.Frame(
-        root,
-        bg=STONE_DARK
-    )
-
+    header = tk.Frame(root, bg=STONE_DARK)
     header.pack(fill="x")
 
     title = tk.Label(
@@ -903,9 +843,7 @@ def show_market_price(root):
 
         return
 
-    symbol_info = mt5.symbol_info_tick(
-        DEFAULT_SYMBOL
-    )
+    symbol_info = mt5.symbol_info_tick(DEFAULT_SYMBOL)
 
     if symbol_info is None:
 
@@ -943,9 +881,7 @@ def show_market_price(root):
             fg=TEAL
         )
 
-        price_title.pack(
-            pady=(35, 25)
-        )
+        price_title.pack(pady=(35, 25))
 
         price_frame = tk.Frame(
             panel,
@@ -1004,20 +940,9 @@ def show_market_price(root):
             pady=25
         )
 
-        price_frame.columnconfigure(
-            0,
-            weight=1
-        )
-
-        price_frame.columnconfigure(
-            1,
-            weight=1
-        )
-
-        price_frame.columnconfigure(
-            2,
-            weight=1
-        )
+        price_frame.columnconfigure(0, weight=1)
+        price_frame.columnconfigure(1, weight=1)
+        price_frame.columnconfigure(2, weight=1)
 
         status_label = tk.Label(
             panel,
@@ -1027,9 +952,7 @@ def show_market_price(root):
             fg=TEAL
         )
 
-        status_label.pack(
-            pady=(25, 10)
-        )
+        status_label.pack(pady=(25, 10))
 
         safety_label = tk.Label(
             panel,
@@ -1039,9 +962,7 @@ def show_market_price(root):
             fg=PURPLE
         )
 
-        safety_label.pack(
-            pady=10
-        )
+        safety_label.pack(pady=10)
 
     back_button = tk.Button(
         panel,
@@ -1060,9 +981,194 @@ def show_market_price(root):
         pady=10
     )
 
-    back_button.pack(
-        pady=(20, 25)
+    back_button.pack(pady=(20, 25))
+
+
+# ============================================================
+# RISK & SAFETY SCREEN
+# ============================================================
+
+def show_risk_safety(root):
+
+    clear_window(root)
+
+    header = tk.Frame(root, bg=STONE_DARK)
+    header.pack(fill="x")
+
+    title = tk.Label(
+        header,
+        text="🛡 MT5 RISK & SAFETY",
+        font=("Segoe UI", 24, "bold"),
+        bg=STONE_DARK,
+        fg=WHITE
     )
+
+    title.pack(pady=(18, 2))
+
+    subtitle = tk.Label(
+        header,
+        text="TRADING PROTECTION SETTINGS",
+        font=("Segoe UI", 10, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL
+    )
+
+    subtitle.pack()
+
+    panel = tk.Frame(
+        root,
+        bg=STONE,
+        highlightbackground=PURPLE_DARK,
+        highlightthickness=3
+    )
+
+    panel.pack(
+        padx=45,
+        pady=15,
+        fill="both",
+        expand=True
+    )
+
+    mode_label = tk.Label(
+        panel,
+        text="TRADING MODE",
+        font=("Segoe UI", 10, "bold"),
+        bg=STONE,
+        fg=TEAL
+    )
+
+    mode_label.pack(pady=(12, 2))
+
+    mode_value = tk.Label(
+        panel,
+        text="DEMO / SIMULATION",
+        font=("Segoe UI", 16, "bold"),
+        bg=STONE_LIGHT,
+        fg=WHITE,
+        padx=30,
+        pady=6
+    )
+
+    mode_value.pack()
+
+    live_label = tk.Label(
+        panel,
+        text="LIVE ORDER EXECUTION",
+        font=("Segoe UI", 10, "bold"),
+        bg=STONE,
+        fg=TEAL
+    )
+
+    live_label.pack(pady=(10, 2))
+
+    live_value = tk.Label(
+        panel,
+        text="DISABLED",
+        font=("Segoe UI", 16, "bold"),
+        bg=STONE_LIGHT,
+        fg=WHITE,
+        padx=30,
+        pady=6
+    )
+
+    live_value.pack()
+
+    settings_frame = tk.Frame(
+        panel,
+        bg=STONE_LIGHT,
+        highlightbackground=PURPLE,
+        highlightthickness=2
+    )
+
+    settings_frame.pack(
+        padx=100,
+        pady=12,
+        fill="x"
+    )
+
+    risk_label = tk.Label(
+        settings_frame,
+        text=f"Risk per trade: {DEFAULT_RISK_PERCENT}%",
+        font=("Segoe UI", 11),
+        bg=STONE_LIGHT,
+        fg=WHITE
+    )
+
+    risk_label.pack(pady=5)
+
+    lot_label = tk.Label(
+        settings_frame,
+        text=f"Maximum lot size: {DEFAULT_MAX_LOT}",
+        font=("Segoe UI", 11),
+        bg=STONE_LIGHT,
+        fg=WHITE
+    )
+
+    lot_label.pack(pady=5)
+
+    stop_label = tk.Label(
+        settings_frame,
+        text=f"Required stop-loss: {DEFAULT_STOP_LOSS_POINTS} points",
+        font=("Segoe UI", 11),
+        bg=STONE_LIGHT,
+        fg=WHITE
+    )
+
+    stop_label.pack(pady=5)
+
+    symbol_label = tk.Label(
+        settings_frame,
+        text=f"Default symbol: {DEFAULT_SYMBOL}",
+        font=("Segoe UI", 11),
+        bg=STONE_LIGHT,
+        fg=WHITE
+    )
+
+    symbol_label.pack(pady=5)
+
+    safety_text = (
+        "✓ Live order execution is not implemented\n"
+        "✓ Current system is signal-only\n"
+        "✓ Risk settings are display-only\n"
+        "✓ No trade can be created from this screen"
+    )
+
+    safety_label = tk.Label(
+        panel,
+        text=safety_text,
+        font=("Segoe UI", 10),
+        bg=STONE,
+        fg=TEAL,
+        justify="left"
+    )
+
+    safety_label.pack(pady=(4, 6))
+
+    warning_label = tk.Label(
+        panel,
+        text="⚠ SAFETY FIRST • DEMO / SIMULATION ONLY",
+        font=("Segoe UI", 10, "bold"),
+        bg=STONE,
+        fg=PURPLE
+    )
+
+    warning_label.pack(pady=5)
+
+    back_button = tk.Button(
+        panel,
+        text="← RETURN TO TRADING COMMAND ROOM",
+        command=lambda: open_mt5_room(root),
+        font=("Segoe UI", 10, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=25,
+        pady=8
+    )
+
+    back_button.pack(pady=(8, 15))
 
 
 # ============================================================
@@ -1072,7 +1178,6 @@ def show_market_price(root):
 def clear_window(root):
 
     for widget in root.winfo_children():
-
         widget.destroy()
 
 
