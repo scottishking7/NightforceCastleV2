@@ -328,11 +328,12 @@ def open_mt5_room(root=None):
     account_button = tk.Button(
         room,
         text="ACCOUNT INFORMATION",
+        command=lambda: show_account_information(root),
         font=("Segoe UI", 13, "bold"),
-        bg=STONE_LIGHT,
-        fg=SILVER,
-        activebackground=PURPLE,
-        activeforeground=WHITE,
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
         relief="flat",
         padx=30,
         pady=14
@@ -420,6 +421,46 @@ def show_trading_signal(root):
         fill="both",
         expand=True
     )
+
+    if not mt5.initialize(MT5_PATH):
+
+        error_label = tk.Label(
+            panel,
+            text="MT5 CONNECTION FAILED",
+            font=("Segoe UI", 22, "bold"),
+            bg=STONE,
+            fg=TEAL
+        )
+
+        error_label.pack(pady=(60, 15))
+
+        detail_label = tk.Label(
+            panel,
+            text=f"MT5 error: {mt5.last_error()}",
+            font=("Segoe UI", 11),
+            bg=STONE,
+            fg=SILVER
+        )
+
+        detail_label.pack(pady=10)
+
+        back_button = tk.Button(
+            panel,
+            text="← RETURN TO TRADING COMMAND ROOM",
+            command=lambda: open_mt5_room(root),
+            font=("Segoe UI", 11, "bold"),
+            bg=STONE_DARK,
+            fg=TEAL,
+            activebackground=PURPLE,
+            activeforeground=WHITE,
+            relief="flat",
+            padx=25,
+            pady=10
+        )
+
+        back_button.pack(pady=30)
+
+        return
 
     result = calculate_signal(DEFAULT_SYMBOL)
 
@@ -568,7 +609,195 @@ def show_trading_signal(root):
     back_button = tk.Button(
         panel,
         text="← RETURN TO TRADING COMMAND ROOM",
-        command=lambda: open_mt5_room(root),
+        command=lambda: (
+            mt5.shutdown(),
+            open_mt5_room(root)
+        ),
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=25,
+        pady=10
+    )
+
+    back_button.pack(
+        pady=(15, 25)
+    )
+
+
+# ============================================================
+# ACCOUNT INFORMATION SCREEN
+# ============================================================
+
+def show_account_information(root):
+
+    clear_window(root)
+
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
+    )
+
+    header.pack(fill="x")
+
+    title = tk.Label(
+        header,
+        text="👤 MT5 ACCOUNT INFORMATION",
+        font=("Segoe UI", 28, "bold"),
+        bg=STONE_DARK,
+        fg=WHITE
+    )
+
+    title.pack(pady=(25, 2))
+
+    subtitle = tk.Label(
+        header,
+        text="DEMO ACCOUNT",
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL
+    )
+
+    subtitle.pack()
+
+    panel = tk.Frame(
+        root,
+        bg=STONE,
+        highlightbackground=PURPLE_DARK,
+        highlightthickness=3
+    )
+
+    panel.pack(
+        padx=45,
+        pady=20,
+        fill="both",
+        expand=True
+    )
+
+    if not mt5.initialize(MT5_PATH):
+
+        error_label = tk.Label(
+            panel,
+            text="MT5 CONNECTION FAILED",
+            font=("Segoe UI", 22, "bold"),
+            bg=STONE,
+            fg=TEAL
+        )
+
+        error_label.pack(pady=(60, 15))
+
+        detail_label = tk.Label(
+            panel,
+            text=f"MT5 error: {mt5.last_error()}",
+            font=("Segoe UI", 11),
+            bg=STONE,
+            fg=SILVER
+        )
+
+        detail_label.pack(pady=10)
+
+        back_button = tk.Button(
+            panel,
+            text="← RETURN TO TRADING COMMAND ROOM",
+            command=lambda: open_mt5_room(root),
+            font=("Segoe UI", 11, "bold"),
+            bg=STONE_DARK,
+            fg=TEAL,
+            activebackground=PURPLE,
+            activeforeground=WHITE,
+            relief="flat",
+            padx=25,
+            pady=10
+        )
+
+        back_button.pack(pady=30)
+
+        return
+
+    account = mt5.account_info()
+
+    if account is None:
+
+        error_label = tk.Label(
+            panel,
+            text="ACCOUNT INFORMATION UNAVAILABLE",
+            font=("Segoe UI", 22, "bold"),
+            bg=STONE,
+            fg=TEAL
+        )
+
+        error_label.pack(pady=(60, 15))
+
+        detail_label = tk.Label(
+            panel,
+            text=f"MT5 error: {mt5.last_error()}",
+            font=("Segoe UI", 11),
+            bg=STONE,
+            fg=SILVER
+        )
+
+        detail_label.pack(pady=10)
+
+    else:
+
+        account_title = tk.Label(
+            panel,
+            text="CONNECTED DEMO ACCOUNT",
+            font=("Segoe UI", 20, "bold"),
+            bg=STONE,
+            fg=TEAL
+        )
+
+        account_title.pack(
+            pady=(35, 25)
+        )
+
+        account_text = (
+            f"Login: {account.login}\n\n"
+            f"Server: {account.server}\n\n"
+            f"Balance: {account.balance:.2f} {account.currency}\n\n"
+            f"Equity: {account.equity:.2f} {account.currency}\n\n"
+            f"Currency: {account.currency}"
+        )
+
+        account_label = tk.Label(
+            panel,
+            text=account_text,
+            font=("Segoe UI", 13),
+            bg=STONE_LIGHT,
+            fg=WHITE,
+            justify="center",
+            padx=40,
+            pady=25
+        )
+
+        account_label.pack(
+            padx=100,
+            fill="x"
+        )
+
+        safety_label = tk.Label(
+            panel,
+            text="✓ ACCOUNT INFORMATION ONLY • NO TRADES CREATED",
+            font=("Segoe UI", 10, "bold"),
+            bg=STONE,
+            fg=PURPLE
+        )
+
+        safety_label.pack(
+            pady=20
+        )
+
+    back_button = tk.Button(
+        panel,
+        text="← RETURN TO TRADING COMMAND ROOM",
+        command=lambda: (
+            mt5.shutdown(),
+            open_mt5_room(root)
+        ),
         font=("Segoe UI", 11, "bold"),
         bg=STONE_DARK,
         fg=TEAL,
