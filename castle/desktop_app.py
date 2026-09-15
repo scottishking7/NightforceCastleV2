@@ -1,9 +1,35 @@
 import tkinter as tk
+import MetaTrader5 as mt5
+
+from castle.signal_engine import calculate_signal
 
 
 WINDOW_WIDTH = 1100
 WINDOW_HEIGHT = 700
 
+MT5_PATH = r"C:\Program Files\MetaTrader 5\terminal64.exe"
+DEFAULT_SYMBOL = "EURUSD"
+
+
+# ============================================================
+# COLOUR PALETTE
+# ============================================================
+
+STONE_DARK = "#090B14"
+STONE = "#111522"
+STONE_LIGHT = "#1B2030"
+
+PURPLE = "#6C4AB6"
+PURPLE_DARK = "#3D286B"
+
+TEAL = "#19D3C5"
+SILVER = "#B8C0D0"
+WHITE = "#F2F2F2"
+
+
+# ============================================================
+# MAIN CASTLE WINDOW
+# ============================================================
 
 def launch_castle():
 
@@ -13,62 +39,52 @@ def launch_castle():
     root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
     root.minsize(900, 600)
 
-    # Nightforce Castle colours
-    stone_dark = "#090B14"
-    stone = "#111522"
-    stone_light = "#1B2030"
-    purple = "#6C4AB6"
-    purple_dark = "#3D286B"
-    teal = "#19D3C5"
-    silver = "#B8C0D0"
-    white = "#F2F2F2"
+    root.configure(bg=STONE_DARK)
 
-    root.configure(bg=stone_dark)
+    show_great_hall(root)
 
-    # ============================================================
-    # CASTLE HEADER
-    # ============================================================
+    root.mainloop()
+
+
+# ============================================================
+# GREAT HALL
+# ============================================================
+
+def show_great_hall(root):
+
+    clear_window(root)
 
     header = tk.Frame(
         root,
-        bg=stone_dark,
-        height=110
+        bg=STONE_DARK
     )
 
-    header.pack(
-        fill="x"
-    )
+    header.pack(fill="x")
 
     title = tk.Label(
         header,
         text="🏰 NIGHTFORCE CASTLE",
         font=("Segoe UI", 28, "bold"),
-        bg=stone_dark,
-        fg=white
+        bg=STONE_DARK,
+        fg=WHITE
     )
 
-    title.pack(
-        pady=(25, 2)
-    )
+    title.pack(pady=(25, 2))
 
     subtitle = tk.Label(
         header,
         text="THE GREAT HALL",
         font=("Segoe UI", 11, "bold"),
-        bg=stone_dark,
-        fg=teal
+        bg=STONE_DARK,
+        fg=TEAL
     )
 
     subtitle.pack()
 
-    # ============================================================
-    # MAIN CASTLE HALL
-    # ============================================================
-
     hall = tk.Frame(
         root,
-        bg=stone,
-        highlightbackground=purple_dark,
+        bg=STONE,
+        highlightbackground=PURPLE_DARK,
         highlightthickness=3
     )
 
@@ -79,14 +95,10 @@ def launch_castle():
         expand=True
     )
 
-    # ============================================================
-    # THRONE / COMMAND AREA
-    # ============================================================
-
     command_frame = tk.Frame(
         hall,
-        bg=stone_light,
-        highlightbackground=purple,
+        bg=STONE_LIGHT,
+        highlightbackground=PURPLE,
         highlightthickness=2
     )
 
@@ -100,33 +112,25 @@ def launch_castle():
         command_frame,
         text="⚔  CASTLE COMMAND",
         font=("Segoe UI", 18, "bold"),
-        bg=stone_light,
-        fg=white
+        bg=STONE_LIGHT,
+        fg=WHITE
     )
 
-    command_title.pack(
-        pady=(18, 4)
-    )
+    command_title.pack(pady=(18, 4))
 
     command_text = tk.Label(
         command_frame,
         text="The heart of Nightforce Castle",
         font=("Segoe UI", 11),
-        bg=stone_light,
-        fg=teal
+        bg=STONE_LIGHT,
+        fg=TEAL
     )
 
-    command_text.pack(
-        pady=(0, 18)
-    )
-
-    # ============================================================
-    # CASTLE ROOMS
-    # ============================================================
+    command_text.pack(pady=(0, 18))
 
     rooms = tk.Frame(
         hall,
-        bg=stone
+        bg=STONE
     )
 
     rooms.pack(
@@ -137,25 +141,25 @@ def launch_castle():
     )
 
     room_data = [
-        ("📈", "MT5 TRADING BOT"),
-        ("📚", "MEMORY VAULT"),
-        ("🖼️", "IMAGE WORKSHOP"),
-        ("✨", "SOCIAL STUDIO"),
-        ("🔎", "RESEARCH AGENT"),
-        ("📻", "MIDNIGHT RADIO"),
-        ("⚙️", "SETTINGS"),
-        ("🚪", "EXIT CASTLE")
+        ("📈", "MT5 TRADING BOT", open_mt5_room),
+        ("📚", "MEMORY VAULT", None),
+        ("🖼️", "IMAGE WORKSHOP", None),
+        ("✨", "SOCIAL STUDIO", None),
+        ("🔎", "RESEARCH AGENT", None),
+        ("📻", "MIDNIGHT RADIO", None),
+        ("⚙️", "SETTINGS", None),
+        ("🚪", "EXIT CASTLE", root.destroy)
     ]
 
-    for index, (icon, name) in enumerate(room_data):
+    for index, (icon, name, command) in enumerate(room_data):
 
         row = index // 4
         column = index % 4
 
         room = tk.Frame(
             rooms,
-            bg=stone_light,
-            highlightbackground=purple_dark,
+            bg=STONE_LIGHT,
+            highlightbackground=PURPLE_DARK,
             highlightthickness=1
         )
 
@@ -171,25 +175,41 @@ def launch_castle():
             room,
             text=icon,
             font=("Segoe UI Emoji", 24),
-            bg=stone_light,
-            fg=white
+            bg=STONE_LIGHT,
+            fg=WHITE
         )
 
-        icon_label.pack(
-            pady=(14, 4)
-        )
+        icon_label.pack(pady=(14, 4))
 
-        name_label = tk.Label(
-            room,
-            text=name,
-            font=("Segoe UI", 9, "bold"),
-            bg=stone_light,
-            fg=silver
-        )
+        if command is not None:
 
-        name_label.pack(
-            pady=(0, 14)
-        )
+            button = tk.Button(
+                room,
+                text=name,
+                command=command,
+                font=("Segoe UI", 9, "bold"),
+                bg=STONE_LIGHT,
+                fg=SILVER,
+                activebackground=PURPLE,
+                activeforeground=WHITE,
+                relief="flat",
+                borderwidth=0,
+                cursor="hand2"
+            )
+
+            button.pack(pady=(0, 14))
+
+        else:
+
+            name_label = tk.Label(
+                room,
+                text=name,
+                font=("Segoe UI", 9, "bold"),
+                bg=STONE_LIGHT,
+                fg=SILVER
+            )
+
+            name_label.pack(pady=(0, 14))
 
     for column in range(4):
 
@@ -205,24 +225,379 @@ def launch_castle():
             weight=1
         )
 
-    # ============================================================
-    # FOOTER
-    # ============================================================
-
     footer = tk.Label(
         hall,
         text="NIGHTFORCE CASTLE  •  PRIVATE COMMAND CENTRE",
         font=("Segoe UI", 9),
-        bg=stone,
-        fg=purple
+        bg=STONE,
+        fg=PURPLE
     )
 
-    footer.pack(
-        pady=(5, 18)
+    footer.pack(pady=(5, 18))
+
+
+# ============================================================
+# MT5 COMMAND ROOM
+# ============================================================
+
+def open_mt5_room(root=None):
+
+    if root is None:
+
+        root = tk._default_root
+
+    clear_window(root)
+
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
     )
 
-    root.mainloop()
+    header.pack(fill="x")
 
+    title = tk.Label(
+        header,
+        text="📈 MT5 TRADING BOT",
+        font=("Segoe UI", 28, "bold"),
+        bg=STONE_DARK,
+        fg=WHITE
+    )
+
+    title.pack(pady=(25, 2))
+
+    subtitle = tk.Label(
+        header,
+        text="THE TRADING COMMAND ROOM",
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL
+    )
+
+    subtitle.pack()
+
+    room = tk.Frame(
+        root,
+        bg=STONE,
+        highlightbackground=PURPLE_DARK,
+        highlightthickness=3
+    )
+
+    room.pack(
+        padx=45,
+        pady=20,
+        fill="both",
+        expand=True
+    )
+
+    warning = tk.Label(
+        room,
+        text="DEMO / SIMULATION MODE",
+        font=("Segoe UI", 14, "bold"),
+        bg=STONE_LIGHT,
+        fg=TEAL
+    )
+
+    warning.pack(pady=(35, 10))
+
+    status = tk.Label(
+        room,
+        text="Live order execution: DISABLED",
+        font=("Segoe UI", 11),
+        bg=STONE,
+        fg=SILVER
+    )
+
+    status.pack(pady=(0, 30))
+
+    signal_button = tk.Button(
+        room,
+        text="VIEW TRADING SIGNAL",
+        command=lambda: show_trading_signal(root),
+        font=("Segoe UI", 13, "bold"),
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        relief="flat",
+        padx=30,
+        pady=14
+    )
+
+    signal_button.pack(pady=10)
+
+    account_button = tk.Button(
+        room,
+        text="ACCOUNT INFORMATION",
+        font=("Segoe UI", 13, "bold"),
+        bg=STONE_LIGHT,
+        fg=SILVER,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=30,
+        pady=14
+    )
+
+    account_button.pack(pady=10)
+
+    price_button = tk.Button(
+        room,
+        text="MARKET PRICE",
+        font=("Segoe UI", 13, "bold"),
+        bg=STONE_LIGHT,
+        fg=SILVER,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=30,
+        pady=14
+    )
+
+    price_button.pack(pady=10)
+
+    back_button = tk.Button(
+        room,
+        text="← RETURN TO GREAT HALL",
+        command=lambda: show_great_hall(root),
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=25,
+        pady=10
+    )
+
+    back_button.pack(pady=(35, 10))
+
+
+# ============================================================
+# TRADING SIGNAL SCREEN
+# ============================================================
+
+def show_trading_signal(root):
+
+    clear_window(root)
+
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
+    )
+
+    header.pack(fill="x")
+
+    title = tk.Label(
+        header,
+        text="⚔ MT5 TRADING SIGNAL",
+        font=("Segoe UI", 28, "bold"),
+        bg=STONE_DARK,
+        fg=WHITE
+    )
+
+    title.pack(pady=(25, 2))
+
+    subtitle = tk.Label(
+        header,
+        text="EURUSD • M15",
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL
+    )
+
+    subtitle.pack()
+
+    panel = tk.Frame(
+        root,
+        bg=STONE,
+        highlightbackground=PURPLE_DARK,
+        highlightthickness=3
+    )
+
+    panel.pack(
+        padx=45,
+        pady=20,
+        fill="both",
+        expand=True
+    )
+
+    result = calculate_signal(DEFAULT_SYMBOL)
+
+    signal = result.get(
+        "signal",
+        "WAIT"
+    )
+
+    strength = result.get(
+        "strength",
+        0
+    )
+
+    strength_level = result.get(
+        "strength_level",
+        "WEAK"
+    )
+
+    signal_label = tk.Label(
+        panel,
+        text=f"SIGNAL: {signal}",
+        font=("Segoe UI", 24, "bold"),
+        bg=STONE,
+        fg=TEAL
+    )
+
+    signal_label.pack(
+        pady=(30, 5)
+    )
+
+    strength_label = tk.Label(
+        panel,
+        text=f"STRENGTH: {strength}/100  •  {strength_level}",
+        font=("Segoe UI", 13, "bold"),
+        bg=STONE,
+        fg=WHITE
+    )
+
+    strength_label.pack(
+        pady=(0, 25)
+    )
+
+    price = result.get("price")
+
+    if price is not None:
+
+        price_text = f"Current Price: {price}"
+
+    else:
+
+        price_text = "Current Price: unavailable"
+
+    price_label = tk.Label(
+        panel,
+        text=price_text,
+        font=("Segoe UI", 11),
+        bg=STONE,
+        fg=SILVER
+    )
+
+    price_label.pack(pady=4)
+
+    short_average = result.get(
+        "short_average"
+    )
+
+    long_average = result.get(
+        "long_average"
+    )
+
+    separation = result.get(
+        "average_separation_points",
+        0
+    )
+
+    averages_text = (
+        f"10-Candle Average: {short_average}\n"
+        f"30-Candle Average: {long_average}\n"
+        f"Separation: {round(separation, 1)} points"
+    )
+
+    averages_label = tk.Label(
+        panel,
+        text=averages_text,
+        font=("Segoe UI", 11),
+        bg=STONE,
+        fg=SILVER,
+        justify="center"
+    )
+
+    averages_label.pack(
+        pady=(15, 20)
+    )
+
+    reason_label = tk.Label(
+        panel,
+        text=f"Reason:\n{result.get('reason', 'No reason available.')}",
+        font=("Segoe UI", 11),
+        bg=STONE_LIGHT,
+        fg=WHITE,
+        wraplength=750,
+        justify="center",
+        padx=20,
+        pady=15
+    )
+
+    reason_label.pack(
+        padx=30,
+        fill="x"
+    )
+
+    conditions = result.get(
+        "conditions",
+        []
+    )
+
+    conditions_text = "\n".join(
+        conditions
+    )
+
+    conditions_label = tk.Label(
+        panel,
+        text=f"Conditions:\n{conditions_text}",
+        font=("Segoe UI", 10),
+        bg=STONE,
+        fg=TEAL,
+        justify="left"
+    )
+
+    conditions_label.pack(
+        pady=(20, 10)
+    )
+
+    warning_label = tk.Label(
+        panel,
+        text="⚠ SIGNAL ONLY • NO ORDER HAS BEEN CREATED",
+        font=("Segoe UI", 10, "bold"),
+        bg=STONE,
+        fg=PURPLE
+    )
+
+    warning_label.pack(
+        pady=10
+    )
+
+    back_button = tk.Button(
+        panel,
+        text="← RETURN TO TRADING COMMAND ROOM",
+        command=lambda: open_mt5_room(root),
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=25,
+        pady=10
+    )
+
+    back_button.pack(
+        pady=(15, 25)
+    )
+
+
+# ============================================================
+# CLEAR CURRENT SCREEN
+# ============================================================
+
+def clear_window(root):
+
+    for widget in root.winfo_children():
+
+        widget.destroy()
+
+
+# ============================================================
+# START APPLICATION
+# ============================================================
 
 if __name__ == "__main__":
 
