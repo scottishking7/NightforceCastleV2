@@ -16,7 +16,8 @@ def calculate_signal(symbol="EURUSD"):
 
         return {
             "signal": "WAIT",
-            "reason": "Not enough market data."
+            "reason": "Not enough market data.",
+            "strength": 0
         }
 
     closes = [float(rate["close"]) for rate in rates]
@@ -27,6 +28,11 @@ def calculate_signal(symbol="EURUSD"):
 
     average_separation_points = (
         abs(short_average - long_average) / 0.00001
+    )
+
+    strength = min(
+        100,
+        int(average_separation_points / 2)
     )
 
     if (
@@ -44,7 +50,8 @@ def calculate_signal(symbol="EURUSD"):
             "price": current_price,
             "short_average": short_average,
             "long_average": long_average,
-            "average_separation_points": average_separation_points
+            "average_separation_points": average_separation_points,
+            "strength": strength
         }
 
     if (
@@ -62,7 +69,8 @@ def calculate_signal(symbol="EURUSD"):
             "price": current_price,
             "short_average": short_average,
             "long_average": long_average,
-            "average_separation_points": average_separation_points
+            "average_separation_points": average_separation_points,
+            "strength": strength
         }
 
     return {
@@ -74,5 +82,6 @@ def calculate_signal(symbol="EURUSD"):
         "price": current_price,
         "short_average": short_average,
         "long_average": long_average,
-        "average_separation_points": average_separation_points
+        "average_separation_points": average_separation_points,
+        "strength": strength
     }

@@ -234,13 +234,30 @@ def show_trading_signal():
 
     result = calculate_signal(symbol)
 
+    strength = result.get("strength", 0)
+
+    if strength < 40:
+
+        strength_level = "WEAK"
+
+    elif strength < 70:
+
+        strength_level = "MODERATE"
+
+    else:
+
+        strength_level = "STRONG"
+
     print()
     print("Symbol:", symbol)
     print("Timeframe: M15")
     print()
 
     print("Signal:", result["signal"])
+    print("Signal Strength:", f"{strength}/100")
+    print("Strength Level:", strength_level)
     print()
+
     print("Reason:")
     print(result["reason"])
     print()
