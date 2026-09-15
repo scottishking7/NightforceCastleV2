@@ -17,7 +17,15 @@ def calculate_signal(symbol="EURUSD"):
         return {
             "signal": "WAIT",
             "reason": "Not enough market data.",
-            "strength": 0
+            "price": None,
+            "short_average": None,
+            "long_average": None,
+            "average_separation_points": 0,
+            "strength": 0,
+            "strength_level": "WEAK",
+            "conditions": [
+                "Not enough market data to calculate the signal."
+            ]
         }
 
     closes = [float(rate["close"]) for rate in rates]
@@ -35,10 +43,72 @@ def calculate_signal(symbol="EURUSD"):
         int(average_separation_points / 2)
     )
 
+    if strength < 40:
+
+        strength_level = "WEAK"
+
+    elif strength < 70:
+
+        strength_level = "MODERATE"
+
+    else:
+
+        strength_level = "STRONG"
+
+    conditions = []
+
+    if short_average > long_average:
+
+        conditions.append(
+            "✓ Short-term average is above the long-term average."
+        )
+
+        trend = "BULLISH"
+
+    else:
+
+        conditions.append(
+            "✓ Short-term average is below the long-term average."
+        )
+
+        trend = "BEARISH"
+
+    if current_price > short_average:
+
+        conditions.append(
+            "✓ Current price is above the short-term average."
+        )
+
+        price_position = "ABOVE"
+
+    else:
+
+        conditions.append(
+            "✓ Current price is below the short-term average."
+        )
+
+        price_position = "BELOW"
+
+    if average_separation_points >= MIN_AVERAGE_SEPARATION_POINTS:
+
+        conditions.append(
+            "✓ Average separation is above the minimum threshold."
+        )
+
+        separation_ok = True
+
+    else:
+
+        conditions.append(
+            "✗ Average separation is below the minimum threshold."
+        )
+
+        separation_ok = False
+
     if (
-        short_average > long_average
-        and current_price > short_average
-        and average_separation_points >= MIN_AVERAGE_SEPARATION_POINTS
+        trend == "BULLISH"
+        and price_position == "ABOVE"
+        and separation_ok
     ):
 
         return {
@@ -51,13 +121,15 @@ def calculate_signal(symbol="EURUSD"):
             "short_average": short_average,
             "long_average": long_average,
             "average_separation_points": average_separation_points,
-            "strength": strength
+            "strength": strength,
+            "strength_level": strength_level,
+            "conditions": conditions
         }
 
     if (
-        short_average < long_average
-        and current_price < short_average
-        and average_separation_points >= MIN_AVERAGE_SEPARATION_POINTS
+        trend == "BEARISH"
+        and price_position == "BELOW"
+        and separation_ok
     ):
 
         return {
@@ -70,7 +142,9 @@ def calculate_signal(symbol="EURUSD"):
             "short_average": short_average,
             "long_average": long_average,
             "average_separation_points": average_separation_points,
-            "strength": strength
+            "strength": strength,
+            "strength_level": strength_level,
+            "conditions": conditions
         }
 
     return {
@@ -83,5 +157,7 @@ def calculate_signal(symbol="EURUSD"):
         "short_average": short_average,
         "long_average": long_average,
         "average_separation_points": average_separation_points,
-        "strength": strength
+        "strength": strength,
+        "strength_level": strength_level,
+        "conditions": conditions
     }
