@@ -707,6 +707,71 @@ def open_midnight_hq(root=None):
     )
     status_label.pack()
 
+    resource_grid = tk.Frame(
+        panel,
+        bg=STONE
+    )
+    resource_grid.pack(
+        padx=45,
+        pady=(0, 10),
+        fill="both",
+        expand=True
+    )
+
+    resource_data = [
+        ("\U0001F319", "OFFICIAL MIDNIGHT"),
+        ("\U0001F4AC", "DISCORD COMMANDS"),
+        ("\U0001F45B", "WALLETS & DAPPS"),
+        ("\U0001F6E0", "DEVELOPER DESK"),
+        ("\U0001F6E1", "SECURITY DESK"),
+        ("\u2694", "NIGHTFORCE")
+    ]
+
+    for index, (icon, name) in enumerate(resource_data):
+
+        row = index // 3
+        column = index % 3
+
+        resource = tk.Frame(
+            resource_grid,
+            bg=STONE_LIGHT,
+            highlightbackground=BRONZE,
+            highlightthickness=2,
+            relief="ridge",
+            bd=1
+        )
+        resource.grid(
+            row=row,
+            column=column,
+            padx=7,
+            pady=7,
+            sticky="nsew"
+        )
+
+        resource_icon = tk.Label(
+            resource,
+            text=icon,
+            font=("Segoe UI Emoji", 20),
+            bg=STONE_LIGHT,
+            fg=WHITE
+        )
+        resource_icon.pack(pady=(9, 2))
+
+        resource_name = tk.Label(
+            resource,
+            text=name,
+            font=("Goudy Old Style", 10, "bold"),
+            bg=STONE_LIGHT,
+            fg=TEAL
+        )
+        resource_name.pack(pady=(0, 9))
+
+    for column in range(3):
+        resource_grid.columnconfigure(column, weight=1)
+
+    for row in range(2):
+        resource_grid.rowconfigure(row, weight=1)
+
     back_button = tk.Button(
         panel,
         text="\u2190 BACK TO GREAT HALL",
