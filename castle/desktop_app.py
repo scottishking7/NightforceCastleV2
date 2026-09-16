@@ -345,6 +345,18 @@ def show_great_hall(root):
 
     subtitle.pack()
 
+    title_divider = tk.Frame(
+        header,
+        bg=BRONZE,
+        height=2
+    )
+
+    title_divider.pack(
+        fill="x",
+        padx=170,
+        pady=(8, 4)
+    )
+
     hall = tk.Frame(
         root,
         bg=STONE,
