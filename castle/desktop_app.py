@@ -1,4 +1,4 @@
-import tkinter as tk
+﻿import tkinter as tk
 from tkinter import messagebox
 import MetaTrader5 as mt5
 
@@ -327,7 +327,7 @@ def show_great_hall(root):
 
     title = tk.Label(
         header,
-        text="🏰 NIGHTFORCE CASTLE",
+        text="\U0001F3F0 NIGHTFORCE CASTLE",
         font=("Perpetua Titling MT", 28, "bold"),
         bg=STONE_DARK,
         fg=WHITE
@@ -428,7 +428,7 @@ def show_great_hall(root):
 
     command_title = tk.Label(
         command_frame,
-        text="⚔  CASTLE COMMAND",
+        text="\u2694  CASTLE COMMAND",
         font=("Perpetua Titling MT", 18, "bold"),
         bg=STONE_LIGHT,
         fg=WHITE
@@ -459,14 +459,14 @@ def show_great_hall(root):
     )
 
     room_data = [
-        ("📈", "MT5 TRADING BOT", open_mt5_room),
-        ("📚", "MEMORY VAULT", open_memory_vault),
-        ("🖼️", "IMAGE WORKSHOP", None),
-        ("✨", "SOCIAL STUDIO", None),
-        ("🔎", "RESEARCH AGENT", None),
-        ("📻", "MIDNIGHT RADIO", None),
-        ("⚙️", "SETTINGS", None),
-        ("🚪", "EXIT CASTLE", root.destroy)
+        ("\U0001F4C8", "MT5 TRADING BOT", open_mt5_room),
+        ("\U0001F4DA", "MEMORY VAULT", open_memory_vault),
+        ("\U0001F5BC", "IMAGE WORKSHOP", None),
+        ("\u2728", "SOCIAL STUDIO", None),
+        ("\U0001F50E", "RESEARCH AGENT", None),
+        ("\U0001F4FB", "MIDNIGHT RADIO", None),
+        ("\u2699", "SETTINGS", None),
+        ("\U0001F6AA", "EXIT CASTLE", root.destroy)
     ]
 
     for index, (icon, name, command) in enumerate(room_data):
@@ -507,7 +507,7 @@ def show_great_hall(root):
                 room,
                 text=name,
                 command=command,
-                font=("Segoe UI", 9, "bold"),
+                font=("Goudy Old Style", 11, "bold"),
                 bg=STONE_LIGHT,
                 fg=SILVER,
                 activebackground=PURPLE,
@@ -524,7 +524,7 @@ def show_great_hall(root):
             name_label = tk.Label(
                 room,
                 text=name,
-                font=("Segoe UI", 9, "bold"),
+                font=("Goudy Old Style", 11, "bold"),
                 bg=STONE_LIGHT,
                 fg=SILVER
             )
@@ -547,7 +547,7 @@ def show_great_hall(root):
 
     footer = tk.Label(
         hall,
-        text="NIGHTFORCE CASTLE  •  PRIVATE COMMAND CENTRE",
+        text="NIGHTFORCE CASTLE  \u2022  PRIVATE COMMAND CENTRE",
         font=("Segoe UI", 9),
         bg=STONE,
         fg=PURPLE
@@ -577,7 +577,7 @@ def open_memory_vault(root=None):
 
     title = tk.Label(
         header,
-        text="📚 MEMORY VAULT",
+        text="ðŸ“š MEMORY VAULT",
         font=("Segoe UI", 28, "bold"),
         bg=STONE_DARK,
         fg=WHITE
@@ -632,7 +632,7 @@ def open_memory_vault(root=None):
 
     view_button = tk.Button(
         button_frame,
-        text="📖 VIEW VAULT",
+        text="ðŸ“– VIEW VAULT",
         command=lambda: show_vault_contents(root),
         font=("Segoe UI", 11, "bold"),
         bg=PURPLE,
@@ -651,7 +651,7 @@ def open_memory_vault(root=None):
 
     add_button = tk.Button(
         button_frame,
-        text="➕ ADD MEMORY",
+        text="âž• ADD MEMORY",
         command=lambda: add_memory(root),
         font=("Segoe UI", 11, "bold"),
         bg=PURPLE,
@@ -670,7 +670,7 @@ def open_memory_vault(root=None):
 
     search_button = tk.Button(
         button_frame,
-        text="🔎 SEARCH VAULT",
+        text="ðŸ”Ž SEARCH VAULT",
         command=lambda: search_vault(root),
         font=("Segoe UI", 11, "bold"),
         bg=STONE_LIGHT,
@@ -715,14 +715,14 @@ def open_memory_vault(root=None):
         )
 
         status_text = (
-            f"✓ VAULT CONNECTED\n\n"
+            f"âœ“ VAULT CONNECTED\n\n"
             f"{memory_count} saved lines currently stored"
         )
 
     except FileNotFoundError:
 
         status_text = (
-            "⚠ VAULT FILE NOT FOUND\n\n"
+            "âš  VAULT FILE NOT FOUND\n\n"
             "The vault will be created when you add your first memory."
         )
 
@@ -741,7 +741,7 @@ def open_memory_vault(root=None):
 
     safety_label = tk.Label(
         panel,
-        text="✓ EXISTING VAULT PRESERVED • NOTHING IS DELETED",
+        text="âœ“ EXISTING VAULT PRESERVED â€¢ NOTHING IS DELETED",
         font=("Segoe UI", 10, "bold"),
         bg=STONE,
         fg=PURPLE
@@ -751,7 +751,7 @@ def open_memory_vault(root=None):
 
     back_button = tk.Button(
         panel,
-        text="← RETURN TO GREAT HALL",
+        text="â† RETURN TO GREAT HALL",
         command=lambda: show_great_hall(root),
         font=("Segoe UI", 11, "bold"),
         bg=STONE_DARK,
@@ -785,7 +785,7 @@ def show_vault_contents(root):
 
     title = tk.Label(
         header,
-        text="📖 VAULT ARCHIVE",
+        text="ðŸ“– VAULT ARCHIVE",
         font=("Segoe UI", 26, "bold"),
         bg=STONE_DARK,
         fg=WHITE
@@ -898,7 +898,7 @@ def show_vault_contents(root):
 
     back_button = tk.Button(
         panel,
-        text="← RETURN TO MEMORY VAULT",
+        text="â† RETURN TO MEMORY VAULT",
         command=lambda: open_memory_vault(root),
         font=("Segoe UI", 10, "bold"),
         bg=STONE_DARK,
@@ -932,7 +932,7 @@ def add_memory(root):
 
     title = tk.Label(
         header,
-        text="➕ ADD MEMORY",
+        text="âž• ADD MEMORY",
         font=("Segoe UI", 26, "bold"),
         bg=STONE_DARK,
         fg=WHITE
@@ -1006,7 +1006,7 @@ def add_memory(root):
 
     save_button = tk.Button(
         button_frame,
-        text="💾 SAVE MEMORY",
+        text="ðŸ’¾ SAVE MEMORY",
         command=lambda: save_memory(root, text_box),
         font=("Segoe UI", 11, "bold"),
         bg=PURPLE,
@@ -1025,7 +1025,7 @@ def add_memory(root):
 
     cancel_button = tk.Button(
         button_frame,
-        text="← CANCEL",
+        text="â† CANCEL",
         command=lambda: open_memory_vault(root),
         font=("Segoe UI", 11, "bold"),
         bg=STONE_DARK,
@@ -1107,7 +1107,7 @@ def search_vault(root):
 
     title = tk.Label(
         header,
-        text="🔎 SEARCH VAULT",
+        text="ðŸ”Ž SEARCH VAULT",
         font=("Segoe UI", 26, "bold"),
         bg=STONE_DARK,
         fg=WHITE
@@ -1141,7 +1141,7 @@ def search_vault(root):
 
     back_button = tk.Button(
         panel,
-        text="← RETURN TO MEMORY VAULT",
+        text="â† RETURN TO MEMORY VAULT",
         command=lambda: open_memory_vault(root),
         font=("Segoe UI", 10, "bold"),
         bg=STONE_DARK,
@@ -1329,7 +1329,7 @@ def open_mt5_room(root=None):
 
     title = tk.Label(
         header,
-        text="📈 MT5 TRADING BOT",
+        text="ðŸ“ˆ MT5 TRADING BOT",
         font=("Segoe UI", 28, "bold"),
         bg=STONE_DARK,
         fg=WHITE
@@ -1447,7 +1447,7 @@ def open_mt5_room(root=None):
 
     back_button = tk.Button(
         room,
-        text="← RETURN TO GREAT HALL",
+        text="â† RETURN TO GREAT HALL",
         command=lambda: show_great_hall(root),
         font=("Segoe UI", 11, "bold"),
         bg=STONE_DARK,
@@ -1475,7 +1475,7 @@ def show_trading_signal(root):
 
     title = tk.Label(
         header,
-        text="⚔ MT5 TRADING SIGNAL",
+        text="âš” MT5 TRADING SIGNAL",
         font=("Segoe UI", 28, "bold"),
         bg=STONE_DARK,
         fg=WHITE
@@ -1485,7 +1485,7 @@ def show_trading_signal(root):
 
     subtitle = tk.Label(
         header,
-        text="EURUSD • M15",
+        text="EURUSD â€¢ M15",
         font=("Segoe UI", 11, "bold"),
         bg=STONE_DARK,
         fg=TEAL
@@ -1531,7 +1531,7 @@ def show_trading_signal(root):
 
         back_button = tk.Button(
             panel,
-            text="← RETURN TO TRADING COMMAND ROOM",
+            text="â† RETURN TO TRADING COMMAND ROOM",
             command=lambda: open_mt5_room(root),
             font=("Segoe UI", 11, "bold"),
             bg=STONE_DARK,
@@ -1578,7 +1578,7 @@ def show_trading_signal(root):
 
     strength_label = tk.Label(
         panel,
-        text=f"STRENGTH: {strength}/100  •  {strength_level}",
+        text=f"STRENGTH: {strength}/100  â€¢  {strength_level}",
         font=("Segoe UI", 13, "bold"),
         bg=STONE,
         fg=WHITE
@@ -1681,7 +1681,7 @@ def show_trading_signal(root):
 
     warning_label = tk.Label(
         panel,
-        text="⚠ SIGNAL ONLY • NO ORDER HAS BEEN CREATED",
+        text="âš  SIGNAL ONLY â€¢ NO ORDER HAS BEEN CREATED",
         font=("Segoe UI", 10, "bold"),
         bg=STONE,
         fg=PURPLE
@@ -1693,7 +1693,7 @@ def show_trading_signal(root):
 
     back_button = tk.Button(
         panel,
-        text="← RETURN TO TRADING COMMAND ROOM",
+        text="â† RETURN TO TRADING COMMAND ROOM",
         command=lambda: (
             mt5.shutdown(),
             open_mt5_room(root)
@@ -1726,7 +1726,7 @@ def show_account_information(root):
 
     title = tk.Label(
         header,
-        text="👤 MT5 ACCOUNT INFORMATION",
+        text="ðŸ‘¤ MT5 ACCOUNT INFORMATION",
         font=("Segoe UI", 28, "bold"),
         bg=STONE_DARK,
         fg=WHITE
@@ -1782,7 +1782,7 @@ def show_account_information(root):
 
         back_button = tk.Button(
             panel,
-            text="← RETURN TO TRADING COMMAND ROOM",
+            text="â† RETURN TO TRADING COMMAND ROOM",
             command=lambda: open_mt5_room(root),
             font=("Segoe UI", 11, "bold"),
             bg=STONE_DARK,
@@ -1862,7 +1862,7 @@ def show_account_information(root):
 
         safety_label = tk.Label(
             panel,
-            text="✓ ACCOUNT INFORMATION ONLY • NO TRADES CREATED",
+            text="âœ“ ACCOUNT INFORMATION ONLY â€¢ NO TRADES CREATED",
             font=("Segoe UI", 10, "bold"),
             bg=STONE,
             fg=PURPLE
@@ -1874,7 +1874,7 @@ def show_account_information(root):
 
     back_button = tk.Button(
         panel,
-        text="← RETURN TO TRADING COMMAND ROOM",
+        text="â† RETURN TO TRADING COMMAND ROOM",
         command=lambda: (
             mt5.shutdown(),
             open_mt5_room(root)
@@ -1907,7 +1907,7 @@ def show_market_price(root):
 
     title = tk.Label(
         header,
-        text="💹 MT5 MARKET PRICE",
+        text="ðŸ’¹ MT5 MARKET PRICE",
         font=("Segoe UI", 28, "bold"),
         bg=STONE_DARK,
         fg=WHITE
@@ -1917,7 +1917,7 @@ def show_market_price(root):
 
     subtitle = tk.Label(
         header,
-        text=f"{DEFAULT_SYMBOL} • LIVE MARKET DATA",
+        text=f"{DEFAULT_SYMBOL} â€¢ LIVE MARKET DATA",
         font=("Segoe UI", 11, "bold"),
         bg=STONE_DARK,
         fg=TEAL
@@ -1963,7 +1963,7 @@ def show_market_price(root):
 
         back_button = tk.Button(
             panel,
-            text="← RETURN TO TRADING COMMAND ROOM",
+            text="â† RETURN TO TRADING COMMAND ROOM",
             command=lambda: open_mt5_room(root),
             font=("Segoe UI", 11, "bold"),
             bg=STONE_DARK,
@@ -2097,7 +2097,7 @@ def show_market_price(root):
 
         status_label = tk.Label(
             panel,
-            text="✓ MT5 CONNECTED • MARKET DATA RECEIVED",
+            text="âœ“ MT5 CONNECTED â€¢ MARKET DATA RECEIVED",
             font=("Segoe UI", 11, "bold"),
             bg=STONE,
             fg=TEAL
@@ -2109,7 +2109,7 @@ def show_market_price(root):
 
         safety_label = tk.Label(
             panel,
-            text="✓ MARKET DATA ONLY • NO TRADES CREATED",
+            text="âœ“ MARKET DATA ONLY â€¢ NO TRADES CREATED",
             font=("Segoe UI", 10, "bold"),
             bg=STONE,
             fg=PURPLE
@@ -2121,7 +2121,7 @@ def show_market_price(root):
 
     back_button = tk.Button(
         panel,
-        text="← RETURN TO TRADING COMMAND ROOM",
+        text="â† RETURN TO TRADING COMMAND ROOM",
         command=lambda: (
             mt5.shutdown(),
             open_mt5_room(root)
@@ -2158,7 +2158,7 @@ def show_risk_safety(root):
 
     title = tk.Label(
         header,
-        text="🛡 MT5 RISK & SAFETY",
+        text="ðŸ›¡ MT5 RISK & SAFETY",
         font=("Segoe UI", 24, "bold"),
         bg=STONE_DARK,
         fg=WHITE
@@ -2292,10 +2292,10 @@ def show_risk_safety(root):
     symbol_label.pack(pady=5)
 
     safety_text = (
-        "✓ Live order execution is not implemented\n"
-        "✓ Current system is signal-only\n"
-        "✓ Risk settings are display-only\n"
-        "✓ No trade can be created from this screen"
+        "âœ“ Live order execution is not implemented\n"
+        "âœ“ Current system is signal-only\n"
+        "âœ“ Risk settings are display-only\n"
+        "âœ“ No trade can be created from this screen"
     )
 
     safety_label = tk.Label(
@@ -2313,7 +2313,7 @@ def show_risk_safety(root):
 
     warning_label = tk.Label(
         panel,
-        text="⚠ SAFETY FIRST • DEMO / SIMULATION ONLY",
+        text="âš  SAFETY FIRST â€¢ DEMO / SIMULATION ONLY",
         font=("Segoe UI", 10, "bold"),
         bg=STONE,
         fg=PURPLE
@@ -2325,7 +2325,7 @@ def show_risk_safety(root):
 
     back_button = tk.Button(
         panel,
-        text="← RETURN TO TRADING COMMAND ROOM",
+        text="â† RETURN TO TRADING COMMAND ROOM",
         command=lambda: open_mt5_room(root),
         font=("Segoe UI", 10, "bold"),
         bg=STONE_DARK,
@@ -2363,3 +2363,5 @@ def clear_window(root):
 if __name__ == "__main__":
 
     launch_castle()
+
+
