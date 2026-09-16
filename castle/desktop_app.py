@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 import MetaTrader5 as mt5
 
 from castle.signal_engine import calculate_signal
@@ -14,14 +15,20 @@ DEFAULT_RISK_PERCENT = 1.0
 DEFAULT_MAX_LOT = 0.10
 DEFAULT_STOP_LOSS_POINTS = 200
 
+VAULT_PATH = "vault.txt"
+
 
 # ============================================================
 # COLOUR PALETTE
 # ============================================================
 
-STONE_DARK = "#090B14"
-STONE = "#111522"
-STONE_LIGHT = "#1B2030"
+STONE_DARK = "#08090D"
+STONE = "#17181D"
+STONE_LIGHT = "#24262C"
+
+WOOD_DARK = "#2A1B14"
+WOOD = "#4A3023"
+WOOD_LIGHT = "#6A4732"
 
 PURPLE = "#6C4AB6"
 PURPLE_DARK = "#3D286B"
@@ -32,8 +39,151 @@ WHITE = "#F2F2F2"
 
 
 # ============================================================
-# MAIN CASTLE WINDOW
+# CASTLE STONE MASONRY
 # ============================================================
+
+def add_stone_masonry(parent):
+
+    canvas = tk.Canvas(
+        parent,
+        bg=STONE,
+        highlightthickness=0,
+        bd=0
+    )
+
+    canvas.place(
+        x=0,
+        y=0,
+        relwidth=1,
+        relheight=1
+    )
+
+    def draw_stones(event=None):
+
+        canvas.delete("stone")
+
+        width = max(canvas.winfo_width(), 700)
+        height = max(canvas.winfo_height(), 400)
+
+        stone_width = 125
+        stone_height = 70
+
+        stone_colours = [
+            "#202329",
+            "#25282E",
+            "#292C32",
+            "#1D2026",
+            "#30333A",
+            "#22252B"
+        ]
+
+        row = 0
+        y = -stone_height
+
+        while y < height + stone_height:
+
+            offset = 0
+
+            if row % 2:
+                offset = stone_width // 2
+
+            column = 0
+            x = -stone_width + offset
+
+            while x < width + stone_width:
+
+                colour_index = (row * 5 + column * 3) % len(stone_colours)
+                fill_colour = stone_colours[colour_index]
+
+                variation = (row + column) % 4
+
+                left = x + 3
+                top = y + 3
+                right = x + stone_width - 4
+                bottom = y + stone_height - 4
+
+                if variation == 0:
+
+                    points = [
+                        left + 8, top,
+                        right - 10, top + 2,
+                        right, top + 16,
+                        right - 5, bottom - 9,
+                        right - 25, bottom,
+                        left + 5, bottom - 5,
+                        left, top + 18
+                    ]
+
+                elif variation == 1:
+
+                    points = [
+                        left + 2, top + 8,
+                        left + 20, top,
+                        right - 5, top + 5,
+                        right, top + 25,
+                        right - 12, bottom,
+                        left + 10, bottom - 3,
+                        left, top + 35
+                    ]
+
+                elif variation == 2:
+
+                    points = [
+                        left + 12, top,
+                        right - 4, top + 4,
+                        right, top + 30,
+                        right - 15, bottom - 2,
+                        left + 18, bottom,
+                        left, bottom - 14,
+                        left + 3, top + 18
+                    ]
+
+                else:
+
+                    points = [
+                        left + 5, top + 4,
+                        right - 18, top,
+                        right, top + 12,
+                        right - 4, bottom - 5,
+                        right - 25, bottom,
+                        left + 2, bottom - 10,
+                        left, top + 25
+                    ]
+
+                canvas.create_polygon(
+                    points,
+                    fill=fill_colour,
+                    outline="#101217",
+                    width=4,
+                    tags="stone"
+                )
+
+                highlight_points = [
+                    points[0],
+                    points[1],
+                    points[2],
+                    points[3],
+                    points[4],
+                    points[5]
+                ]
+
+                canvas.create_line(
+                    highlight_points,
+                    fill="#3A3E46",
+                    width=2,
+                    tags="stone"
+                )
+
+                column += 1
+                x += stone_width
+
+            row += 1
+            y += stone_height
+
+    canvas.bind("<Configure>", draw_stones)
+
+    return canvas
+
 
 def launch_castle():
 
@@ -58,7 +208,11 @@ def show_great_hall(root):
 
     clear_window(root)
 
-    header = tk.Frame(root, bg=STONE_DARK)
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
+    )
+
     header.pack(fill="x")
 
     title = tk.Label(
@@ -84,8 +238,10 @@ def show_great_hall(root):
     hall = tk.Frame(
         root,
         bg=STONE,
-        highlightbackground=PURPLE_DARK,
-        highlightthickness=3
+        highlightbackground=WOOD,
+        highlightthickness=6,
+        relief="ridge",
+        bd=2
     )
 
     hall.pack(
@@ -95,11 +251,63 @@ def show_great_hall(root):
         expand=True
     )
 
+    add_stone_masonry(hall)
+
+    timber_top = tk.Frame(
+        hall,
+        bg=WOOD,
+        height=18,
+        highlightbackground=WOOD_DARK,
+        highlightcolor=WOOD_DARK,
+        highlightthickness=3,
+        relief="raised",
+        bd=2
+    )
+
+    timber_top.pack(
+        fill="x",
+        padx=18,
+        pady=(18, 0)
+    )
+
+    timber_top_highlight = tk.Frame(
+        timber_top,
+        bg=WOOD_LIGHT,
+        height=3
+    )
+    timber_top_highlight.pack(fill="x", padx=4, pady=(2, 0))
+
+    timber_bottom = tk.Frame(
+        hall,
+        bg=WOOD,
+        height=18,
+        highlightbackground=WOOD_DARK,
+        highlightcolor=WOOD_DARK,
+        highlightthickness=3,
+        relief="raised",
+        bd=2
+    )
+
+    timber_bottom.pack(
+        fill="x",
+        padx=18,
+        pady=(0, 18)
+    )
+
+    timber_bottom_highlight = tk.Frame(
+        timber_bottom,
+        bg=WOOD_LIGHT,
+        height=3
+    )
+    timber_bottom_highlight.pack(fill="x", padx=4, pady=(2, 0))
+
     command_frame = tk.Frame(
         hall,
         bg=STONE_LIGHT,
-        highlightbackground=PURPLE,
-        highlightthickness=2
+        highlightbackground=WOOD_LIGHT,
+        highlightthickness=3,
+        relief="ridge",
+        bd=2
     )
 
     command_frame.pack(
@@ -128,7 +336,10 @@ def show_great_hall(root):
 
     command_text.pack(pady=(0, 18))
 
-    rooms = tk.Frame(hall, bg=STONE)
+    rooms = tk.Frame(
+        hall,
+        bg=STONE
+    )
 
     rooms.pack(
         padx=35,
@@ -139,7 +350,7 @@ def show_great_hall(root):
 
     room_data = [
         ("📈", "MT5 TRADING BOT", open_mt5_room),
-        ("📚", "MEMORY VAULT", None),
+        ("📚", "MEMORY VAULT", open_memory_vault),
         ("🖼️", "IMAGE WORKSHOP", None),
         ("✨", "SOCIAL STUDIO", None),
         ("🔎", "RESEARCH AGENT", None),
@@ -156,8 +367,10 @@ def show_great_hall(root):
         room = tk.Frame(
             rooms,
             bg=STONE_LIGHT,
-            highlightbackground=PURPLE_DARK,
-            highlightthickness=1
+            highlightbackground=WOOD_DARK,
+            highlightthickness=3,
+            relief="ridge",
+            bd=1
         )
 
         room.grid(
@@ -209,10 +422,18 @@ def show_great_hall(root):
             name_label.pack(pady=(0, 14))
 
     for column in range(4):
-        rooms.columnconfigure(column, weight=1)
+
+        rooms.columnconfigure(
+            column,
+            weight=1
+        )
 
     for row in range(2):
-        rooms.rowconfigure(row, weight=1)
+
+        rooms.rowconfigure(
+            row,
+            weight=1
+        )
 
     footer = tk.Label(
         hall,
@@ -226,17 +447,774 @@ def show_great_hall(root):
 
 
 # ============================================================
+# MEMORY VAULT
+# ============================================================
+
+def open_memory_vault(root=None):
+
+    if root is None:
+
+        root = tk._default_root
+
+    clear_window(root)
+
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
+    )
+
+    header.pack(fill="x")
+
+    title = tk.Label(
+        header,
+        text="📚 MEMORY VAULT",
+        font=("Segoe UI", 28, "bold"),
+        bg=STONE_DARK,
+        fg=WHITE
+    )
+
+    title.pack(pady=(25, 2))
+
+    subtitle = tk.Label(
+        header,
+        text="NIGHTFORCE KNOWLEDGE ARCHIVE",
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL
+    )
+
+    subtitle.pack()
+
+    panel = tk.Frame(
+        root,
+        bg=STONE,
+        highlightbackground=PURPLE_DARK,
+        highlightthickness=3
+    )
+
+    panel.pack(
+        padx=45,
+        pady=20,
+        fill="both",
+        expand=True
+    )
+
+    intro = tk.Label(
+        panel,
+        text="Your saved ideas, prompts, posts and research requests",
+        font=("Segoe UI", 11),
+        bg=STONE,
+        fg=SILVER
+    )
+
+    intro.pack(pady=(15, 10))
+
+    button_frame = tk.Frame(
+        panel,
+        bg=STONE
+    )
+
+    button_frame.pack(
+        fill="x",
+        padx=30,
+        pady=5
+    )
+
+    view_button = tk.Button(
+        button_frame,
+        text="📖 VIEW VAULT",
+        command=lambda: show_vault_contents(root),
+        font=("Segoe UI", 11, "bold"),
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        relief="flat",
+        padx=20,
+        pady=10
+    )
+
+    view_button.pack(
+        side="left",
+        padx=8
+    )
+
+    add_button = tk.Button(
+        button_frame,
+        text="➕ ADD MEMORY",
+        command=lambda: add_memory(root),
+        font=("Segoe UI", 11, "bold"),
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        relief="flat",
+        padx=20,
+        pady=10
+    )
+
+    add_button.pack(
+        side="left",
+        padx=8
+    )
+
+    search_button = tk.Button(
+        button_frame,
+        text="🔎 SEARCH VAULT",
+        command=lambda: search_vault(root),
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_LIGHT,
+        fg=TEAL,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=20,
+        pady=10
+    )
+
+    search_button.pack(
+        side="left",
+        padx=8
+    )
+
+    status_frame = tk.Frame(
+        panel,
+        bg=STONE_LIGHT,
+        highlightbackground=PURPLE,
+        highlightthickness=2
+    )
+
+    status_frame.pack(
+        padx=100,
+        pady=25,
+        fill="x"
+    )
+
+    try:
+
+        with open(VAULT_PATH, "r", encoding="utf-8") as file:
+
+            lines = file.readlines()
+
+        memory_count = len(
+            [
+                line
+                for line in lines
+                if line.strip()
+            ]
+        )
+
+        status_text = (
+            f"✓ VAULT CONNECTED\n\n"
+            f"{memory_count} saved lines currently stored"
+        )
+
+    except FileNotFoundError:
+
+        status_text = (
+            "⚠ VAULT FILE NOT FOUND\n\n"
+            "The vault will be created when you add your first memory."
+        )
+
+    status_label = tk.Label(
+        status_frame,
+        text=status_text,
+        font=("Segoe UI", 12, "bold"),
+        bg=STONE_LIGHT,
+        fg=TEAL,
+        justify="center",
+        padx=20,
+        pady=20
+    )
+
+    status_label.pack()
+
+    safety_label = tk.Label(
+        panel,
+        text="✓ EXISTING VAULT PRESERVED • NOTHING IS DELETED",
+        font=("Segoe UI", 10, "bold"),
+        bg=STONE,
+        fg=PURPLE
+    )
+
+    safety_label.pack(pady=10)
+
+    back_button = tk.Button(
+        panel,
+        text="← RETURN TO GREAT HALL",
+        command=lambda: show_great_hall(root),
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=25,
+        pady=10
+    )
+
+    back_button.pack(
+        pady=(10, 20)
+    )
+
+
+# ============================================================
+# VIEW VAULT CONTENTS
+# ============================================================
+
+def show_vault_contents(root):
+
+    clear_window(root)
+
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
+    )
+
+    header.pack(fill="x")
+
+    title = tk.Label(
+        header,
+        text="📖 VAULT ARCHIVE",
+        font=("Segoe UI", 26, "bold"),
+        bg=STONE_DARK,
+        fg=WHITE
+    )
+
+    title.pack(pady=(20, 2))
+
+    subtitle = tk.Label(
+        header,
+        text="SAVED NIGHTFORCE MATERIAL",
+        font=("Segoe UI", 10, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL
+    )
+
+    subtitle.pack()
+
+    panel = tk.Frame(
+        root,
+        bg=STONE,
+        highlightbackground=PURPLE_DARK,
+        highlightthickness=3
+    )
+
+    panel.pack(
+        padx=45,
+        pady=15,
+        fill="both",
+        expand=True
+    )
+
+    text_frame = tk.Frame(
+        panel,
+        bg=STONE
+    )
+
+    text_frame.pack(
+        padx=20,
+        pady=20,
+        fill="both",
+        expand=True
+    )
+
+    scrollbar = tk.Scrollbar(
+        text_frame
+    )
+
+    scrollbar.pack(
+        side="right",
+        fill="y"
+    )
+
+    text_box = tk.Text(
+        text_frame,
+        bg=STONE_LIGHT,
+        fg=WHITE,
+        insertbackground=WHITE,
+        font=("Segoe UI", 10),
+        wrap="word",
+        yscrollcommand=scrollbar.set,
+        relief="flat",
+        padx=15,
+        pady=15
+    )
+
+    text_box.pack(
+        side="left",
+        fill="both",
+        expand=True
+    )
+
+    scrollbar.config(
+        command=text_box.yview
+    )
+
+    try:
+
+        with open(
+            VAULT_PATH,
+            "r",
+            encoding="utf-8"
+        ) as file:
+
+            contents = file.read()
+
+        if contents.strip():
+
+            text_box.insert(
+                "1.0",
+                contents
+            )
+
+        else:
+
+            text_box.insert(
+                "1.0",
+                "Vault is currently empty."
+            )
+
+    except FileNotFoundError:
+
+        text_box.insert(
+            "1.0",
+            "Vault file does not exist yet."
+        )
+
+    text_box.config(
+        state="disabled"
+    )
+
+    back_button = tk.Button(
+        panel,
+        text="← RETURN TO MEMORY VAULT",
+        command=lambda: open_memory_vault(root),
+        font=("Segoe UI", 10, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=25,
+        pady=8
+    )
+
+    back_button.pack(
+        pady=(0, 15)
+    )
+
+
+# ============================================================
+# ADD MEMORY
+# ============================================================
+
+def add_memory(root):
+
+    clear_window(root)
+
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
+    )
+
+    header.pack(fill="x")
+
+    title = tk.Label(
+        header,
+        text="➕ ADD MEMORY",
+        font=("Segoe UI", 26, "bold"),
+        bg=STONE_DARK,
+        fg=WHITE
+    )
+
+    title.pack(pady=(20, 2))
+
+    subtitle = tk.Label(
+        header,
+        text="ADD A NEW ITEM TO THE MEMORY VAULT",
+        font=("Segoe UI", 10, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL
+    )
+
+    subtitle.pack()
+
+    panel = tk.Frame(
+        root,
+        bg=STONE,
+        highlightbackground=PURPLE_DARK,
+        highlightthickness=3
+    )
+
+    panel.pack(
+        padx=45,
+        pady=20,
+        fill="both",
+        expand=True
+    )
+
+    instruction = tk.Label(
+        panel,
+        text="Enter the memory, idea, prompt or note you want to save:",
+        font=("Segoe UI", 11),
+        bg=STONE,
+        fg=SILVER
+    )
+
+    instruction.pack(
+        pady=(25, 10)
+    )
+
+    text_box = tk.Text(
+        panel,
+        height=12,
+        bg=STONE_LIGHT,
+        fg=WHITE,
+        insertbackground=WHITE,
+        font=("Segoe UI", 11),
+        wrap="word",
+        relief="flat",
+        padx=15,
+        pady=15
+    )
+
+    text_box.pack(
+        padx=50,
+        fill="both",
+        expand=True
+    )
+
+    button_frame = tk.Frame(
+        panel,
+        bg=STONE
+    )
+
+    button_frame.pack(
+        pady=15
+    )
+
+    save_button = tk.Button(
+        button_frame,
+        text="💾 SAVE MEMORY",
+        command=lambda: save_memory(root, text_box),
+        font=("Segoe UI", 11, "bold"),
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        relief="flat",
+        padx=25,
+        pady=10
+    )
+
+    save_button.pack(
+        side="left",
+        padx=8
+    )
+
+    cancel_button = tk.Button(
+        button_frame,
+        text="← CANCEL",
+        command=lambda: open_memory_vault(root),
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=25,
+        pady=10
+    )
+
+    cancel_button.pack(
+        side="left",
+        padx=8
+    )
+
+
+# ============================================================
+# SAVE MEMORY
+# ============================================================
+
+def save_memory(root, text_box):
+
+    memory = text_box.get(
+        "1.0",
+        "end"
+    ).strip()
+
+    if not memory:
+
+        messagebox.showwarning(
+            "Memory Vault",
+            "Please enter something before saving."
+        )
+
+        return
+
+    try:
+
+        with open(
+            VAULT_PATH,
+            "a",
+            encoding="utf-8"
+        ) as file:
+
+            file.write(
+                "\n" + memory + "\n"
+            )
+
+        messagebox.showinfo(
+            "Memory Vault",
+            "Memory saved successfully."
+        )
+
+        open_memory_vault(root)
+
+    except OSError as error:
+
+        messagebox.showerror(
+            "Memory Vault",
+            f"Could not save memory:\n\n{error}"
+        )
+
+
+# ============================================================
+# SEARCH VAULT
+# ============================================================
+
+def search_vault(root):
+
+    clear_window(root)
+
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
+    )
+
+    header.pack(fill="x")
+
+    title = tk.Label(
+        header,
+        text="🔎 SEARCH VAULT",
+        font=("Segoe UI", 26, "bold"),
+        bg=STONE_DARK,
+        fg=WHITE
+    )
+
+    title.pack(pady=(20, 2))
+
+    subtitle = tk.Label(
+        header,
+        text="SEARCH YOUR SAVED NIGHTFORCE MATERIAL",
+        font=("Segoe UI", 10, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL
+    )
+
+    subtitle.pack()
+
+    panel = tk.Frame(
+        root,
+        bg=STONE,
+        highlightbackground=PURPLE_DARK,
+        highlightthickness=3
+    )
+
+    panel.pack(
+        padx=45,
+        pady=15,
+        fill="both",
+        expand=True
+    )
+
+    back_button = tk.Button(
+        panel,
+        text="← RETURN TO MEMORY VAULT",
+        command=lambda: open_memory_vault(root),
+        font=("Segoe UI", 10, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=25,
+        pady=8
+    )
+
+    back_button.pack(
+        side="top",
+        anchor="w",
+        padx=40,
+        pady=(0, 15)
+    )
+
+
+    search_frame = tk.Frame(
+        panel,
+        bg=STONE
+    )
+
+    search_frame.pack(
+        fill="x",
+        padx=40,
+        pady=20
+    )
+
+    search_entry = tk.Entry(
+        search_frame,
+        font=("Segoe UI", 12),
+        bg=STONE_LIGHT,
+        fg=WHITE,
+        insertbackground=WHITE,
+        relief="flat"
+    )
+
+    search_entry.pack(
+        side="left",
+        fill="x",
+        expand=True,
+        ipady=9,
+        padx=(0, 10)
+    )
+
+    results_box = tk.Text(
+        panel,
+        bg=STONE_LIGHT,
+        fg=WHITE,
+        insertbackground=WHITE,
+        font=("Segoe UI", 10),
+        wrap="word",
+        relief="flat",
+        padx=15,
+        pady=15
+    )
+
+    results_box.pack(
+        padx=40,
+        pady=(0, 15),
+        fill="both",
+        expand=True
+    )
+
+    def perform_search():
+
+        search_term = search_entry.get().strip().lower()
+
+        results_box.config(
+            state="normal"
+        )
+
+        results_box.delete(
+            "1.0",
+            "end"
+        )
+
+        if not search_term:
+
+            results_box.insert(
+                "1.0",
+                "Enter a search term above."
+            )
+
+            results_box.config(
+                state="disabled"
+            )
+
+            return
+
+        try:
+
+            with open(
+                VAULT_PATH,
+                "r",
+                encoding="utf-8"
+            ) as file:
+
+                lines = file.readlines()
+
+        except FileNotFoundError:
+
+            results_box.insert(
+                "1.0",
+                "Vault file does not exist yet."
+            )
+
+            results_box.config(
+                state="disabled"
+            )
+
+            return
+
+        matches = []
+
+        for line in lines:
+
+            if search_term in line.lower():
+
+                if line.strip():
+
+                    matches.append(
+                        line.strip()
+                    )
+
+        if matches:
+
+            results_box.insert(
+                "1.0",
+                "\n\n".join(matches)
+            )
+
+        else:
+
+            results_box.insert(
+                "1.0",
+                "No matching memories found."
+            )
+
+        results_box.config(
+            state="disabled"
+        )
+
+    search_button = tk.Button(
+        search_frame,
+        text="SEARCH",
+        command=perform_search,
+        font=("Segoe UI", 10, "bold"),
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        relief="flat",
+        padx=20,
+        pady=8
+    )
+
+    search_button.pack(
+        side="right"
+    )
+
+    search_entry.focus_set()
+
+
+# ============================================================
 # MT5 COMMAND ROOM
 # ============================================================
 
 def open_mt5_room(root=None):
 
     if root is None:
+
         root = tk._default_root
 
     clear_window(root)
 
-    header = tk.Frame(root, bg=STONE_DARK)
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
+    )
+
     header.pack(fill="x")
 
     title = tk.Label(
@@ -461,9 +1439,20 @@ def show_trading_signal(root):
 
     result = calculate_signal(DEFAULT_SYMBOL)
 
-    signal = result.get("signal", "WAIT")
-    strength = result.get("strength", 0)
-    strength_level = result.get("strength_level", "WEAK")
+    signal = result.get(
+        "signal",
+        "WAIT"
+    )
+
+    strength = result.get(
+        "strength",
+        0
+    )
+
+    strength_level = result.get(
+        "strength_level",
+        "WEAK"
+    )
 
     signal_label = tk.Label(
         panel,
@@ -473,7 +1462,9 @@ def show_trading_signal(root):
         fg=TEAL
     )
 
-    signal_label.pack(pady=(30, 5))
+    signal_label.pack(
+        pady=(30, 5)
+    )
 
     strength_label = tk.Label(
         panel,
@@ -483,13 +1474,18 @@ def show_trading_signal(root):
         fg=WHITE
     )
 
-    strength_label.pack(pady=(0, 25))
+    strength_label.pack(
+        pady=(0, 25)
+    )
 
     price = result.get("price")
 
     if price is not None:
+
         price_text = f"Current Price: {price}"
+
     else:
+
         price_text = "Current Price: unavailable"
 
     price_label = tk.Label(
@@ -502,9 +1498,18 @@ def show_trading_signal(root):
 
     price_label.pack(pady=4)
 
-    short_average = result.get("short_average")
-    long_average = result.get("long_average")
-    separation = result.get("average_separation_points", 0)
+    short_average = result.get(
+        "short_average"
+    )
+
+    long_average = result.get(
+        "long_average"
+    )
+
+    separation = result.get(
+        "average_separation_points",
+        0
+    )
 
     averages_text = (
         f"10-Candle Average: {short_average}\n"
@@ -521,7 +1526,9 @@ def show_trading_signal(root):
         justify="center"
     )
 
-    averages_label.pack(pady=(15, 20))
+    averages_label.pack(
+        pady=(15, 20)
+    )
 
     reason_label = tk.Label(
         panel,
@@ -540,18 +1547,27 @@ def show_trading_signal(root):
         fill="x"
     )
 
-    conditions = result.get("conditions", [])
+    conditions = result.get(
+        "conditions",
+        []
+    )
+
+    conditions_text = "\n".join(
+        conditions
+    )
 
     conditions_label = tk.Label(
         panel,
-        text=f"Conditions:\n{chr(10).join(conditions)}",
+        text=f"Conditions:\n{conditions_text}",
         font=("Segoe UI", 10),
         bg=STONE,
         fg=TEAL,
         justify="left"
     )
 
-    conditions_label.pack(pady=(20, 10))
+    conditions_label.pack(
+        pady=(20, 10)
+    )
 
     warning_label = tk.Label(
         panel,
@@ -561,7 +1577,9 @@ def show_trading_signal(root):
         fg=PURPLE
     )
 
-    warning_label.pack(pady=10)
+    warning_label.pack(
+        pady=10
+    )
 
     back_button = tk.Button(
         panel,
@@ -580,7 +1598,9 @@ def show_trading_signal(root):
         pady=10
     )
 
-    back_button.pack(pady=(15, 25))
+    back_button.pack(
+        pady=(15, 25)
+    )
 
 
 # ============================================================
@@ -702,7 +1722,9 @@ def show_account_information(root):
             fg=TEAL
         )
 
-        account_title.pack(pady=(35, 25))
+        account_title.pack(
+            pady=(35, 25)
+        )
 
         account_text = (
             f"Login: {account.login}\n\n"
@@ -736,7 +1758,9 @@ def show_account_information(root):
             fg=PURPLE
         )
 
-        safety_label.pack(pady=20)
+        safety_label.pack(
+            pady=20
+        )
 
     back_button = tk.Button(
         panel,
@@ -755,7 +1779,9 @@ def show_account_information(root):
         pady=10
     )
 
-    back_button.pack(pady=(15, 25))
+    back_button.pack(
+        pady=(15, 25)
+    )
 
 
 # ============================================================
@@ -843,7 +1869,9 @@ def show_market_price(root):
 
         return
 
-    symbol_info = mt5.symbol_info_tick(DEFAULT_SYMBOL)
+    symbol_info = mt5.symbol_info_tick(
+        DEFAULT_SYMBOL
+    )
 
     if symbol_info is None:
 
@@ -881,7 +1909,9 @@ def show_market_price(root):
             fg=TEAL
         )
 
-        price_title.pack(pady=(35, 25))
+        price_title.pack(
+            pady=(35, 25)
+        )
 
         price_frame = tk.Frame(
             panel,
@@ -940,9 +1970,20 @@ def show_market_price(root):
             pady=25
         )
 
-        price_frame.columnconfigure(0, weight=1)
-        price_frame.columnconfigure(1, weight=1)
-        price_frame.columnconfigure(2, weight=1)
+        price_frame.columnconfigure(
+            0,
+            weight=1
+        )
+
+        price_frame.columnconfigure(
+            1,
+            weight=1
+        )
+
+        price_frame.columnconfigure(
+            2,
+            weight=1
+        )
 
         status_label = tk.Label(
             panel,
@@ -952,7 +1993,9 @@ def show_market_price(root):
             fg=TEAL
         )
 
-        status_label.pack(pady=(25, 10))
+        status_label.pack(
+            pady=(25, 10)
+        )
 
         safety_label = tk.Label(
             panel,
@@ -962,7 +2005,9 @@ def show_market_price(root):
             fg=PURPLE
         )
 
-        safety_label.pack(pady=10)
+        safety_label.pack(
+            pady=10
+        )
 
     back_button = tk.Button(
         panel,
@@ -981,7 +2026,9 @@ def show_market_price(root):
         pady=10
     )
 
-    back_button.pack(pady=(20, 25))
+    back_button.pack(
+        pady=(20, 25)
+    )
 
 
 # ============================================================
@@ -992,7 +2039,11 @@ def show_risk_safety(root):
 
     clear_window(root)
 
-    header = tk.Frame(root, bg=STONE_DARK)
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
+    )
+
     header.pack(fill="x")
 
     title = tk.Label(
@@ -1037,7 +2088,9 @@ def show_risk_safety(root):
         fg=TEAL
     )
 
-    mode_label.pack(pady=(12, 2))
+    mode_label.pack(
+        pady=(12, 2)
+    )
 
     mode_value = tk.Label(
         panel,
@@ -1059,7 +2112,9 @@ def show_risk_safety(root):
         fg=TEAL
     )
 
-    live_label.pack(pady=(10, 2))
+    live_label.pack(
+        pady=(10, 2)
+    )
 
     live_value = tk.Label(
         panel,
@@ -1142,7 +2197,9 @@ def show_risk_safety(root):
         justify="left"
     )
 
-    safety_label.pack(pady=(4, 6))
+    safety_label.pack(
+        pady=(4, 6)
+    )
 
     warning_label = tk.Label(
         panel,
@@ -1152,7 +2209,9 @@ def show_risk_safety(root):
         fg=PURPLE
     )
 
-    warning_label.pack(pady=5)
+    warning_label.pack(
+        pady=5
+    )
 
     back_button = tk.Button(
         panel,
@@ -1168,7 +2227,12 @@ def show_risk_safety(root):
         pady=8
     )
 
-    back_button.pack(pady=(8, 15))
+    back_button.pack(
+        side="top",
+        anchor="w",
+        padx=40,
+        pady=(10, 5)
+    )
 
 
 # ============================================================
@@ -1178,6 +2242,7 @@ def show_risk_safety(root):
 def clear_window(root):
 
     for widget in root.winfo_children():
+
         widget.destroy()
 
 
