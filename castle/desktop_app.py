@@ -180,6 +180,114 @@ def add_stone_masonry(parent):
             row += 1
             y += stone_height
 
+        def draw_wall_torch(x, y):
+
+            # Soft firelight rings behind the flame.
+            canvas.create_oval(
+                x - 34, y - 38,
+                x + 34, y + 32,
+                fill="#4A2B18",
+                outline="",
+                tags="stone"
+            )
+
+            canvas.create_oval(
+                x - 23, y - 30,
+                x + 23, y + 20,
+                fill="#70401F",
+                outline="",
+                tags="stone"
+            )
+
+            # Black iron wall bracket.
+            canvas.create_line(
+                x, y + 18,
+                x, y + 34,
+                fill="#090A0D",
+                width=6,
+                tags="stone"
+            )
+
+            canvas.create_line(
+                x - 11, y + 34,
+                x + 11, y + 34,
+                fill="#090A0D",
+                width=5,
+                tags="stone"
+            )
+
+            canvas.create_line(
+                x, y + 29,
+                x + 13, y + 21,
+                fill="#17181D",
+                width=4,
+                tags="stone"
+            )
+
+            # Wooden torch shaft.
+            canvas.create_polygon(
+                x - 5, y + 8,
+                x + 5, y + 8,
+                x + 3, y + 32,
+                x - 3, y + 32,
+                fill=WOOD,
+                outline=WOOD_DARK,
+                width=2,
+                tags="stone"
+            )
+
+            # Dark wrapping beneath the flame.
+            canvas.create_rectangle(
+                x - 8, y + 3,
+                x + 8, y + 15,
+                fill="#17120F",
+                outline="#090A0D",
+                width=2,
+                tags="stone"
+            )
+
+            # Outer flame.
+            canvas.create_polygon(
+                x, y - 32,
+                x + 11, y - 13,
+                x + 8, y + 2,
+                x, y + 9,
+                x - 10, y + 1,
+                x - 12, y - 12,
+                x - 5, y - 22,
+                fill="#D96A1D",
+                outline="#7A3213",
+                width=1,
+                tags="stone"
+            )
+
+            # Inner flame.
+            canvas.create_polygon(
+                x, y - 21,
+                x + 6, y - 8,
+                x + 4, y + 1,
+                x, y + 5,
+                x - 5, y,
+                x - 5, y - 8,
+                fill="#F2B544",
+                outline="",
+                tags="stone"
+            )
+
+            # Hot flame core.
+            canvas.create_oval(
+                x - 3, y - 8,
+                x + 3, y + 2,
+                fill="#FFE29A",
+                outline="",
+                tags="stone"
+            )
+
+        # Torches mounted on the exposed outer Great Hall walls.
+        torch_y = 65
+        draw_wall_torch(42, torch_y)
+        draw_wall_torch(width - 42, torch_y)
+
     canvas.bind("<Configure>", draw_stones)
 
     return canvas
