@@ -722,6 +722,29 @@ def open_official_midnight(root=None):
         fill="x"
     )
 
+    developer_docs_button = tk.Button(
+        panel,
+        text="\U0001F4D6  OFFICIAL DEVELOPER DOCS",
+        command=lambda: webbrowser.open("https://docs.midnight.network/"),
+        font=("Goudy Old Style", 11, "bold"),
+        bg=PURPLE_DARK,
+        fg=TEAL,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        highlightbackground=BRONZE,
+        highlightthickness=2,
+        relief="raised",
+        bd=2,
+        cursor="hand2",
+        padx=25,
+        pady=10
+    )
+    developer_docs_button.pack(
+        padx=80,
+        pady=(0, 10),
+        fill="x"
+    )
+
     back_button = tk.Button(
         panel,
         text="\u2190 BACK TO MIDNIGHT HQ",
