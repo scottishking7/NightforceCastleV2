@@ -326,7 +326,7 @@ def show_great_hall(root):
     title = tk.Label(
         header,
         text="🏰 NIGHTFORCE CASTLE",
-        font=("Segoe UI", 28, "bold"),
+        font=("Perpetua Titling MT", 28, "bold"),
         bg=STONE_DARK,
         fg=WHITE
     )
@@ -336,7 +336,7 @@ def show_great_hall(root):
     subtitle = tk.Label(
         header,
         text="THE GREAT HALL",
-        font=("Segoe UI", 11, "bold"),
+        font=("Copperplate Gothic Light", 11, "bold"),
         bg=STONE_DARK,
         fg=TEAL
     )
@@ -427,7 +427,7 @@ def show_great_hall(root):
     command_title = tk.Label(
         command_frame,
         text="⚔  CASTLE COMMAND",
-        font=("Segoe UI", 18, "bold"),
+        font=("Perpetua Titling MT", 18, "bold"),
         bg=STONE_LIGHT,
         fg=WHITE
     )
@@ -437,7 +437,7 @@ def show_great_hall(root):
     command_text = tk.Label(
         command_frame,
         text="The heart of Nightforce Castle",
-        font=("Segoe UI", 11),
+        font=("Goudy Old Style", 12),
         bg=STONE_LIGHT,
         fg=TEAL
     )
