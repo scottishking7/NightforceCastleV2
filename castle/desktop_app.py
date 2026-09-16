@@ -434,7 +434,7 @@ def show_great_hall(root):
 
     command_frame.pack(
         padx=35,
-        pady=(30, 20),
+        pady=(14, 10),
         fill="x"
     )
 
@@ -456,7 +456,42 @@ def show_great_hall(root):
         fg=TEAL
     )
 
-    command_text.pack(pady=(0, 18))
+    command_row = tk.Frame(
+        command_frame,
+        bg=STONE_LIGHT
+    )
+
+    command_row.pack(
+        pady=(0, 14)
+    )
+
+    command_text.pack(
+        in_=command_row,
+        side="left",
+        padx=(0, 18)
+    )
+
+    midnight_hq_button = tk.Button(
+        command_row,
+        text="\U0001F319  ENTER MIDNIGHT HQ",
+        command=lambda: open_midnight_hq(root),
+        font=("Goudy Old Style", 11, "bold"),
+        bg=PURPLE_DARK,
+        fg=TEAL,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        highlightbackground=BRONZE,
+        highlightthickness=2,
+        relief="raised",
+        bd=2,
+        cursor="hand2",
+        padx=18,
+        pady=4
+    )
+
+    midnight_hq_button.pack(
+        side="left"
+    )
 
     rooms = tk.Frame(
         hall,
