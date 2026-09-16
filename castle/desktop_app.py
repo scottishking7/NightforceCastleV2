@@ -581,6 +581,115 @@ def show_great_hall(root):
 
 
 # ============================================================
+# MIDNIGHT HQ
+# ============================================================
+
+def open_midnight_hq(root=None):
+
+    if root is None:
+        root = tk._default_root
+
+    clear_window(root)
+
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
+    )
+    header.pack(fill="x")
+
+    title = tk.Label(
+        header,
+        text="\U0001F319 MIDNIGHT HQ",
+        font=("Perpetua Titling MT", 28, "bold"),
+        bg=STONE_DARK,
+        fg=WHITE
+    )
+    title.pack(pady=(25, 2))
+
+    subtitle = tk.Label(
+        header,
+        text="NIGHTFORCE MIDNIGHT COMMAND CENTRE",
+        font=("Copperplate Gothic Light", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL
+    )
+    subtitle.pack()
+
+    title_divider = tk.Frame(
+        header,
+        bg=BRONZE,
+        height=2
+    )
+    title_divider.pack(
+        fill="x",
+        padx=170,
+        pady=(8, 4)
+    )
+
+    panel = tk.Frame(
+        root,
+        bg=STONE,
+        highlightbackground=BRONZE,
+        highlightthickness=3
+    )
+    panel.pack(
+        padx=45,
+        pady=20,
+        fill="both",
+        expand=True
+    )
+
+    intro = tk.Label(
+        panel,
+        text="Midnight resources, Nightforce tools and community intelligence",
+        font=("Goudy Old Style", 13),
+        bg=STONE,
+        fg=SILVER
+    )
+    intro.pack(pady=(25, 15))
+
+    status_frame = tk.Frame(
+        panel,
+        bg=STONE_LIGHT,
+        highlightbackground=PURPLE_DARK,
+        highlightthickness=2
+    )
+    status_frame.pack(
+        padx=80,
+        pady=20,
+        fill="x"
+    )
+
+    status_label = tk.Label(
+        status_frame,
+        text="MIDNIGHT HQ ONLINE\n\nResource systems will be added here.",
+        font=("Goudy Old Style", 12, "bold"),
+        bg=STONE_LIGHT,
+        fg=TEAL,
+        justify="center",
+        padx=20,
+        pady=25
+    )
+    status_label.pack()
+
+    back_button = tk.Button(
+        panel,
+        text="\u2190 BACK TO GREAT HALL",
+        command=lambda: show_great_hall(root),
+        font=("Goudy Old Style", 11, "bold"),
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        relief="flat",
+        cursor="hand2",
+        padx=20,
+        pady=10
+    )
+    back_button.pack(pady=25)
+
+
+# ============================================================
 # MEMORY VAULT
 # ============================================================
 
