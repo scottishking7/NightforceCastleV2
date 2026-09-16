@@ -501,6 +501,18 @@ def show_great_hall(root):
 
         icon_label.pack(pady=(14, 4))
 
+        bronze_accent = tk.Frame(
+            room,
+            bg=BRONZE,
+            height=2
+        )
+
+        bronze_accent.pack(
+            fill="x",
+            padx=38,
+            pady=(0, 5)
+        )
+
         if command is not None:
 
             button = tk.Button(
