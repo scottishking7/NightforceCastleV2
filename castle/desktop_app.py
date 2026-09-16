@@ -414,7 +414,7 @@ def show_great_hall(root):
     command_frame = tk.Frame(
         hall,
         bg=STONE_LIGHT,
-        highlightbackground=WOOD_LIGHT,
+        highlightbackground=BRONZE,
         highlightthickness=3,
         relief="ridge",
         bd=2
@@ -2363,5 +2363,6 @@ def clear_window(root):
 if __name__ == "__main__":
 
     launch_castle()
+
 
 
