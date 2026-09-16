@@ -477,7 +477,7 @@ def show_great_hall(root):
         room = tk.Frame(
             rooms,
             bg=STONE_LIGHT,
-            highlightbackground=WOOD_DARK,
+            highlightbackground=BRONZE,
             highlightthickness=3,
             relief="ridge",
             bd=1
