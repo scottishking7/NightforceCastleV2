@@ -699,6 +699,29 @@ def open_official_midnight(root=None):
         fill="x"
     )
 
+    official_site_button = tk.Button(
+        panel,
+        text="\U0001F310  OFFICIAL MIDNIGHT WEBSITE",
+        command=lambda: webbrowser.open("https://midnight.network/"),
+        font=("Goudy Old Style", 11, "bold"),
+        bg=PURPLE_DARK,
+        fg=TEAL,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        highlightbackground=BRONZE,
+        highlightthickness=2,
+        relief="raised",
+        bd=2,
+        cursor="hand2",
+        padx=25,
+        pady=10
+    )
+    official_site_button.pack(
+        padx=80,
+        pady=(5, 10),
+        fill="x"
+    )
+
     back_button = tk.Button(
         panel,
         text="\u2190 BACK TO MIDNIGHT HQ",
