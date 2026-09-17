@@ -1371,6 +1371,24 @@ def open_midnight_hq(root=None):
                 lambda event: open_discord_commands(root)
             )
 
+        if name == "WALLETS & DAPPS":
+            resource.configure(cursor="hand2")
+            resource_icon.configure(cursor="hand2")
+            resource_name.configure(cursor="hand2")
+
+            resource.bind(
+                "<Button-1>",
+                lambda event: open_wallets_dapps(root)
+            )
+            resource_icon.bind(
+                "<Button-1>",
+                lambda event: open_wallets_dapps(root)
+            )
+            resource_name.bind(
+                "<Button-1>",
+                lambda event: open_wallets_dapps(root)
+            )
+
     for column in range(3):
         resource_grid.columnconfigure(column, weight=1)
 
