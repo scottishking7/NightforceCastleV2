@@ -950,14 +950,20 @@ def open_discord_commands(root=None):
             return
 
         matches = [
-            command
-            for command in command_library
-            if query in command.lower()
+            item
+            for item in command_library
+            if query in item["command"].lower()
+            or query in item["description"].lower()
         ]
 
         if matches:
+            result_lines = [
+                f'{item["command"]}  -  {item["description"]}'
+                for item in matches
+            ]
+
             results_status.configure(
-                text="\n".join(matches),
+                text="\n\n".join(result_lines),
                 fg=WHITE
             )
         else:
