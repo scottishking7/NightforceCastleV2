@@ -939,6 +939,16 @@ def open_discord_commands(root=None):
 
     command_library = []
 
+    def copy_command(command):
+        root.clipboard_clear()
+        root.clipboard_append(command)
+        root.update()
+
+        results_status.configure(
+            text=f"Copied to clipboard: {command}",
+            fg=TEAL
+        )
+
     def search_commands(event=None):
         query = search_entry.get().strip().lower()
 
