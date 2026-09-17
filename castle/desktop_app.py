@@ -1457,15 +1457,37 @@ def open_developer_desk(root=None):
 
     status_label = tk.Label(
         status_frame,
-        text="DEVELOPER DESK ONLINE\n\nVerified developer resources will be added here.",
+        text="VERIFIED DEVELOPER RESOURCES",
         font=("Goudy Old Style", 12, "bold"),
         bg=STONE_LIGHT,
         fg=TEAL,
         justify="center",
         padx=20,
-        pady=30
+        pady=15
     )
-    status_label.pack(expand=True)
+    status_label.pack()
+
+    developer_docs_button = tk.Button(
+        status_frame,
+        text="\U0001F4DA  OFFICIAL DEVELOPER DOCS",
+        command=lambda: webbrowser.open(
+            "https://docs.midnight.network/"
+        ),
+        font=("Goudy Old Style", 11, "bold"),
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        relief="flat",
+        cursor="hand2",
+        padx=25,
+        pady=10
+    )
+    developer_docs_button.pack(
+        padx=80,
+        pady=(5, 20),
+        fill="x"
+    )
 
     back_button = tk.Button(
         panel,
