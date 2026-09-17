@@ -1303,15 +1303,59 @@ def open_wallets_dapps(root=None):
 
     status_label = tk.Label(
         status_frame,
-        text="WALLETS & DAPPS DESK ONLINE\n\nVerified resources will be added here.",
+        text="VERIFIED MIDNIGHT RESOURCES",
         font=("Goudy Old Style", 12, "bold"),
         bg=STONE_LIGHT,
         fg=TEAL,
         justify="center",
         padx=20,
-        pady=30
+        pady=15
     )
-    status_label.pack(expand=True)
+    status_label.pack()
+
+    wallet_button = tk.Button(
+        status_frame,
+        text="\U0001F45B  OFFICIAL WALLET CATALOG",
+        command=lambda: webbrowser.open(
+            "https://midnight.network/ecosystem-catalog?tag=wallet"
+        ),
+        font=("Goudy Old Style", 11, "bold"),
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        relief="flat",
+        cursor="hand2",
+        padx=25,
+        pady=10
+    )
+    wallet_button.pack(
+        padx=80,
+        pady=(5, 10),
+        fill="x"
+    )
+
+    dapps_button = tk.Button(
+        status_frame,
+        text="\U0001F6E0  MIDNIGHT AWESOME DAPPS",
+        command=lambda: webbrowser.open(
+            "https://github.com/midnightntwrk/midnight-awesome-dapps"
+        ),
+        font=("Goudy Old Style", 11, "bold"),
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        relief="flat",
+        cursor="hand2",
+        padx=25,
+        pady=10
+    )
+    dapps_button.pack(
+        padx=80,
+        pady=(0, 20),
+        fill="x"
+    )
 
     back_button = tk.Button(
         panel,
