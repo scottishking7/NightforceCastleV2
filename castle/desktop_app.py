@@ -932,6 +932,16 @@ def open_discord_commands(root=None):
     )
     results_status.pack(
         padx=18,
+        pady=(0, 10),
+        fill="x"
+    )
+
+    command_rows = tk.Frame(
+        results_frame,
+        bg=STONE_LIGHT
+    )
+    command_rows.pack(
+        padx=18,
         pady=(0, 14),
         fill="both",
         expand=True
