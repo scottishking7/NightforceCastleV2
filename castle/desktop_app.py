@@ -936,18 +936,161 @@ def open_discord_commands(root=None):
         fill="x"
     )
 
-    command_rows = tk.Frame(
+    command_scroll_area = tk.Frame(
         results_frame,
         bg=STONE_LIGHT
     )
-    command_rows.pack(
+    command_scroll_area.pack(
         padx=18,
         pady=(0, 14),
         fill="both",
         expand=True
     )
 
-    command_library = []
+    command_canvas = tk.Canvas(
+        command_scroll_area,
+        bg=STONE_LIGHT,
+        highlightthickness=0
+    )
+    command_canvas.pack(
+        side="left",
+        fill="both",
+        expand=True
+    )
+
+    command_scrollbar = tk.Scrollbar(
+        command_scroll_area,
+        orient="vertical",
+        command=command_canvas.yview
+    )
+    command_scrollbar.pack(
+        side="right",
+        fill="y"
+    )
+
+    command_canvas.configure(
+        yscrollcommand=command_scrollbar.set
+    )
+
+    command_rows = tk.Frame(
+        command_canvas,
+        bg=STONE_LIGHT
+    )
+
+    command_rows_window = command_canvas.create_window(
+        (0, 0),
+        window=command_rows,
+        anchor="nw"
+    )
+
+    def update_command_scrollregion(event=None):
+        command_canvas.configure(
+            scrollregion=command_canvas.bbox("all")
+        )
+
+    def resize_command_rows(event):
+        command_canvas.itemconfigure(
+            command_rows_window,
+            width=event.width
+        )
+
+    command_rows.bind(
+        "<Configure>",
+        update_command_scrollregion
+    )
+
+    command_canvas.bind(
+        "<Configure>",
+        resize_command_rows
+    )
+
+    command_library = [
+        {
+            "command": "!academy",
+            "description": "Directs users to the Midnight Academy learning platform.",
+            "category": "Learning & Education"
+        },
+        {
+            "command": "!devs",
+            "description": "Provides developer documentation for building on Midnight.",
+            "category": "Learning & Education"
+        },
+        {
+            "command": "!zealy",
+            "description": "Directs users to the Midnight learning and quest platform.",
+            "category": "Learning & Education"
+        },
+        {
+            "command": "!cex",
+            "description": "Shows centralized exchanges that support Midnight ecosystem assets.",
+            "category": "Ecosystem & Links"
+        },
+        {
+            "command": "!contact",
+            "description": "Directs users to official Midnight contact channels.",
+            "category": "Ecosystem & Links"
+        },
+        {
+            "command": "!dapps",
+            "description": "Shows projects and dApps currently building on Midnight.",
+            "category": "Ecosystem & Links"
+        },
+        {
+            "command": "!dex",
+            "description": "Shows decentralized exchanges within the Midnight ecosystem.",
+            "category": "Ecosystem & Links"
+        },
+        {
+            "command": "!newsletter",
+            "description": "Encourages users to subscribe to the Midnight newsletter.",
+            "category": "Ecosystem & Links"
+        },
+        {
+            "command": "!wallets",
+            "description": "Directs users to approved wallets that support Midnight.",
+            "category": "Ecosystem & Links"
+        },
+        {
+            "command": "!dust",
+            "description": "Directs users to a portal to begin generating DUST.",
+            "category": "Token & Wallet"
+        },
+        {
+            "command": "!faucet",
+            "description": "Directs users to the faucet for Midnight Preprod Test Tokens (tNIGHT).",
+            "category": "Token & Wallet"
+        },
+        {
+            "command": "!redeem",
+            "description": "Explains how to redeem or claim $NIGHT tokens from the Glacier Drop and Scavenger Mine.",
+            "category": "Token & Wallet"
+        },
+        {
+            "command": "!thaw",
+            "description": "Provides information on the $NIGHT token thawing process.",
+            "category": "Token & Wallet"
+        },
+        {
+            "command": "!price",
+            "description": "Redirects price speculation away from the Discord server.",
+            "category": "Moderation"
+        },
+        {
+            "command": "!scammer",
+            "description": "Use when a user reports a confirmed scammer.",
+            "category": "Moderation"
+        },
+        {
+            "command": "!blockproducer",
+            "description": "Directs users interested in becoming block producers to open a support ticket.",
+            "category": "Community"
+        },
+        {
+            "command": "!nightforce",
+            "description": "Gives context about the ambassador program and encourages the user to learn more on the landing page.",
+            "category": "Community"
+        }
+    ]
 
     def copy_command(command):
         root.clipboard_clear()
@@ -1071,7 +1214,10 @@ def open_discord_commands(root=None):
         padx=20,
         pady=10
     )
-    back_button.pack(pady=25)
+    back_button.pack(
+        pady=(0, 15),
+        before=results_frame
+    )
 
 
 # ============================================================
