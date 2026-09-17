@@ -1028,6 +1028,7 @@ def open_discord_commands(root=None):
         query = search_entry.get().strip().lower()
 
         if not command_library:
+            render_command_rows([])
             results_status.configure(
                 text="No verified commands have been loaded yet.",
                 fg=SILVER
@@ -1042,16 +1043,13 @@ def open_discord_commands(root=None):
         ]
 
         if matches:
-            result_lines = [
-                f'{item["command"]}  -  {item["description"]}'
-                for item in matches
-            ]
-
+            render_command_rows(matches)
             results_status.configure(
-                text="\n\n".join(result_lines),
-                fg=WHITE
+                text=f"{len(matches)} command(s) found.",
+                fg=TEAL
             )
         else:
+            render_command_rows([])
             results_status.configure(
                 text="No commands matched your search.",
                 fg=SILVER
