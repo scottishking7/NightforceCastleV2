@@ -853,21 +853,120 @@ def open_discord_commands(root=None):
     )
     intro.pack(pady=(35, 20))
 
-    status = tk.Label(
+    search_frame = tk.Frame(
         panel,
-        text="DISCORD COMMAND LIBRARY ONLINE\n\nCommand tools will be added here.",
-        font=("Goudy Old Style", 12, "bold"),
         bg=STONE_LIGHT,
-        fg=TEAL,
-        justify="center",
-        padx=30,
-        pady=25
+        highlightbackground=BRONZE,
+        highlightthickness=2
     )
-    status.pack(
+    search_frame.pack(
         padx=80,
-        pady=20,
+        pady=(10, 20),
         fill="x"
     )
+
+    search_label = tk.Label(
+        search_frame,
+        text="SEARCH COMMANDS",
+        font=("Goudy Old Style", 11, "bold"),
+        bg=STONE_LIGHT,
+        fg=TEAL
+    )
+    search_label.pack(
+        anchor="w",
+        padx=18,
+        pady=(14, 5)
+    )
+
+    search_entry = tk.Entry(
+        search_frame,
+        font=("Consolas", 12),
+        bg=STONE_DARK,
+        fg=WHITE,
+        insertbackground=TEAL,
+        relief="flat",
+        bd=0
+    )
+    search_entry.pack(
+        padx=18,
+        pady=(0, 14),
+        fill="x",
+        ipady=8
+    )
+
+    results_frame = tk.Frame(
+        panel,
+        bg=STONE_LIGHT,
+        highlightbackground=BRONZE,
+        highlightthickness=2
+    )
+    results_frame.pack(
+        padx=80,
+        pady=(0, 15),
+        fill="both",
+        expand=True
+    )
+
+    results_title = tk.Label(
+        results_frame,
+        text="COMMAND RESULTS",
+        font=("Goudy Old Style", 11, "bold"),
+        bg=STONE_LIGHT,
+        fg=TEAL
+    )
+    results_title.pack(
+        anchor="w",
+        padx=18,
+        pady=(14, 5)
+    )
+
+    results_status = tk.Label(
+        results_frame,
+        text="Command library ready. Verified commands will appear here.",
+        font=("Goudy Old Style", 11),
+        bg=STONE_DARK,
+        fg=SILVER,
+        anchor="w",
+        padx=15,
+        pady=15
+    )
+    results_status.pack(
+        padx=18,
+        pady=(0, 14),
+        fill="both",
+        expand=True
+    )
+
+    command_library = []
+
+    def search_commands(event=None):
+        query = search_entry.get().strip().lower()
+
+        if not command_library:
+            results_status.configure(
+                text="No verified commands have been loaded yet.",
+                fg=SILVER
+            )
+            return
+
+        matches = [
+            command
+            for command in command_library
+            if query in command.lower()
+        ]
+
+        if matches:
+            results_status.configure(
+                text="\n".join(matches),
+                fg=WHITE
+            )
+        else:
+            results_status.configure(
+                text="No commands matched your search.",
+                fg=SILVER
+            )
+
+    search_entry.bind("<KeyRelease>", search_commands)
 
     back_button = tk.Button(
         panel,
