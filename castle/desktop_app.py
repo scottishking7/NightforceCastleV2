@@ -959,6 +959,71 @@ def open_discord_commands(root=None):
             fg=TEAL
         )
 
+    def render_command_rows(commands):
+        for widget in command_rows.winfo_children():
+            widget.destroy()
+
+        for item in commands:
+            row = tk.Frame(
+                command_rows,
+                bg=STONE_DARK,
+                highlightbackground=BRONZE,
+                highlightthickness=1
+            )
+            row.pack(
+                fill="x",
+                pady=(0, 8)
+            )
+
+            command_label = tk.Label(
+                row,
+                text=item["command"],
+                font=("Consolas", 11, "bold"),
+                bg=STONE_DARK,
+                fg=TEAL,
+                anchor="w"
+            )
+            command_label.pack(
+                side="left",
+                padx=(12, 15),
+                pady=12
+            )
+
+            description_label = tk.Label(
+                row,
+                text=item["description"],
+                font=("Goudy Old Style", 11),
+                bg=STONE_DARK,
+                fg=WHITE,
+                anchor="w"
+            )
+            description_label.pack(
+                side="left",
+                fill="x",
+                expand=True,
+                pady=12
+            )
+
+            copy_button = tk.Button(
+                row,
+                text="COPY",
+                command=lambda command=item["command"]: copy_command(command),
+                font=("Goudy Old Style", 10, "bold"),
+                bg=PURPLE,
+                fg=WHITE,
+                activebackground=TEAL,
+                activeforeground=STONE_DARK,
+                relief="flat",
+                cursor="hand2",
+                padx=12,
+                pady=5
+            )
+            copy_button.pack(
+                side="right",
+                padx=12,
+                pady=8
+            )
+
     def search_commands(event=None):
         query = search_entry.get().strip().lower()
 
