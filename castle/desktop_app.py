@@ -1689,6 +1689,24 @@ def open_midnight_hq(root=None):
                 lambda event: open_wallets_dapps(root)
             )
 
+        if name == "DEVELOPER DESK":
+            resource.configure(cursor="hand2")
+            resource_icon.configure(cursor="hand2")
+            resource_name.configure(cursor="hand2")
+
+            resource.bind(
+                "<Button-1>",
+                lambda event: open_developer_desk(root)
+            )
+            resource_icon.bind(
+                "<Button-1>",
+                lambda event: open_developer_desk(root)
+            )
+            resource_name.bind(
+                "<Button-1>",
+                lambda event: open_developer_desk(root)
+            )
+
     for column in range(3):
         resource_grid.columnconfigure(column, weight=1)
 
