@@ -6,6 +6,8 @@ This module does not place or execute trades.
 
 import MetaTrader5 as mt5
 
+from castle.signal_engine import calculate_ma_signal_from_closes
+
 
 DEFAULT_SYMBOL = "EURUSD"
 DEFAULT_TIMEFRAME = mt5.TIMEFRAME_M15
@@ -30,3 +32,31 @@ def load_historical_bars(
         return []
 
     return list(rates)
+
+
+def replay_ma_signals(bars):
+    """Replay the MA strategy through historical bars chronologically."""
+
+    if len(bars) < 30:
+        return []
+
+    closes = []
+    results = []
+
+    for bar in bars:
+        closes.append(float(bar["close"]))
+
+        if len(closes) < 30:
+            continue
+
+        signal = calculate_ma_signal_from_closes(closes)
+
+        results.append({
+            "time": int(bar["time"]),
+            "signal": signal["signal"],
+            "price": signal["price"],
+            "strength": signal["strength"],
+        })
+
+    return results
+
