@@ -1534,12 +1534,71 @@ def open_developer_desk(root=None):
 
     toolkit_status = tk.Label(
         toolkit_frame,
-        text="Developer utilities and code tools will be available here.",
-        font=("Goudy Old Style", 11),
+        text="RPC REQUEST BUILDER",
+        font=("Goudy Old Style", 11, "bold"),
         bg=STONE,
         fg=SILVER
     )
-    toolkit_status.pack(pady=(0, 12))
+    toolkit_status.pack(pady=(0, 8))
+
+    rpc_input_row = tk.Frame(
+        toolkit_frame,
+        bg=STONE
+    )
+    rpc_input_row.pack(
+        padx=20,
+        pady=(0, 8),
+        fill="x"
+    )
+
+    rpc_method_entry = tk.Entry(
+        rpc_input_row,
+        font=("Consolas", 10),
+        bg=STONE_LIGHT,
+        fg=WHITE,
+        insertbackground=WHITE,
+        relief="flat"
+    )
+    rpc_method_entry.insert(0, "RPC method")
+    rpc_method_entry.pack(
+        side="left",
+        padx=(0, 8),
+        ipady=6,
+        fill="x",
+        expand=True
+    )
+
+    rpc_params_entry = tk.Entry(
+        rpc_input_row,
+        font=("Consolas", 10),
+        bg=STONE_LIGHT,
+        fg=WHITE,
+        insertbackground=WHITE,
+        relief="flat"
+    )
+    rpc_params_entry.insert(0, "[]")
+    rpc_params_entry.pack(
+        side="left",
+        padx=(0, 8),
+        ipady=6,
+        fill="x",
+        expand=True
+    )
+
+    rpc_generate_button = tk.Button(
+        rpc_input_row,
+        text="GENERATE",
+        font=("Goudy Old Style", 10, "bold"),
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        relief="flat",
+        cursor="hand2",
+        padx=14,
+        pady=5
+    )
+    rpc_generate_button.pack(side="left")
 
     back_button = tk.Button(
         panel,
