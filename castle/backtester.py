@@ -196,3 +196,63 @@ def apply_spread_costs(
 
     return results
 
+
+def summarize_trade_performance(trades):
+    """Summarize completed trades using net price movement."""
+
+    if not trades:
+        return {
+            "completed_trades": 0,
+            "winning_trades": 0,
+            "losing_trades": 0,
+            "flat_trades": 0,
+            "win_rate": 0.0,
+            "total_net_price_move": 0.0,
+            "average_net_price_move": 0.0,
+        }
+
+    net_moves = []
+
+    for trade in trades:
+        if "net_price_move" not in trade:
+            raise ValueError(
+                "Trade must contain net_price_move before summarizing performance"
+            )
+
+        net_moves.append(trade["net_price_move"])
+
+    winning_trades = sum(
+        move > 0
+        for move in net_moves
+    )
+
+    losing_trades = sum(
+        move < 0
+        for move in net_moves
+    )
+
+    flat_trades = sum(
+        move == 0
+        for move in net_moves
+    )
+
+    completed_trades = len(net_moves)
+    total_net_price_move = sum(net_moves)
+
+    return {
+        "completed_trades": completed_trades,
+        "winning_trades": winning_trades,
+        "losing_trades": losing_trades,
+        "flat_trades": flat_trades,
+        "win_rate": (
+            winning_trades
+            / completed_trades
+            * 100
+        ),
+        "total_net_price_move": total_net_price_move,
+        "average_net_price_move": (
+            total_net_price_move
+            / completed_trades
+        ),
+    }
+
