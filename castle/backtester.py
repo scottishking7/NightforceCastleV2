@@ -400,6 +400,7 @@ def summarize_trade_performance(trades):
             "win_rate": 0.0,
             "total_net_price_move": 0.0,
             "average_net_price_move": 0.0,
+            "maximum_drawdown": 0.0,
         }
 
     net_moves = []
@@ -430,6 +431,27 @@ def summarize_trade_performance(trades):
     completed_trades = len(net_moves)
     total_net_price_move = sum(net_moves)
 
+    cumulative_net_move = 0.0
+    peak_net_move = 0.0
+    maximum_drawdown = 0.0
+
+    for move in net_moves:
+        cumulative_net_move += move
+        peak_net_move = max(
+            peak_net_move,
+            cumulative_net_move,
+        )
+
+        drawdown = (
+            peak_net_move
+            - cumulative_net_move
+        )
+
+        maximum_drawdown = max(
+            maximum_drawdown,
+            drawdown,
+        )
+
     return {
         "completed_trades": completed_trades,
         "winning_trades": winning_trades,
@@ -445,5 +467,6 @@ def summarize_trade_performance(trades):
             total_net_price_move
             / completed_trades
         ),
+        "maximum_drawdown": maximum_drawdown,
     }
 
