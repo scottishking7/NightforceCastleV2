@@ -96,3 +96,38 @@ def simulate_ma_trades(bars):
 
     return events
 
+
+def pair_ma_trades(events):
+    """Pair simulated MA entry and exit events into completed trades."""
+
+    trades = []
+    open_trade = None
+
+    for event in events:
+        signal = event["signal"]
+
+        if open_trade is None:
+            if signal in ("BUY", "SELL"):
+                open_trade = {
+                    "direction": signal,
+                    "entry_time": event["execution_time"],
+                    "entry_price": event["execution_price"],
+                }
+
+            continue
+
+        if signal != "WAIT":
+            continue
+
+        trades.append({
+            "direction": open_trade["direction"],
+            "entry_time": open_trade["entry_time"],
+            "entry_price": open_trade["entry_price"],
+            "exit_time": event["execution_time"],
+            "exit_price": event["execution_price"],
+        })
+
+        open_trade = None
+
+    return trades
+
