@@ -7,6 +7,7 @@ This module does not place or execute trades.
 import MetaTrader5 as mt5
 
 from castle.signal_engine import calculate_ma_signal_from_closes
+from castle.strategy_lab import get_confirmation_bars
 
 
 DEFAULT_SYMBOL = "EURUSD"
@@ -171,6 +172,17 @@ def simulate_ma_trades_with_confirmation(
         previous_confirmed_signal = current_signal
 
     return events
+
+
+def simulate_registered_ma_strategy(bars, strategy_id):
+    """Simulate a registered MA strategy using Strategy Lab metadata."""
+
+    confirmation_bars = get_confirmation_bars(strategy_id)
+
+    return simulate_ma_trades_with_confirmation(
+        bars,
+        confirmation_bars,
+    )
 
 
 def pair_ma_trades(events):
