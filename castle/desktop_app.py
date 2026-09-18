@@ -1507,9 +1507,39 @@ def open_developer_desk(root=None):
     )
     ankr_rpc_button.pack(
         padx=80,
+        pady=(0, 15),
+        fill="x"
+    )
+
+    toolkit_frame = tk.Frame(
+        status_frame,
+        bg=STONE,
+        highlightbackground=BRONZE,
+        highlightthickness=2
+    )
+    toolkit_frame.pack(
+        padx=80,
         pady=(0, 20),
         fill="x"
     )
+
+    toolkit_title = tk.Label(
+        toolkit_frame,
+        text="\U0001F6E0  DEVELOPER TOOLKIT",
+        font=("Goudy Old Style", 12, "bold"),
+        bg=STONE,
+        fg=TEAL
+    )
+    toolkit_title.pack(pady=(12, 4))
+
+    toolkit_status = tk.Label(
+        toolkit_frame,
+        text="Developer utilities and code tools will be available here.",
+        font=("Goudy Old Style", 11),
+        bg=STONE,
+        fg=SILVER
+    )
+    toolkit_status.pack(pady=(0, 12))
 
     back_button = tk.Button(
         panel,
