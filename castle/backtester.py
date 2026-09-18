@@ -343,6 +343,51 @@ def evaluate_registered_ma_periods(
     return results
 
 
+def summarize_period_results(results):
+    """Summarize registered strategy results across historical periods."""
+
+    if not results:
+        return {
+            "period_count": 0,
+            "positive_periods": 0,
+            "negative_periods": 0,
+            "flat_periods": 0,
+            "completed_trades": 0,
+            "raw_total_price_move": 0.0,
+            "total_net_price_move": 0.0,
+        }
+
+    net_totals = [
+        result["total_net_price_move"]
+        for result in results.values()
+    ]
+
+    return {
+        "period_count": len(results),
+        "positive_periods": sum(
+            value > 0
+            for value in net_totals
+        ),
+        "negative_periods": sum(
+            value < 0
+            for value in net_totals
+        ),
+        "flat_periods": sum(
+            value == 0
+            for value in net_totals
+        ),
+        "completed_trades": sum(
+            result["completed_trades"]
+            for result in results.values()
+        ),
+        "raw_total_price_move": sum(
+            result["raw_total_price_move"]
+            for result in results.values()
+        ),
+        "total_net_price_move": sum(net_totals),
+    }
+
+
 def summarize_trade_performance(trades):
     """Summarize completed trades using net price movement."""
 
