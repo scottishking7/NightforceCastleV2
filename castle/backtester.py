@@ -162,3 +162,37 @@ def calculate_trade_price_moves(trades):
 
     return results
 
+
+def apply_spread_costs(
+    trades,
+    point_size,
+    spread_points,
+):
+    """Apply a configurable round-trip spread cost to trade results."""
+
+    if point_size <= 0:
+        raise ValueError("point_size must be greater than zero")
+
+    if spread_points < 0:
+        raise ValueError("spread_points cannot be negative")
+
+    spread_cost = point_size * spread_points
+    results = []
+
+    for trade in trades:
+        if "price_move" not in trade:
+            raise ValueError(
+                "Trade must contain price_move before spread costs are applied"
+            )
+
+        result = trade.copy()
+        result["spread_points"] = spread_points
+        result["spread_cost"] = spread_cost
+        result["net_price_move"] = (
+            trade["price_move"] - spread_cost
+        )
+
+        results.append(result)
+
+    return results
+
