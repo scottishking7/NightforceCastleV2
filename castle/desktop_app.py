@@ -1,4 +1,5 @@
 ﻿import tkinter as tk
+import json
 import webbrowser
 from tkinter import messagebox
 import MetaTrader5 as mt5
@@ -1440,7 +1441,7 @@ def open_developer_desk(root=None):
         bg=STONE,
         fg=SILVER
     )
-    intro.pack(pady=(35, 20))
+    intro.pack(pady=(18, 10))
 
     status_frame = tk.Frame(
         panel,
@@ -1450,7 +1451,7 @@ def open_developer_desk(root=None):
     )
     status_frame.pack(
         padx=80,
-        pady=20,
+        pady=10,
         fill="both",
         expand=True
     )
@@ -1585,9 +1586,63 @@ def open_developer_desk(root=None):
         expand=True
     )
 
+    def generate_rpc_request():
+        method = rpc_method_entry.get().strip()
+        params_text = rpc_params_entry.get().strip()
+
+        if not method or method == "RPC method":
+            messagebox.showwarning(
+                "RPC Request Builder",
+                "Enter an RPC method first."
+            )
+            return
+
+        try:
+            params = json.loads(params_text or "[]")
+        except json.JSONDecodeError:
+            messagebox.showerror(
+                "RPC Request Builder",
+                "Parameters must be valid JSON."
+            )
+            return
+
+        if not isinstance(params, (list, dict)):
+            messagebox.showerror(
+                "RPC Request Builder",
+                "Parameters must be a JSON array or object."
+            )
+            return
+
+        request = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": params,
+            "id": 1
+        }
+
+        request_json = json.dumps(
+            request,
+            indent=2
+        )
+
+        rpc_output.configure(state="normal")
+        rpc_output.delete("1.0", "end")
+        rpc_output.insert("1.0", request_json)
+        rpc_output.configure(state="disabled")
+
+        root.clipboard_clear()
+        root.clipboard_append(request_json)
+        root.update()
+
+        messagebox.showinfo(
+            "RPC Request Builder",
+            "JSON-RPC request generated and copied to clipboard."
+        )
+
     rpc_generate_button = tk.Button(
         rpc_input_row,
         text="GENERATE",
+        command=generate_rpc_request,
         font=("Goudy Old Style", 10, "bold"),
         bg=PURPLE,
         fg=WHITE,
@@ -1599,6 +1654,30 @@ def open_developer_desk(root=None):
         pady=5
     )
     rpc_generate_button.pack(side="left")
+
+    rpc_output = tk.Text(
+        toolkit_frame,
+        height=5,
+        font=("Consolas", 9),
+        bg=STONE_LIGHT,
+        fg=TEAL,
+        insertbackground=WHITE,
+        relief="flat",
+        wrap="word",
+        padx=10,
+        pady=8
+    )
+    rpc_output.pack(
+        padx=20,
+        pady=(0, 12),
+        fill="x"
+    )
+
+    rpc_output.insert(
+        "1.0",
+        "Generated JSON-RPC request will appear here."
+    )
+    rpc_output.configure(state="disabled")
 
     back_button = tk.Button(
         panel,
@@ -1614,7 +1693,10 @@ def open_developer_desk(root=None):
         padx=20,
         pady=10
     )
-    back_button.pack(pady=25)
+    back_button.pack(
+        pady=(0, 12),
+        before=status_frame
+    )
 
 
 # ============================================================
