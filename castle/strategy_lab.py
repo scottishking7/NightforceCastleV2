@@ -13,6 +13,16 @@ STRATEGIES = {
         "timeframe": "M15",
         "status": "ACTIVE_BASELINE",
     },
+    "ma_trend_confirmed_3": {
+        "name": "MA Trend - 3 Bar Confirmation",
+        "description": (
+            "Experimental 10/30 MA trend strategy requiring "
+            "three consecutive matching completed-bar signals."
+        ),
+        "timeframe": "M15",
+        "confirmation_bars": 3,
+        "status": "EXPERIMENTAL",
+    },
 }
 
 
