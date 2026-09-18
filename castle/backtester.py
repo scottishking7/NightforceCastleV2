@@ -285,6 +285,43 @@ def apply_spread_costs(
     return results
 
 
+def evaluate_registered_ma_strategy(
+    bars,
+    strategy_id,
+    point_size,
+    spread_points,
+):
+    """Evaluate a registered MA strategy on supplied historical bars."""
+
+    events = simulate_registered_ma_strategy(
+        bars,
+        strategy_id,
+    )
+
+    trades = pair_ma_trades(events)
+    raw_trades = calculate_trade_price_moves(trades)
+
+    net_trades = apply_spread_costs(
+        raw_trades,
+        point_size,
+        spread_points,
+    )
+
+    summary = summarize_trade_performance(net_trades)
+
+    return {
+        "strategy_id": strategy_id,
+        "bar_count": len(bars),
+        "event_count": len(events),
+        "raw_total_price_move": sum(
+            trade["price_move"]
+            for trade in raw_trades
+        ),
+        "spread_points": spread_points,
+        **summary,
+    }
+
+
 def summarize_trade_performance(trades):
     """Summarize completed trades using net price movement."""
 
