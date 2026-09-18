@@ -44,6 +44,73 @@ def calculate_rsi(closes, period=RSI_PERIOD):
     return round(rsi, 2)
 
 
+def calculate_ma_signal_from_closes(closes):
+    """Calculate the MA trend signal from supplied closing prices."""
+
+    if len(closes) < 30:
+        return {
+            "signal": "WAIT",
+            "price": None,
+            "short_average": None,
+            "long_average": None,
+            "average_separation_points": 0,
+            "strength": 0,
+            "strength_level": "WEAK",
+        }
+
+    short_average = sum(closes[-10:]) / 10
+    long_average = sum(closes[-30:]) / 30
+    current_price = closes[-1]
+
+    average_separation_points = (
+        abs(short_average - long_average) / 0.00001
+    )
+
+    strength = min(
+        100,
+        int(average_separation_points / 2)
+    )
+
+    if strength < 40:
+        strength_level = "WEAK"
+    elif strength < 70:
+        strength_level = "MODERATE"
+    else:
+        strength_level = "STRONG"
+
+    separation_ok = (
+        average_separation_points
+        >= MIN_AVERAGE_SEPARATION_POINTS
+    )
+
+    if (
+        short_average > long_average
+        and current_price > short_average
+        and separation_ok
+    ):
+        signal = "BUY"
+
+    elif (
+        short_average < long_average
+        and current_price < short_average
+        and separation_ok
+    ):
+        signal = "SELL"
+
+    else:
+        signal = "WAIT"
+
+    return {
+        "signal": signal,
+        "price": current_price,
+        "short_average": short_average,
+        "long_average": long_average,
+        "average_separation_points": average_separation_points,
+        "strength": strength,
+        "strength_level": strength_level,
+    }
+
+
 def calculate_signal(symbol="EURUSD"):
 
     rates = mt5.copy_rates_from_pos(
