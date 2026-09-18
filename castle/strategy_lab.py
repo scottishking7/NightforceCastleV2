@@ -32,6 +32,19 @@ def get_strategy(strategy_id):
     return STRATEGIES.get(strategy_id)
 
 
+def get_confirmation_bars(strategy_id):
+    """Return the registered MA confirmation-bar count."""
+
+    strategy = get_strategy(strategy_id)
+
+    if strategy is None:
+        raise ValueError(
+            f"Unknown strategy: {strategy_id}"
+        )
+
+    return strategy.get("confirmation_bars", 1)
+
+
 def list_strategies():
     """Return all currently registered Strategy Lab definitions."""
 
