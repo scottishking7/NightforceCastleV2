@@ -60,3 +60,39 @@ def replay_ma_signals(bars):
 
     return results
 
+
+def simulate_ma_trades(bars):
+    """Simulate MA entries and exits at the next completed bar open."""
+
+    if len(bars) < 31:
+        return []
+
+    closes = []
+    events = []
+    previous_signal = None
+
+    for index, bar in enumerate(bars[:-1]):
+        closes.append(float(bar["close"]))
+
+        if len(closes) < 30:
+            continue
+
+        result = calculate_ma_signal_from_closes(closes)
+        current_signal = result["signal"]
+
+        if current_signal == previous_signal:
+            continue
+
+        next_bar = bars[index + 1]
+
+        events.append({
+            "signal_time": int(bar["time"]),
+            "execution_time": int(next_bar["time"]),
+            "signal": current_signal,
+            "execution_price": float(next_bar["open"]),
+        })
+
+        previous_signal = current_signal
+
+    return events
+
