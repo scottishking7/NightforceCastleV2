@@ -131,3 +131,34 @@ def pair_ma_trades(events):
 
     return trades
 
+
+def calculate_trade_price_moves(trades):
+    """Add direction-aware raw price movement to completed trades."""
+
+    results = []
+
+    for trade in trades:
+        result = trade.copy()
+
+        if trade["direction"] == "BUY":
+            price_move = (
+                trade["exit_price"]
+                - trade["entry_price"]
+            )
+
+        elif trade["direction"] == "SELL":
+            price_move = (
+                trade["entry_price"]
+                - trade["exit_price"]
+            )
+
+        else:
+            raise ValueError(
+                f"Unknown trade direction: {trade['direction']}"
+            )
+
+        result["price_move"] = price_move
+        results.append(result)
+
+    return results
+
