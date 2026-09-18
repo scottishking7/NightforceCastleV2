@@ -1485,7 +1485,29 @@ def open_developer_desk(root=None):
     )
     developer_docs_button.pack(
         padx=80,
-        pady=(5, 20),
+        pady=(5, 10),
+        fill="x"
+    )
+
+    ankr_rpc_button = tk.Button(
+        status_frame,
+        text="\U0001F310  MIDNIGHT RPC / ANKR",
+        command=lambda: webbrowser.open(
+            "https://www.ankr.com/rpc/midnight/"
+        ),
+        font=("Goudy Old Style", 11, "bold"),
+        bg=PURPLE,
+        fg=WHITE,
+        activebackground=TEAL,
+        activeforeground=STONE_DARK,
+        relief="flat",
+        cursor="hand2",
+        padx=25,
+        pady=10
+    )
+    ankr_rpc_button.pack(
+        padx=80,
+        pady=(0, 20),
         fill="x"
     )
 
