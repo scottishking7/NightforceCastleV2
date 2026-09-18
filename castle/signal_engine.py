@@ -1,6 +1,47 @@
 import MetaTrader5 as mt5
 
 MIN_AVERAGE_SEPARATION_POINTS = 20
+RSI_PERIOD = 14
+
+
+def calculate_rsi(closes, period=RSI_PERIOD):
+
+    if len(closes) < period + 1:
+        return None
+
+    recent_closes = closes[-(period + 1):]
+
+    gains = []
+    losses = []
+
+    for previous, current in zip(
+        recent_closes[:-1],
+        recent_closes[1:]
+    ):
+        change = current - previous
+
+        gains.append(max(change, 0))
+        losses.append(max(-change, 0))
+
+    average_gain = sum(gains) / period
+    average_loss = sum(losses) / period
+
+    if average_gain == 0 and average_loss == 0:
+        return 50.0
+
+    if average_loss == 0:
+        return 100.0
+
+    if average_gain == 0:
+        return 0.0
+
+    relative_strength = average_gain / average_loss
+
+    rsi = 100 - (
+        100 / (1 + relative_strength)
+    )
+
+    return round(rsi, 2)
 
 
 def calculate_signal(symbol="EURUSD"):
@@ -8,7 +49,7 @@ def calculate_signal(symbol="EURUSD"):
     rates = mt5.copy_rates_from_pos(
         symbol,
         mt5.TIMEFRAME_M15,
-        0,
+        1,
         50
     )
 
@@ -29,6 +70,8 @@ def calculate_signal(symbol="EURUSD"):
         }
 
     closes = [float(rate["close"]) for rate in rates]
+
+    rsi = calculate_rsi(closes)
 
     short_average = sum(closes[-10:]) / 10
     long_average = sum(closes[-30:]) / 30
