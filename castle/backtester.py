@@ -34,6 +34,27 @@ def load_historical_bars(
     return list(rates)
 
 
+def load_historical_bars_range(
+    start_time,
+    end_time,
+    symbol=DEFAULT_SYMBOL,
+    timeframe=DEFAULT_TIMEFRAME,
+):
+    """Load a fixed historical bar range from an initialized MT5 terminal."""
+
+    rates = mt5.copy_rates_range(
+        symbol,
+        timeframe,
+        start_time,
+        end_time,
+    )
+
+    if rates is None:
+        return []
+
+    return list(rates)
+
+
 def replay_ma_signals(bars):
     """Replay the MA strategy through historical bars chronologically."""
 
