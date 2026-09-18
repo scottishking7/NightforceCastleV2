@@ -322,6 +322,27 @@ def evaluate_registered_ma_strategy(
     }
 
 
+def evaluate_registered_ma_periods(
+    periods,
+    strategy_id,
+    point_size,
+    spread_points,
+):
+    """Evaluate a registered MA strategy across named historical periods."""
+
+    results = {}
+
+    for period_name, bars in periods.items():
+        results[period_name] = evaluate_registered_ma_strategy(
+            bars,
+            strategy_id,
+            point_size,
+            spread_points,
+        )
+
+    return results
+
+
 def summarize_trade_performance(trades):
     """Summarize completed trades using net price movement."""
 
