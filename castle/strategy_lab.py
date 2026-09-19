@@ -339,14 +339,69 @@ RESEARCH_FINDINGS = {
             "in both validation periods. The broad inverse relationship "
             "was replicated, with minor adjacent-quartile irregularities."
         ),
+        "dual_control_for_20_bar_volatility_and_range": True,
+        "volatility_boundaries_points": (
+            50.05,
+            67.65,
+            90.75,
+        ),
+        "volatility_boundary_source": (
+            "Frozen existing 20-bar volatility regime boundaries"
+        ),
+        "dual_control_method": (
+            "For each validation period separately, observations were "
+            "assigned to frozen 20-bar-volatility and current-bar-range "
+            "quartiles. Next-bar range was residualized against the "
+            "mean next-bar range of its volatility-by-range cell, then "
+            "the residuals were grouped by the frozen body-fraction "
+            "quartiles. Cell baselines were estimated within each "
+            "validation period, so this is a replicated conditional "
+            "association rather than an out-of-sample prediction model."
+        ),
+        "dual_control_average_residual_points": {
+            "2025": (
+                4.76,
+                0.09,
+                -0.15,
+                -4.74,
+            ),
+            "2026-01 through 2026-08": (
+                2.66,
+                1.02,
+                -0.96,
+                -3.28,
+            ),
+        },
+        "dual_control_median_residual_points": {
+            "2025": (
+                -4.83,
+                -7.55,
+                -8.01,
+                -12.14,
+            ),
+            "2026-01 through 2026-08": (
+                -3.20,
+                -3.96,
+                -6.55,
+                -8.36,
+            ),
+        },
+        "dual_control_relationship": (
+            "Average and median residual next-bar range decreased "
+            "monotonically from body-fraction Q1 through Q4 in both "
+            "validation periods after simultaneous control for the "
+            "frozen 20-bar volatility regime and current-bar range."
+        ),
         "validation_periods": (
             "2025",
             "2026-01 through 2026-08",
         ),
         "research_conclusion": (
             "Preserve as a replicated incremental short-horizon "
-            "volatility feature conditional on current-bar range. "
-            "It predicts movement magnitude, not price direction."
+            "volatility feature. The inverse body-fraction relationship "
+            "survived simultaneous control for current-bar range and "
+            "the broader 20-bar volatility regime. It predicts movement "
+            "magnitude, not price direction."
         ),
         "status": "REPLICATED_RESEARCH_FINDING",
         "directional_signal": False,
