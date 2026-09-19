@@ -53,6 +53,49 @@ RESEARCH_FINDINGS = {
         "status": "REPLICATED_RESEARCH_FINDING",
         "directional_signal": False,
     },
+    "eurusd_m15_utc_time_blocks": {
+        "name": "EURUSD M15 UTC Time Blocks",
+        "description": (
+            "UTC time block added information about the magnitude of "
+            "the subsequent 5-bar price move after controlling for "
+            "the 20-bar volatility regime. The broad relationship "
+            "replicated in 2025 and 2026 using non-overlapping "
+            "forward observations and did not provide a directional "
+            "signal."
+        ),
+        "symbol": "EURUSD",
+        "timeframe": "M15",
+        "time_basis": "UTC",
+        "time_blocks": (
+            "00-05",
+            "06-11",
+            "12-17",
+            "18-23",
+        ),
+        "volatility_lookback_bars": 20,
+        "forward_measurement_bars": 5,
+        "non_overlapping_forward_windows": True,
+        "relative_move_vs_regime_average": {
+            "2025": (
+                -6.8,
+                16.1,
+                18.6,
+                -27.9,
+            ),
+            "2026-01 through 2026-08": (
+                -11.4,
+                15.9,
+                19.1,
+                -23.9,
+            ),
+        },
+        "validation_periods": (
+            "2025",
+            "2026-01 through 2026-08",
+        ),
+        "status": "REPLICATED_RESEARCH_FINDING",
+        "directional_signal": False,
+    },
 }
 
 
