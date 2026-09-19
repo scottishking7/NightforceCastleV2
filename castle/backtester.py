@@ -336,6 +336,32 @@ def evaluate_registered_ma_strategy(
     }
 
 
+def evaluate_registered_ma_range(
+    start_time,
+    end_time,
+    strategy_id,
+    point_size,
+    spread_points,
+    symbol=DEFAULT_SYMBOL,
+    timeframe=DEFAULT_TIMEFRAME,
+):
+    """Evaluate a registered MA strategy over one continuous historical range."""
+
+    bars = load_historical_bars_range(
+        start_time,
+        end_time,
+        symbol,
+        timeframe,
+    )
+
+    return evaluate_registered_ma_strategy(
+        bars,
+        strategy_id,
+        point_size,
+        spread_points,
+    )
+
+
 def evaluate_registered_ma_periods(
     periods,
     strategy_id,
