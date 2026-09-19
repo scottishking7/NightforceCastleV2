@@ -98,6 +98,57 @@ RESEARCH_FINDINGS = {
         ),
         "status": "RESEARCH_CLOSED_NO_ROBUST_EDGE",
     },
+    "eurusd_m15_new_low_reversion": {
+        "name": "EURUSD M15 New-Low Reversion",
+        "description": (
+            "Independent closes below the previous 20-bar low showed "
+            "a modest upward reversion over the subsequent 5 bars in "
+            "both the 2025 and 2026 research samples. A causal "
+            "next-open implementation remained slightly profitable "
+            "with a 5-point spread overall, but profitability was "
+            "cost-sensitive, concentrated in large winners, and not "
+            "stable across chronological subperiods."
+        ),
+        "symbol": "EURUSD",
+        "timeframe": "M15",
+        "lookback_bars": 20,
+        "forward_measurement_bars": 5,
+        "independent_event_separation_bars": 5,
+        "point_size": 0.00001,
+        "independent_event_average_upward_points": {
+            "2025": 5.96,
+            "2026-01 through 2026-08": 6.64,
+        },
+        "independent_event_reversal_percent": {
+            "2025": 54.87,
+            "2026-01 through 2026-08": 52.05,
+        },
+        "tested_execution": (
+            "BUY next bar open after a qualifying completed-bar "
+            "signal; hold 5 complete bars; exit following bar open."
+        ),
+        "tested_spread_points": 5.0,
+        "tested_net_expectancy_points": {
+            "2025": 1.94,
+            "2026-01 through 2026-08": 1.49,
+        },
+        "tested_profit_factor": {
+            "2025": 1.042,
+            "2026-01 through 2026-08": 1.040,
+        },
+        "research_conclusion": (
+            "Preserve the replicated structural reversion finding, "
+            "but close the tested executable strategy because the "
+            "edge was thin, cost-sensitive, winner-concentrated, "
+            "and chronologically unstable."
+        ),
+        "validation_periods": (
+            "2025",
+            "2026-01 through 2026-08",
+        ),
+        "status": "REPLICATED_FINDING_EXECUTION_CLOSED",
+        "promote_to_trading": False,
+    },
     "eurusd_m15_utc_time_blocks": {
         "name": "EURUSD M15 UTC Time Blocks",
         "description": (
