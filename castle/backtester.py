@@ -309,15 +309,29 @@ def evaluate_registered_ma_strategy(
 
     summary = summarize_trade_performance(net_trades)
 
+    raw_total_price_move = sum(
+        trade["price_move"]
+        for trade in raw_trades
+    )
+
+    completed_trades = summary["completed_trades"]
+
+    if completed_trades == 0:
+        break_even_spread_points = None
+    else:
+        break_even_spread_points = (
+            raw_total_price_move
+            / completed_trades
+            / point_size
+        )
+
     return {
         "strategy_id": strategy_id,
         "bar_count": len(bars),
         "event_count": len(events),
-        "raw_total_price_move": sum(
-            trade["price_move"]
-            for trade in raw_trades
-        ),
+        "raw_total_price_move": raw_total_price_move,
         "spread_points": spread_points,
+        "break_even_spread_points": break_even_spread_points,
         **summary,
     }
 
