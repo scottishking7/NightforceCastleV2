@@ -330,6 +330,29 @@ def evaluate_registered_ma_strategy(
             / point_size
         )
 
+    average_winning_price_move = summary[
+        "average_winning_price_move"
+    ]
+    average_losing_price_move = summary[
+        "average_losing_price_move"
+    ]
+
+    if average_winning_price_move is None:
+        average_winning_points = None
+    else:
+        average_winning_points = (
+            average_winning_price_move
+            / point_size
+        )
+
+    if average_losing_price_move is None:
+        average_losing_points = None
+    else:
+        average_losing_points = (
+            average_losing_price_move
+            / point_size
+        )
+
     return {
         "strategy_id": strategy_id,
         "bar_count": len(bars),
@@ -338,6 +361,8 @@ def evaluate_registered_ma_strategy(
         "spread_points": spread_points,
         "break_even_spread_points": break_even_spread_points,
         "net_expectancy_points": net_expectancy_points,
+        "average_winning_points": average_winning_points,
+        "average_losing_points": average_losing_points,
         **summary,
     }
 
@@ -446,6 +471,8 @@ def summarize_trade_performance(trades):
             "win_rate": 0.0,
             "total_net_price_move": 0.0,
             "average_net_price_move": 0.0,
+            "average_winning_price_move": None,
+            "average_losing_price_move": None,
             "maximum_drawdown": 0.0,
             "profit_factor": None,
         }
@@ -477,6 +504,30 @@ def summarize_trade_performance(trades):
 
     completed_trades = len(net_moves)
     total_net_price_move = sum(net_moves)
+
+    if winning_trades == 0:
+        average_winning_price_move = None
+    else:
+        average_winning_price_move = (
+            sum(
+                move
+                for move in net_moves
+                if move > 0
+            )
+            / winning_trades
+        )
+
+    if losing_trades == 0:
+        average_losing_price_move = None
+    else:
+        average_losing_price_move = (
+            sum(
+                move
+                for move in net_moves
+                if move < 0
+            )
+            / losing_trades
+        )
 
     gross_profit = sum(
         move
@@ -536,6 +587,8 @@ def summarize_trade_performance(trades):
             total_net_price_move
             / completed_trades
         ),
+        "average_winning_price_move": average_winning_price_move,
+        "average_losing_price_move": average_losing_price_move,
         "maximum_drawdown": maximum_drawdown,
         "profit_factor": profit_factor,
     }
