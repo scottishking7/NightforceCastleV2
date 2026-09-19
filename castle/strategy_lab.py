@@ -207,6 +207,54 @@ RESEARCH_FINDINGS = {
             "from current-bar range Q1 through Q4 in both validation "
             "periods."
         ),
+        "persistence_horizons_bars": (
+            1,
+            2,
+            3,
+            5,
+            10,
+        ),
+        "persistence_test_spacing_bars": 11,
+        "persistence_average_range_points": {
+            "2025": {
+                1: (43.87, 60.89, 80.17, 115.44),
+                2: (46.02, 60.40, 81.52, 117.66),
+                3: (47.06, 62.26, 78.53, 114.99),
+                5: (51.48, 64.65, 78.73, 108.63),
+                10: (56.55, 66.01, 76.45, 100.56),
+            },
+            "2026-01 through 2026-08": {
+                1: (39.85, 55.03, 75.47, 106.13),
+                2: (40.58, 58.58, 69.34, 94.50),
+                3: (40.62, 57.61, 70.35, 94.43),
+                5: (45.11, 57.45, 72.80, 88.57),
+                10: (51.06, 58.88, 66.64, 83.34),
+            },
+        },
+        "persistence_median_range_points": {
+            "2025": {
+                1: (40.0, 54.0, 71.0, 99.5),
+                2: (40.0, 53.0, 70.0, 98.5),
+                3: (40.0, 54.0, 67.0, 96.5),
+                5: (40.0, 53.0, 66.0, 91.0),
+                10: (47.0, 57.0, 63.0, 82.5),
+            },
+            "2026-01 through 2026-08": {
+                1: (34.0, 49.0, 65.0, 92.0),
+                2: (36.0, 49.0, 60.0, 85.0),
+                3: (35.0, 49.0, 61.0, 82.0),
+                5: (37.0, 48.0, 63.0, 80.0),
+                10: (42.0, 48.0, 56.0, 67.0),
+            },
+        },
+        "persistence_relationship": (
+            "Using the same frozen range boundaries and independent "
+            "11-bar-spaced observations, average and median future "
+            "bar range remained monotonically ordered from Q1 through "
+            "Q4 at horizons 1, 2, 3, 5, and 10 in both validation "
+            "periods. The separation narrowed with horizon, consistent "
+            "with a persistent but decaying short-term volatility state."
+        ),
         "validation_periods": (
             "2025",
             "2026-01 through 2026-08",
