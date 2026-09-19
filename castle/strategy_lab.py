@@ -469,14 +469,72 @@ RESEARCH_FINDINGS = {
             "adjacent-quartile irregularities did not alter the broad "
             "Q1-to-Q4 relationship."
         ),
+        "dual_control_for_20_bar_volatility_and_range": True,
+        "range_boundaries_points": (
+            41.0,
+            61.0,
+            92.0,
+        ),
+        "range_boundary_source": (
+            "Frozen existing one-bar range persistence boundaries"
+        ),
+        "dual_control_method": (
+            "For each validation period separately, observations were "
+            "assigned to frozen 20-bar-volatility and current-bar-range "
+            "quartiles. Future 5-bar absolute movement was residualized "
+            "against the mean future movement of its volatility-by-range "
+            "cell, then residuals were grouped by the frozen acceleration "
+            "quartiles. Cell baselines were estimated within each "
+            "validation period, so this is a replicated conditional "
+            "association rather than an out-of-sample prediction model."
+        ),
+        "dual_control_average_residual_points": {
+            "2025": (
+                -6.30,
+                -1.34,
+                -0.03,
+                7.66,
+            ),
+            "2026-01 through 2026-08": (
+                -3.24,
+                -0.16,
+                -0.66,
+                4.16,
+            ),
+        },
+        "dual_control_median_residual_points": {
+            "2025": (
+                -19.47,
+                -18.57,
+                -20.47,
+                -16.58,
+            ),
+            "2026-01 through 2026-08": (
+                -20.62,
+                -13.00,
+                -15.51,
+                -12.62,
+            ),
+        },
+        "dual_control_relationship": (
+            "Average residual future movement preserved the broad "
+            "positive Q1-to-Q4 acceleration relationship in both "
+            "validation periods after simultaneous control for frozen "
+            "20-bar volatility and current-bar range. The 2025 averages "
+            "were monotonic; 2026 had a small Q2-to-Q3 inversion. Median "
+            "residuals were noisier and were not monotonically ordered."
+        ),
         "validation_periods": (
             "2025",
             "2026-01 through 2026-08",
         ),
         "research_conclusion": (
             "Preserve as a replicated incremental volatility feature. "
-            "It describes volatility magnitude and acceleration, not "
-            "future price direction."
+            "The broad average acceleration relationship survived "
+            "simultaneous control for 20-bar volatility and current-bar "
+            "range, although median residuals were less orderly. It "
+            "describes volatility magnitude and acceleration, not future "
+            "price direction."
         ),
         "status": "REPLICATED_RESEARCH_FINDING",
         "directional_signal": False,
