@@ -53,6 +53,51 @@ RESEARCH_FINDINGS = {
         "status": "REPLICATED_RESEARCH_FINDING",
         "directional_signal": False,
     },
+    "eurusd_m15_ma_trend_confirmed_3": {
+        "name": "EURUSD M15 3-Bar Confirmed MA Research",
+        "description": (
+            "The 10/30 moving-average strategy with three-bar "
+            "confirmation did not demonstrate a robust executable "
+            "edge across the 2025 and 2026 research periods. "
+            "Entry filters and early-exit diagnostics produced "
+            "interesting state relationships, but tested executable "
+            "interventions did not establish consistent profitability."
+        ),
+        "symbol": "EURUSD",
+        "timeframe": "M15",
+        "strategy_id": "ma_trend_confirmed_3",
+        "validation_periods": (
+            "2025",
+            "2026-01 through 2026-08",
+        ),
+        "forward_direction_horizons_bars": (
+            1,
+            3,
+            5,
+            10,
+            20,
+        ),
+        "forward_direction_average_points": {
+            "2025": (
+                -0.35,
+                -1.96,
+                -3.05,
+                -7.54,
+                -3.94,
+            ),
+            "2026-01 through 2026-08": (
+                0.05,
+                1.59,
+                3.00,
+                2.71,
+                3.48,
+            ),
+        },
+        "research_conclusion": (
+            "Retain as a benchmark; do not promote to live trading."
+        ),
+        "status": "RESEARCH_CLOSED_NO_ROBUST_EDGE",
+    },
     "eurusd_m15_utc_time_blocks": {
         "name": "EURUSD M15 UTC Time Blocks",
         "description": (
