@@ -318,10 +318,15 @@ def evaluate_registered_ma_strategy(
 
     if completed_trades == 0:
         break_even_spread_points = None
+        net_expectancy_points = None
     else:
         break_even_spread_points = (
             raw_total_price_move
             / completed_trades
+            / point_size
+        )
+        net_expectancy_points = (
+            summary["average_net_price_move"]
             / point_size
         )
 
@@ -332,6 +337,7 @@ def evaluate_registered_ma_strategy(
         "raw_total_price_move": raw_total_price_move,
         "spread_points": spread_points,
         "break_even_spread_points": break_even_spread_points,
+        "net_expectancy_points": net_expectancy_points,
         **summary,
     }
 
