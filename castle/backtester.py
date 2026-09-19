@@ -401,6 +401,7 @@ def summarize_trade_performance(trades):
             "total_net_price_move": 0.0,
             "average_net_price_move": 0.0,
             "maximum_drawdown": 0.0,
+            "profit_factor": None,
         }
 
     net_moves = []
@@ -430,6 +431,28 @@ def summarize_trade_performance(trades):
 
     completed_trades = len(net_moves)
     total_net_price_move = sum(net_moves)
+
+    gross_profit = sum(
+        move
+        for move in net_moves
+        if move > 0
+    )
+
+    gross_loss = abs(
+        sum(
+            move
+            for move in net_moves
+            if move < 0
+        )
+    )
+
+    if gross_loss == 0:
+        profit_factor = None
+    else:
+        profit_factor = (
+            gross_profit
+            / gross_loss
+        )
 
     cumulative_net_move = 0.0
     peak_net_move = 0.0
@@ -468,5 +491,6 @@ def summarize_trade_performance(trades):
             / completed_trades
         ),
         "maximum_drawdown": maximum_drawdown,
+        "profit_factor": profit_factor,
     }
 
