@@ -149,6 +149,76 @@ RESEARCH_FINDINGS = {
         "status": "REPLICATED_FINDING_EXECUTION_CLOSED",
         "promote_to_trading": False,
     },
+    "eurusd_m15_one_bar_range_persistence": {
+        "name": "EURUSD M15 One-Bar Range Persistence",
+        "description": (
+            "The high-low range of the most recently completed M15 "
+            "bar was strongly associated with the high-low range of "
+            "the following bar in both the 2025 and 2026 research "
+            "samples. The relationship remained monotonically ordered "
+            "after controlling for the existing 20-bar volatility "
+            "regime, indicating incremental short-horizon volatility "
+            "information rather than only the broader regime effect. "
+            "The finding predicts movement magnitude, not direction."
+        ),
+        "symbol": "EURUSD",
+        "timeframe": "M15",
+        "point_size": 0.00001,
+        "forward_measurement_bars": 1,
+        "non_overlapping_observations": True,
+        "range_boundaries_points": (
+            41.0,
+            61.0,
+            92.0,
+        ),
+        "boundary_source": "2025 research sample",
+        "average_next_range_points": {
+            "2025": (
+                43.79,
+                61.05,
+                78.32,
+                120.87,
+            ),
+            "2026-01 through 2026-08": (
+                37.44,
+                52.95,
+                70.13,
+                101.53,
+            ),
+        },
+        "median_next_range_points": {
+            "2025": (
+                38.0,
+                54.0,
+                69.0,
+                101.0,
+            ),
+            "2026-01 through 2026-08": (
+                33.0,
+                47.0,
+                62.0,
+                89.0,
+            ),
+        },
+        "controlled_for_20_bar_volatility": True,
+        "controlled_relationship": (
+            "Within every frozen 20-bar volatility quartile, "
+            "next-bar average and median range increased monotonically "
+            "from current-bar range Q1 through Q4 in both validation "
+            "periods."
+        ),
+        "validation_periods": (
+            "2025",
+            "2026-01 through 2026-08",
+        ),
+        "research_conclusion": (
+            "Preserve as a replicated incremental volatility feature. "
+            "Do not interpret it as a directional trading signal."
+        ),
+        "status": "REPLICATED_RESEARCH_FINDING",
+        "directional_signal": False,
+        "promote_to_trading": False,
+    },
     "eurusd_m15_utc_time_blocks": {
         "name": "EURUSD M15 UTC Time Blocks",
         "description": (
