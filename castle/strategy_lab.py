@@ -267,6 +267,91 @@ RESEARCH_FINDINGS = {
         "directional_signal": False,
         "promote_to_trading": False,
     },
+    "eurusd_m15_candle_body_fraction": {
+        "name": "EURUSD M15 Candle Body Fraction",
+        "description": (
+            "Candle body fraction, defined as absolute close-open "
+            "distance divided by the full high-low range of the "
+            "completed M15 bar, contained incremental information "
+            "about the following bar's high-low range after controlling "
+            "for current-bar range. Within frozen current-range "
+            "quartiles, smaller-body and more wick-heavy candles "
+            "generally preceded larger next-bar ranges than candles "
+            "with larger body fractions in both validation periods. "
+            "The unconditional relationship was weak, so this finding "
+            "is specifically conditional on current-bar range."
+        ),
+        "symbol": "EURUSD",
+        "timeframe": "M15",
+        "point_size": 0.00001,
+        "forward_measurement_bars": 1,
+        "non_overlapping_observations": True,
+        "body_fraction_definition": (
+            "abs(close - open) / (high - low)"
+        ),
+        "body_fraction_boundaries": (
+            0.2375,
+            0.4557,
+            0.6667,
+        ),
+        "body_boundary_source": "2025 research sample",
+        "controlled_for_current_bar_range": True,
+        "range_boundaries_points": (
+            41.0,
+            61.0,
+            92.0,
+        ),
+        "range_boundary_source": (
+            "Frozen existing one-bar range persistence boundaries"
+        ),
+        "controlled_average_next_range_points": {
+            "2025": {
+                "range_q1": (45.06, 42.69, 43.51, 40.44),
+                "range_q2": (65.54, 63.04, 59.16, 53.10),
+                "range_q3": (86.55, 77.39, 76.69, 73.40),
+                "range_q4": (134.11, 124.28, 123.04, 111.84),
+            },
+            "2026-01 through 2026-08": {
+                "range_q1": (39.52, 36.65, 36.38, 32.60),
+                "range_q2": (55.62, 54.44, 51.97, 46.67),
+                "range_q3": (73.79, 75.93, 69.70, 62.49),
+                "range_q4": (113.26, 100.96, 97.88, 99.32),
+            },
+        },
+        "controlled_median_next_range_points": {
+            "2025": {
+                "range_q1": (39.0, 38.0, 38.0, 36.0),
+                "range_q2": (57.0, 56.0, 53.0, 47.0),
+                "range_q3": (77.0, 69.0, 69.0, 64.0),
+                "range_q4": (112.0, 106.0, 102.0, 94.0),
+            },
+            "2026-01 through 2026-08": {
+                "range_q1": (35.0, 33.0, 32.0, 29.0),
+                "range_q2": (50.0, 50.0, 46.0, 40.0),
+                "range_q3": (65.0, 67.0, 61.0, 56.0),
+                "range_q4": (99.0, 90.0, 85.0, 88.5),
+            },
+        },
+        "controlled_relationship": (
+            "Within every frozen current-bar range quartile, the "
+            "lowest body-fraction quartile had a larger average "
+            "next-bar range than the highest body-fraction quartile "
+            "in both validation periods. The broad inverse relationship "
+            "was replicated, with minor adjacent-quartile irregularities."
+        ),
+        "validation_periods": (
+            "2025",
+            "2026-01 through 2026-08",
+        ),
+        "research_conclusion": (
+            "Preserve as a replicated incremental short-horizon "
+            "volatility feature conditional on current-bar range. "
+            "It predicts movement magnitude, not price direction."
+        ),
+        "status": "REPLICATED_RESEARCH_FINDING",
+        "directional_signal": False,
+        "promote_to_trading": False,
+    },
     "eurusd_m15_volatility_acceleration": {
         "name": "EURUSD M15 Volatility Acceleration",
         "description": (
