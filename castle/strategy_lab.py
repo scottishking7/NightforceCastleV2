@@ -219,6 +219,81 @@ RESEARCH_FINDINGS = {
         "directional_signal": False,
         "promote_to_trading": False,
     },
+    "eurusd_m15_volatility_acceleration": {
+        "name": "EURUSD M15 Volatility Acceleration",
+        "description": (
+            "The ratio of average high-low range over the most recent "
+            "5 completed M15 bars to the preceding 15 completed bars "
+            "was associated with the magnitude of the subsequent "
+            "5-bar price move in both the 2025 and 2026 research "
+            "samples. Higher volatility acceleration generally "
+            "preceded larger absolute price movement. The relationship "
+            "remained broadly ordered after controlling for the "
+            "existing 20-bar absolute-volatility regime."
+        ),
+        "symbol": "EURUSD",
+        "timeframe": "M15",
+        "point_size": 0.00001,
+        "total_lookback_bars": 20,
+        "recent_bars": 5,
+        "preceding_bars": 15,
+        "forward_measurement_bars": 5,
+        "non_overlapping_forward_windows": True,
+        "acceleration_boundaries": (
+            0.7314,
+            0.9495,
+            1.2736,
+        ),
+        "boundary_source": "2025 research sample",
+        "average_future_absolute_points": {
+            "2025": (
+                68.44,
+                79.92,
+                88.05,
+                104.64,
+            ),
+            "2026-01 through 2026-08": (
+                57.28,
+                63.56,
+                68.95,
+                77.44,
+            ),
+        },
+        "median_future_absolute_points": {
+            "2025": (
+                47.0,
+                54.0,
+                60.0,
+                74.0,
+            ),
+            "2026-01 through 2026-08": (
+                34.0,
+                44.0,
+                50.0,
+                53.0,
+            ),
+        },
+        "controlled_for_20_bar_volatility": True,
+        "controlled_relationship": (
+            "Within each frozen 20-bar volatility quartile, higher "
+            "acceleration was broadly associated with larger future "
+            "absolute movement in both validation periods. Minor "
+            "adjacent-quartile irregularities did not alter the broad "
+            "Q1-to-Q4 relationship."
+        ),
+        "validation_periods": (
+            "2025",
+            "2026-01 through 2026-08",
+        ),
+        "research_conclusion": (
+            "Preserve as a replicated incremental volatility feature. "
+            "It describes volatility magnitude and acceleration, not "
+            "future price direction."
+        ),
+        "status": "REPLICATED_RESEARCH_FINDING",
+        "directional_signal": False,
+        "promote_to_trading": False,
+    },
     "eurusd_m15_utc_time_blocks": {
         "name": "EURUSD M15 UTC Time Blocks",
         "description": (
