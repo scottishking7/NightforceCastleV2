@@ -25,6 +25,37 @@ STRATEGIES = {
     },
 }
 
+RESEARCH_FINDINGS = {
+    "eurusd_m15_volatility_regimes": {
+        "name": "EURUSD M15 Volatility Regimes",
+        "description": (
+            "Recent 20-bar average high-low volatility was associated "
+            "with the magnitude of the subsequent 5-bar price move in "
+            "both 2025 and 2026 research samples. The relationship "
+            "replicated with non-overlapping forward observations but "
+            "did not provide a reliable directional signal."
+        ),
+        "symbol": "EURUSD",
+        "timeframe": "M15",
+        "volatility_lookback_bars": 20,
+        "forward_measurement_bars": 5,
+        "point_size": 0.00001,
+        "regime_boundaries_points": (
+            50.05,
+            67.65,
+            90.75,
+        ),
+        "boundary_source": "2025 research sample",
+        "validation_periods": (
+            "2025",
+            "2026-01 through 2026-08",
+        ),
+        "status": "REPLICATED_RESEARCH_FINDING",
+        "directional_signal": False,
+    },
+}
+
+
 
 def get_strategy(strategy_id):
     """Return a Strategy Lab definition by its identifier."""
