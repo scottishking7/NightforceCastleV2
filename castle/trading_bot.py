@@ -185,6 +185,11 @@ def build_demo_order_preflight(
     if not allowed:
         raise ValueError(message)
 
+    allowed, message = require_no_open_castle_position(symbol)
+
+    if not allowed:
+        raise ValueError(message)
+
     if order_type not in (
         mt5.ORDER_TYPE_BUY,
         mt5.ORDER_TYPE_SELL,
