@@ -25,6 +25,75 @@ def require_demo_account():
     return True, "Demo account verified."
 
 
+def calculate_position_size(
+    symbol,
+    order_type,
+    entry_price,
+    stop_price,
+    risk_percent=DEFAULT_RISK_PERCENT,
+    max_lot=DEFAULT_MAX_LOT,
+):
+
+    account = mt5.account_info()
+    symbol_info = mt5.symbol_info(symbol)
+
+    if account is None:
+        raise ValueError("Could not retrieve MT5 account information.")
+
+    if symbol_info is None:
+        raise ValueError(f"Could not retrieve symbol information: {symbol}")
+
+    if risk_percent <= 0:
+        raise ValueError("Risk percent must be greater than zero.")
+
+    if max_lot <= 0:
+        raise ValueError("Maximum lot size must be greater than zero.")
+
+    one_lot_result = mt5.order_calc_profit(
+        order_type,
+        symbol,
+        1.0,
+        entry_price,
+        stop_price,
+    )
+
+    if one_lot_result is None:
+        raise ValueError(
+            f"Could not calculate stop-loss risk: {mt5.last_error()}"
+        )
+
+    one_lot_loss = abs(one_lot_result)
+
+    if one_lot_loss <= 0:
+        raise ValueError("Stop-loss risk must be greater than zero.")
+
+    risk_budget = account.balance * risk_percent / 100
+
+    theoretical_lots = risk_budget / one_lot_loss
+
+    capped_lots = min(
+        theoretical_lots,
+        max_lot,
+        symbol_info.volume_max,
+    )
+
+    volume_step = symbol_info.volume_step
+
+    if volume_step <= 0:
+        raise ValueError("Invalid MT5 volume step.")
+
+    stepped_lots = int(
+        (capped_lots + 1e-12) / volume_step
+    ) * volume_step
+
+    stepped_lots = round(stepped_lots, 8)
+
+    if stepped_lots < symbol_info.volume_min:
+        return 0.0
+
+    return stepped_lots
+
+
 def trading_bot():
 
     while True:
