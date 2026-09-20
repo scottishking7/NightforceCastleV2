@@ -88,6 +88,35 @@ def require_no_open_castle_position(symbol=DEFAULT_SYMBOL):
     return True, f"No open Castle position found for {symbol}."
 
 
+def get_open_castle_position(symbol=DEFAULT_SYMBOL):
+
+    positions = mt5.positions_get(symbol=symbol)
+
+    if positions is None:
+        raise ValueError(
+            f"Could not retrieve open positions for {symbol}."
+        )
+
+    castle_positions = [
+        position
+        for position in positions
+        if position.magic == CASTLE_MAGIC_NUMBER
+    ]
+
+    if not castle_positions:
+        raise ValueError(
+            f"No open Castle position found for {symbol}."
+        )
+
+    if len(castle_positions) != 1:
+        raise ValueError(
+            f"Expected exactly one Castle position for {symbol}; "
+            f"found {len(castle_positions)}."
+        )
+
+    return castle_positions[0]
+
+
 def calculate_position_size(
     symbol,
     order_type,
