@@ -94,6 +94,108 @@ def calculate_position_size(
     return stepped_lots
 
 
+def build_demo_order_preflight(
+    symbol,
+    order_type,
+    stop_loss_points=DEFAULT_STOP_LOSS_POINTS,
+):
+
+    allowed, message = require_demo_account()
+
+    if not allowed:
+        raise ValueError(message)
+
+    if order_type not in (
+        mt5.ORDER_TYPE_BUY,
+        mt5.ORDER_TYPE_SELL,
+    ):
+        raise ValueError("Only BUY and SELL market orders are supported.")
+
+    if stop_loss_points <= 0:
+        raise ValueError("Stop-loss points must be greater than zero.")
+
+    symbol_info = mt5.symbol_info(symbol)
+
+    if symbol_info is None:
+        raise ValueError(
+            f"Could not retrieve symbol information: {symbol}"
+        )
+
+    if not symbol_info.visible:
+        if not mt5.symbol_select(symbol, True):
+            raise ValueError(
+                f"Could not select symbol: {symbol}"
+            )
+
+    tick = mt5.symbol_info_tick(symbol)
+
+    if tick is None:
+        raise ValueError(
+            f"Could not retrieve market price: {symbol}"
+        )
+
+    if order_type == mt5.ORDER_TYPE_BUY:
+        entry_price = tick.ask
+        stop_price = (
+            entry_price
+            - stop_loss_points * symbol_info.point
+        )
+        direction = "BUY"
+
+    else:
+        entry_price = tick.bid
+        stop_price = (
+            entry_price
+            + stop_loss_points * symbol_info.point
+        )
+        direction = "SELL"
+
+    volume = calculate_position_size(
+        symbol,
+        order_type,
+        entry_price,
+        stop_price,
+    )
+
+    if volume <= 0:
+        raise ValueError(
+            "Calculated position size is below the tradable minimum."
+        )
+
+    request = {
+        "action": mt5.TRADE_ACTION_DEAL,
+        "symbol": symbol,
+        "volume": volume,
+        "type": order_type,
+        "price": entry_price,
+        "sl": stop_price,
+        "deviation": 20,
+        "magic": 26092026,
+        "comment": "Nightforce demo preflight",
+        "type_time": mt5.ORDER_TIME_GTC,
+        "type_filling": mt5.ORDER_FILLING_FOK,
+    }
+
+    check_result = mt5.order_check(request)
+
+    if check_result is None:
+        raise ValueError(
+            f"MT5 order check failed: {mt5.last_error()}"
+        )
+
+    if check_result.retcode != 0:
+        raise ValueError(
+            "MT5 order check rejected request: "
+            f"{check_result.retcode} {check_result.comment}"
+        )
+
+    return {
+        "direction": direction,
+        "request": request,
+        "check_result": check_result,
+    }
+
+
 def trading_bot():
 
     while True:
