@@ -392,6 +392,67 @@ RESEARCH_FINDINGS = {
             "validation periods after simultaneous control for the "
             "frozen 20-bar volatility regime and current-bar range."
         ),
+        "triple_control_for_volatility_range_and_acceleration": True,
+        "acceleration_boundaries": (
+            0.7314,
+            0.9495,
+            1.2736,
+        ),
+        "acceleration_boundary_source": (
+            "Frozen existing volatility acceleration boundaries"
+        ),
+        "triple_control_method": (
+            "For each validation period separately, observations were "
+            "assigned to frozen 20-bar-volatility, current-bar-range, "
+            "and volatility-acceleration quartiles. Next-bar range was "
+            "residualized against the mean next-bar range of its exact "
+            "volatility-by-range-by-acceleration cell, then residuals "
+            "were grouped by the frozen body-fraction quartiles. Cell "
+            "baselines were estimated within each validation period, "
+            "so this is a replicated conditional association rather "
+            "than an out-of-sample prediction model."
+        ),
+        "triple_control_populated_cells": {
+            "2025": 63,
+            "2026-01 through 2026-08": 62,
+        },
+        "triple_control_average_residual_points": {
+            "2025": (
+                2.73,
+                2.40,
+                -2.28,
+                -2.83,
+            ),
+            "2026-01 through 2026-08": (
+                2.74,
+                0.40,
+                -0.55,
+                -3.03,
+            ),
+        },
+        "triple_control_median_residual_points": {
+            "2025": (
+                -5.08,
+                -4.96,
+                -8.63,
+                -10.63,
+            ),
+            "2026-01 through 2026-08": (
+                -4.35,
+                -6.39,
+                -6.54,
+                -10.07,
+            ),
+        },
+        "triple_control_relationship": (
+            "The inverse body-fraction relationship remained after "
+            "simultaneous control for frozen 20-bar volatility, "
+            "current-bar range, and volatility acceleration. Average "
+            "residual next-bar range decreased across body-fraction "
+            "quartiles in both periods, with 2026 fully monotonic and "
+            "2025 showing the same broad Q1-to-Q4 structure. Median "
+            "residuals were also broadly supportive."
+        ),
         "validation_periods": (
             "2025",
             "2026-01 through 2026-08",
@@ -399,9 +460,10 @@ RESEARCH_FINDINGS = {
         "research_conclusion": (
             "Preserve as a replicated incremental short-horizon "
             "volatility feature. The inverse body-fraction relationship "
-            "survived simultaneous control for current-bar range and "
-            "the broader 20-bar volatility regime. It predicts movement "
-            "magnitude, not price direction."
+            "survived simultaneous control for current-bar range, the "
+            "broader 20-bar volatility regime, and volatility "
+            "acceleration. It predicts movement magnitude, not price "
+            "direction."
         ),
         "status": "REPLICATED_RESEARCH_FINDING",
         "directional_signal": False,
