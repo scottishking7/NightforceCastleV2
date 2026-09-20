@@ -12,6 +12,17 @@ DEFAULT_STOP_LOSS_POINTS = 200
 FIRST_DEMO_MAX_LOT = 0.01
 MAX_EXECUTION_TICK_AGE_SECONDS = 60
 CASTLE_MAGIC_NUMBER = 26092026
+DEMO_EXECUTION_ARM_TOKEN = "ARM_DEMO_EXECUTION"
+
+
+def require_demo_execution_armed(arm_token):
+
+    if arm_token != DEMO_EXECUTION_ARM_TOKEN:
+        raise ValueError(
+            "Execution blocked: demo execution is not explicitly armed."
+        )
+
+    return True
 
 
 def require_demo_account():
