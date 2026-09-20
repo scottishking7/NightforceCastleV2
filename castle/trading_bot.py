@@ -154,7 +154,7 @@ def build_demo_order_preflight(
     stop_loss_points=DEFAULT_STOP_LOSS_POINTS,
 ):
 
-    allowed, message = require_demo_account()
+    allowed, message = require_demo_execution_environment(symbol)
 
     if not allowed:
         raise ValueError(message)
