@@ -616,6 +616,68 @@ RESEARCH_FINDINGS = {
             "weighted-average and median bin differences in both "
             "periods."
         ),
+        "body_fraction_diagnostic": {
+            "2025": {
+                "inside_average": 0.4016,
+                "inside_median": 0.3810,
+                "outside_average": 0.4572,
+                "outside_median": 0.4675,
+            },
+            "2026-01 through 2026-08": {
+                "inside_average": 0.3907,
+                "inside_median": 0.3614,
+                "outside_average": 0.4272,
+                "outside_median": 0.4356,
+            },
+        },
+        "dual_control_for_range_and_body_fraction": True,
+        "body_fraction_boundaries": (
+            0.2375,
+            0.4557,
+            0.6667,
+        ),
+        "body_fraction_boundary_source": (
+            "Frozen existing candle-body-fraction boundaries"
+        ),
+        "dual_control_method": (
+            "Inside and outside observations were compared within exact "
+            "cells formed by fixed 10-point current-range bins and the "
+            "four frozen candle-body-fraction quartiles. Only cells "
+            "containing both structures were retained. Each cell's "
+            "difference was the mean next-bar range after inside bars "
+            "minus the mean next-bar range after outside bars. The "
+            "aggregate difference was weighted by the smaller inside/"
+            "outside count in each matched cell."
+        ),
+        "dual_control_results": {
+            "2025": {
+                "matched_cells": 82,
+                "matched_weight": 990,
+                "inside_higher_cells": 65,
+                "outside_higher_cells": 17,
+                "weighted_average_difference_points": 22.08,
+                "median_cell_difference_points": 17.72,
+            },
+            "2026-01 through 2026-08": {
+                "matched_cells": 62,
+                "matched_weight": 595,
+                "inside_higher_cells": 46,
+                "outside_higher_cells": 16,
+                "weighted_average_difference_points": 14.46,
+                "median_cell_difference_points": 11.58,
+            },
+        },
+        "dual_control_relationship": (
+            "Inside bars had lower body fractions than outside bars in "
+            "both periods, making body fraction a plausible confounder. "
+            "However, the inside-bar next-range advantage remained after "
+            "simultaneously matching on current range and frozen body-"
+            "fraction quartile. The weighted difference was +22.08 "
+            "points across 82 matched cells in 2025 and +14.46 points "
+            "across 62 matched cells in 2026. Inside bars had the larger "
+            "mean next-bar range in 65 of 82 and 46 of 62 matched cells, "
+            "respectively."
+        ),
         "validation_periods": (
             "2025",
             "2026-01 through 2026-08",
@@ -623,10 +685,14 @@ RESEARCH_FINDINGS = {
         "research_conclusion": (
             "Preserve as a replicated incremental short-horizon "
             "volatility-structure finding. The inside-versus-outside "
-            "relationship survived substantially finer current-range "
-            "matching in both validation periods. It describes future "
-            "movement magnitude, not price direction, and has not been "
-            "tested as an executable trading strategy."
+            "relationship survived fine current-range matching and "
+            "simultaneous control for frozen candle-body fraction in "
+            "both validation periods. The dual-control effect remained "
+            "similar in magnitude to the range-only matched result, "
+            "supporting information beyond simple range persistence and "
+            "body fraction. It describes future movement magnitude, not "
+            "price direction, and has not been tested as an executable "
+            "trading strategy."
         ),
         "status": "REPLICATED_RESEARCH_FINDING",
         "directional_signal": False,
