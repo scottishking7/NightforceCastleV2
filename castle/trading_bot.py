@@ -49,6 +49,24 @@ def calculate_position_size(
     if max_lot <= 0:
         raise ValueError("Maximum lot size must be greater than zero.")
 
+    if order_type not in (
+        mt5.ORDER_TYPE_BUY,
+        mt5.ORDER_TYPE_SELL,
+    ):
+        raise ValueError("Only BUY and SELL market orders are supported.")
+
+    if order_type == mt5.ORDER_TYPE_BUY:
+        if stop_price >= entry_price:
+            raise ValueError(
+                "BUY stop-loss must be below the entry price."
+            )
+
+    if order_type == mt5.ORDER_TYPE_SELL:
+        if stop_price <= entry_price:
+            raise ValueError(
+                "SELL stop-loss must be above the entry price."
+            )
+
     one_lot_result = mt5.order_calc_profit(
         order_type,
         symbol,
