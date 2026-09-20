@@ -9,6 +9,22 @@ DEFAULT_MAX_LOT = 0.10
 DEFAULT_STOP_LOSS_POINTS = 200
 
 
+def require_demo_account():
+
+    account = mt5.account_info()
+
+    if account is None:
+        return False, "Could not retrieve MT5 account information."
+
+    if account.trade_mode != mt5.ACCOUNT_TRADE_MODE_DEMO:
+        return (
+            False,
+            "Execution blocked: MT5 account is not a demo account.",
+        )
+
+    return True, "Demo account verified."
+
+
 def trading_bot():
 
     while True:
