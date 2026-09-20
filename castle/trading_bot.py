@@ -7,6 +7,7 @@ DEFAULT_SYMBOL = "EURUSD"
 DEFAULT_RISK_PERCENT = 1.0
 DEFAULT_MAX_LOT = 0.10
 DEFAULT_STOP_LOSS_POINTS = 200
+FIRST_DEMO_MAX_LOT = 0.01
 CASTLE_MAGIC_NUMBER = 26092026
 
 
@@ -240,6 +241,7 @@ def build_demo_order_preflight(
         order_type,
         entry_price,
         stop_price,
+        max_lot=FIRST_DEMO_MAX_LOT,
     )
 
     if volume <= 0:
