@@ -1,4 +1,6 @@
-﻿import MetaTrader5 as mt5
+﻿import time
+
+import MetaTrader5 as mt5
 from castle.signal_engine import calculate_signal
 
 MT5_PATH = r"C:\Program Files\MetaTrader 5\terminal64.exe"
@@ -8,6 +10,7 @@ DEFAULT_RISK_PERCENT = 1.0
 DEFAULT_MAX_LOT = 0.10
 DEFAULT_STOP_LOSS_POINTS = 200
 FIRST_DEMO_MAX_LOT = 0.01
+MAX_EXECUTION_TICK_AGE_SECONDS = 60
 CASTLE_MAGIC_NUMBER = 26092026
 
 
@@ -115,6 +118,42 @@ def get_open_castle_position(symbol=DEFAULT_SYMBOL):
         )
 
     return castle_positions[0]
+
+
+def require_fresh_market_tick(
+    symbol=DEFAULT_SYMBOL,
+    max_age_seconds=MAX_EXECUTION_TICK_AGE_SECONDS,
+):
+
+    if max_age_seconds <= 0:
+        raise ValueError("Maximum tick age must be greater than zero.")
+
+    tick = mt5.symbol_info_tick(symbol)
+
+    if tick is None:
+        raise ValueError(
+            f"Could not retrieve market price: {symbol}"
+        )
+
+    if tick.time <= 0:
+        raise ValueError(
+            f"Execution blocked: invalid market tick time for {symbol}."
+        )
+
+    tick_age_seconds = time.time() - tick.time
+
+    if tick_age_seconds < -5:
+        raise ValueError(
+            f"Execution blocked: market tick time is in the future for {symbol}."
+        )
+
+    if tick_age_seconds > max_age_seconds:
+        raise ValueError(
+            f"Execution blocked: stale market tick for {symbol} "
+            f"({tick_age_seconds:.1f} seconds old)."
+        )
+
+    return tick
 
 
 def calculate_position_size(
@@ -242,12 +281,7 @@ def build_demo_order_preflight(
                 f"Could not select symbol: {symbol}"
             )
 
-    tick = mt5.symbol_info_tick(symbol)
-
-    if tick is None:
-        raise ValueError(
-            f"Could not retrieve market price: {symbol}"
-        )
+    tick = require_fresh_market_tick(symbol)
 
     if order_type == mt5.ORDER_TYPE_BUY:
         entry_price = tick.ask
@@ -347,12 +381,7 @@ def build_demo_close_preflight(symbol=DEFAULT_SYMBOL):
                 f"Could not select symbol: {symbol}"
             )
 
-    tick = mt5.symbol_info_tick(symbol)
-
-    if tick is None:
-        raise ValueError(
-            f"Could not retrieve market price: {symbol}"
-        )
+    tick = require_fresh_market_tick(symbol)
 
     if close_type == mt5.ORDER_TYPE_SELL:
         close_price = tick.bid
