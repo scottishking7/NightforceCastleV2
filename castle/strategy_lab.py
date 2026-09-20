@@ -469,6 +469,169 @@ RESEARCH_FINDINGS = {
         "directional_signal": False,
         "promote_to_trading": False,
     },
+    "eurusd_m15_inside_outside_range_structure": {
+        "name": "EURUSD M15 Inside vs Outside Range Structure",
+        "description": (
+            "Inside-versus-outside candle range structure contained "
+            "incremental information about the following M15 bar's "
+            "high-low range after controlling for current-bar range. "
+            "Unconditionally, outside bars appeared to precede larger "
+            "next-bar ranges in the 2025 discovery sample, but outside "
+            "bars also had systematically larger current ranges. After "
+            "range control, inside bars generally preceded larger "
+            "next-bar ranges than outside bars in both validation "
+            "periods."
+        ),
+        "symbol": "EURUSD",
+        "timeframe": "M15",
+        "point_size": 0.00001,
+        "forward_measurement_bars": 1,
+        "non_overlapping_observations": True,
+        "inside_definition": (
+            "current high <= previous high and current low >= previous low"
+        ),
+        "outside_definition": (
+            "current high > previous high and current low < previous low"
+        ),
+        "range_boundaries_points": (
+            41.0,
+            61.0,
+            92.0,
+        ),
+        "range_boundary_source": (
+            "Frozen existing one-bar range persistence boundaries"
+        ),
+        "controlled_for_current_bar_range": True,
+        "range_quartile_average_next_range_points": {
+            "2025": {
+                "range_q1": {
+                    "inside": 43.66,
+                    "outside": 36.67,
+                },
+                "range_q2": {
+                    "inside": 70.83,
+                    "outside": 50.50,
+                },
+                "range_q3": {
+                    "inside": 90.09,
+                    "outside": 66.07,
+                },
+                "range_q4": {
+                    "inside": 138.94,
+                    "outside": 123.11,
+                },
+            },
+            "2026-01 through 2026-08": {
+                "range_q1": {
+                    "inside": 41.18,
+                    "outside": 43.29,
+                },
+                "range_q2": {
+                    "inside": 62.85,
+                    "outside": 49.14,
+                },
+                "range_q3": {
+                    "inside": 88.21,
+                    "outside": 67.12,
+                },
+                "range_q4": {
+                    "inside": 121.57,
+                    "outside": 117.53,
+                },
+            },
+        },
+        "range_quartile_median_next_range_points": {
+            "2025": {
+                "range_q1": {
+                    "inside": 39.0,
+                    "outside": 30.0,
+                },
+                "range_q2": {
+                    "inside": 64.0,
+                    "outside": 44.0,
+                },
+                "range_q3": {
+                    "inside": 79.0,
+                    "outside": 59.0,
+                },
+                "range_q4": {
+                    "inside": 118.0,
+                    "outside": 94.0,
+                },
+            },
+            "2026-01 through 2026-08": {
+                "range_q1": {
+                    "inside": 36.0,
+                    "outside": 34.0,
+                },
+                "range_q2": {
+                    "inside": 58.0,
+                    "outside": 45.0,
+                },
+                "range_q3": {
+                    "inside": 79.0,
+                    "outside": 59.0,
+                },
+                "range_q4": {
+                    "inside": 105.0,
+                    "outside": 89.0,
+                },
+            },
+        },
+        "fine_range_matching": True,
+        "fine_range_bin_width_points": 10,
+        "fine_range_matching_method": (
+            "Inside and outside observations were compared within fixed "
+            "10-point current-range bins. Only bins containing both "
+            "structures were retained. Each bin's difference was the "
+            "mean next-bar range after inside bars minus the mean "
+            "next-bar range after outside bars. The aggregate difference "
+            "was weighted by the smaller inside/outside count in each "
+            "matched bin."
+        ),
+        "fine_range_matching_results": {
+            "2025": {
+                "matched_bins": 32,
+                "matched_weight": 1028,
+                "inside_higher_bins": 29,
+                "outside_higher_bins": 3,
+                "weighted_average_difference_points": 22.98,
+                "median_bin_difference_points": 26.0,
+            },
+            "2026-01 through 2026-08": {
+                "matched_bins": 21,
+                "matched_weight": 631,
+                "inside_higher_bins": 19,
+                "outside_higher_bins": 2,
+                "weighted_average_difference_points": 14.43,
+                "median_bin_difference_points": 17.80,
+            },
+        },
+        "controlled_relationship": (
+            "After controlling for current-bar range, inside bars "
+            "generally preceded larger next-bar ranges than outside "
+            "bars in both validation periods. Fine 10-point range "
+            "matching preserved the relationship in 29 of 32 matched "
+            "2025 bins and 19 of 21 matched 2026 bins, with positive "
+            "weighted-average and median bin differences in both "
+            "periods."
+        ),
+        "validation_periods": (
+            "2025",
+            "2026-01 through 2026-08",
+        ),
+        "research_conclusion": (
+            "Preserve as a replicated incremental short-horizon "
+            "volatility-structure finding. The inside-versus-outside "
+            "relationship survived substantially finer current-range "
+            "matching in both validation periods. It describes future "
+            "movement magnitude, not price direction, and has not been "
+            "tested as an executable trading strategy."
+        ),
+        "status": "REPLICATED_RESEARCH_FINDING",
+        "directional_signal": False,
+        "promote_to_trading": False,
+    },
     "eurusd_m15_volatility_acceleration": {
         "name": "EURUSD M15 Volatility Acceleration",
         "description": (
