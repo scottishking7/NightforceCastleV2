@@ -62,6 +62,31 @@ def require_demo_execution_environment(symbol=DEFAULT_SYMBOL):
     return True, "Demo execution environment verified."
 
 
+def require_no_open_castle_position(symbol=DEFAULT_SYMBOL):
+
+    positions = mt5.positions_get(symbol=symbol)
+
+    if positions is None:
+        return (
+            False,
+            f"Execution blocked: could not retrieve open positions for {symbol}.",
+        )
+
+    castle_positions = [
+        position
+        for position in positions
+        if position.magic == CASTLE_MAGIC_NUMBER
+    ]
+
+    if castle_positions:
+        return (
+            False,
+            f"Execution blocked: Castle already has an open {symbol} position.",
+        )
+
+    return True, f"No open Castle position found for {symbol}."
+
+
 def calculate_position_size(
     symbol,
     order_type,
