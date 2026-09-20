@@ -7,6 +7,7 @@ DEFAULT_SYMBOL = "EURUSD"
 DEFAULT_RISK_PERCENT = 1.0
 DEFAULT_MAX_LOT = 0.10
 DEFAULT_STOP_LOSS_POINTS = 200
+CASTLE_MAGIC_NUMBER = 26092026
 
 
 def require_demo_account():
@@ -224,7 +225,7 @@ def build_demo_order_preflight(
         "price": entry_price,
         "sl": stop_price,
         "deviation": 20,
-        "magic": 26092026,
+        "magic": CASTLE_MAGIC_NUMBER,
         "comment": "Nightforce demo preflight",
         "type_time": mt5.ORDER_TIME_GTC,
         "type_filling": mt5.ORDER_FILLING_FOK,
