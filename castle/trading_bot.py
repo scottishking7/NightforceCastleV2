@@ -25,6 +25,42 @@ def require_demo_account():
     return True, "Demo account verified."
 
 
+def require_demo_execution_environment(symbol=DEFAULT_SYMBOL):
+
+    terminal = mt5.terminal_info()
+    account = mt5.account_info()
+    symbol_info = mt5.symbol_info(symbol)
+
+    if terminal is None:
+        return False, "Execution blocked: MT5 terminal information unavailable."
+
+    if account is None:
+        return False, "Execution blocked: MT5 account information unavailable."
+
+    if symbol_info is None:
+        return False, f"Execution blocked: symbol unavailable: {symbol}"
+
+    if not terminal.trade_allowed:
+        return False, "Execution blocked: MT5 Algo Trading is disabled."
+
+    if terminal.tradeapi_disabled:
+        return False, "Execution blocked: MT5 Python trading API is disabled."
+
+    if account.trade_mode != mt5.ACCOUNT_TRADE_MODE_DEMO:
+        return False, "Execution blocked: MT5 account is not a demo account."
+
+    if not account.trade_allowed:
+        return False, "Execution blocked: account trading is not allowed."
+
+    if not account.trade_expert:
+        return False, "Execution blocked: Expert Advisor trading is not allowed."
+
+    if symbol_info.trade_mode != mt5.SYMBOL_TRADE_MODE_FULL:
+        return False, f"Execution blocked: full trading is not enabled for {symbol}."
+
+    return True, "Demo execution environment verified."
+
+
 def calculate_position_size(
     symbol,
     order_type,
