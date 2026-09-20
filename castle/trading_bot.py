@@ -312,6 +312,88 @@ def build_demo_order_preflight(
     }
 
 
+def build_demo_close_preflight(symbol=DEFAULT_SYMBOL):
+
+    allowed, message = require_demo_execution_environment(symbol)
+
+    if not allowed:
+        raise ValueError(message)
+
+    position = get_open_castle_position(symbol)
+
+    if position.type == mt5.POSITION_TYPE_BUY:
+        close_type = mt5.ORDER_TYPE_SELL
+        direction = "SELL"
+
+    elif position.type == mt5.POSITION_TYPE_SELL:
+        close_type = mt5.ORDER_TYPE_BUY
+        direction = "BUY"
+
+    else:
+        raise ValueError(
+            f"Unsupported Castle position type: {position.type}"
+        )
+
+    symbol_info = mt5.symbol_info(symbol)
+
+    if symbol_info is None:
+        raise ValueError(
+            f"Could not retrieve symbol information: {symbol}"
+        )
+
+    if not symbol_info.visible:
+        if not mt5.symbol_select(symbol, True):
+            raise ValueError(
+                f"Could not select symbol: {symbol}"
+            )
+
+    tick = mt5.symbol_info_tick(symbol)
+
+    if tick is None:
+        raise ValueError(
+            f"Could not retrieve market price: {symbol}"
+        )
+
+    if close_type == mt5.ORDER_TYPE_SELL:
+        close_price = tick.bid
+    else:
+        close_price = tick.ask
+
+    request = {
+        "action": mt5.TRADE_ACTION_DEAL,
+        "symbol": symbol,
+        "volume": position.volume,
+        "type": close_type,
+        "position": position.ticket,
+        "price": close_price,
+        "deviation": 20,
+        "magic": CASTLE_MAGIC_NUMBER,
+        "comment": "Nightforce demo close preflight",
+        "type_time": mt5.ORDER_TIME_GTC,
+        "type_filling": mt5.ORDER_FILLING_FOK,
+    }
+
+    check_result = mt5.order_check(request)
+
+    if check_result is None:
+        raise ValueError(
+            f"MT5 close order check failed: {mt5.last_error()}"
+        )
+
+    if check_result.retcode != 0:
+        raise ValueError(
+            "MT5 close order check rejected request: "
+            f"{check_result.retcode} {check_result.comment}"
+        )
+
+    return {
+        "direction": direction,
+        "position": position,
+        "request": request,
+        "check_result": check_result,
+    }
+
+
 def trading_bot():
 
     while True:
