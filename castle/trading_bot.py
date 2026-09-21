@@ -164,6 +164,33 @@ def verify_open_castle_position(
     return position
 
 
+def verify_closed_castle_position(
+    symbol=DEFAULT_SYMBOL,
+):
+
+    positions = mt5.positions_get(symbol=symbol)
+
+    if positions is None:
+        raise ValueError(
+            "Post-close verification failed: "
+            f"could not retrieve open positions for {symbol}."
+        )
+
+    castle_positions = [
+        position
+        for position in positions
+        if position.magic == CASTLE_MAGIC_NUMBER
+    ]
+
+    if castle_positions:
+        raise ValueError(
+            "Post-close verification failed: "
+            f"Castle position still open for {symbol}."
+        )
+
+    return True
+
+
 def require_fresh_market_tick(
     symbol=DEFAULT_SYMBOL,
     max_age_seconds=MAX_EXECUTION_TICK_AGE_SECONDS,
@@ -530,12 +557,17 @@ def execute_demo_close(
             f"{result.retcode} {result.comment}"
         )
 
+    close_verified = verify_closed_castle_position(
+        preflight["request"]["symbol"]
+    )
+
     return {
         "direction": preflight["direction"],
         "position": preflight["position"],
         "request": preflight["request"],
         "check_result": preflight["check_result"],
         "result": result,
+        "close_verified": close_verified,
     }
 
 
