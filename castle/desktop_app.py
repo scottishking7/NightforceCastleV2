@@ -512,7 +512,7 @@ def show_great_hall(root):
         ("\U0001F4DA", "MEMORY VAULT", open_memory_vault),
         ("\U0001F5BC", "IMAGE WORKSHOP", None),
         ("\u2728", "SOCIAL STUDIO", None),
-        ("\U0001F50E", "RESEARCH AGENT", None),
+        ("\U0001F504", "SOLANA ARBITRAGE BOT", open_solana_arbitrage_room),
         ("\U0001F4FB", "MIDNIGHT RADIO", None),
         ("\u2699", "SETTINGS", None),
         ("\U0001F6AA", "EXIT CASTLE", root.destroy)
@@ -2849,6 +2849,111 @@ def open_mt5_room(root=None):
     )
 
     back_button.pack(pady=(22, 8))
+
+
+# ============================================================
+# SOLANA ARBITRAGE BOT
+# ============================================================
+
+def open_solana_arbitrage_room(root=None):
+
+    if root is None:
+        root = tk._default_root
+
+    clear_window(root)
+
+    header = tk.Frame(
+        root,
+        bg=STONE_DARK
+    )
+
+    header.pack(fill="x")
+
+    title = tk.Label(
+        header,
+        text="SOLANA ARBITRAGE BOT",
+        font=("Segoe UI", 28, "bold"),
+        bg=STONE_DARK,
+        fg=WHITE
+    )
+
+    title.pack(pady=(25, 2))
+
+    subtitle = tk.Label(
+        header,
+        text="THE SOLANA TRADING LAB",
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL
+    )
+
+    subtitle.pack()
+
+    room = tk.Frame(
+        root,
+        bg=STONE,
+        highlightbackground=PURPLE_DARK,
+        highlightthickness=3
+    )
+
+    room.pack(
+        padx=45,
+        pady=20,
+        fill="both",
+        expand=True
+    )
+
+    mode = tk.Label(
+        room,
+        text="RESEARCH / SIMULATION MODE",
+        font=("Segoe UI", 14, "bold"),
+        bg=STONE_LIGHT,
+        fg=TEAL
+    )
+
+    mode.pack(pady=(25, 8))
+
+    status = tk.Label(
+        room,
+        text="Wallet execution: DISABLED",
+        font=("Segoe UI", 11),
+        bg=STONE,
+        fg=SILVER
+    )
+
+    status.pack(pady=(0, 22))
+
+    description = tk.Label(
+        room,
+        text=(
+            "Solana arbitrage research environment\n\n"
+            "Market data and quote comparison will be added first.\n"
+            "Fees and slippage will be included before opportunities are accepted.\n"
+            "No wallet keys or blockchain transactions are enabled."
+        ),
+        font=("Segoe UI", 12),
+        bg=STONE,
+        fg=WHITE,
+        justify="center"
+    )
+
+    description.pack(pady=15)
+
+    back_button = tk.Button(
+        room,
+        text="RETURN TO GREAT HALL",
+        command=lambda: show_great_hall(root),
+        font=("Segoe UI", 11, "bold"),
+        bg=STONE_DARK,
+        fg=TEAL,
+        activebackground=PURPLE,
+        activeforeground=WHITE,
+        relief="flat",
+        padx=25,
+        pady=9
+    )
+
+    back_button.pack(pady=(25, 8))
 
 
 # ============================================================
