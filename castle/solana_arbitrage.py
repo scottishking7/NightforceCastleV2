@@ -101,6 +101,106 @@ def calculate_arbitrage_opportunity(
     }
 
 
+def compare_venue_quotes(
+    venue_a_name,
+    venue_a_price_usdc,
+    venue_b_name,
+    venue_b_price_usdc,
+):
+    quotes = {
+        venue_a_name: venue_a_price_usdc,
+        venue_b_name: venue_b_price_usdc,
+    }
+
+    for venue_name, price in quotes.items():
+        if not venue_name or not venue_name.strip():
+            raise ValueError("Venue names cannot be empty.")
+
+        if not math.isfinite(price):
+            raise ValueError(
+                f"{venue_name} price must be a finite number."
+            )
+
+        if price <= 0:
+            raise ValueError(
+                f"{venue_name} price must be greater than zero."
+            )
+
+    if venue_a_name == venue_b_name:
+        raise ValueError("Venue names must be different.")
+
+    if venue_a_price_usdc == venue_b_price_usdc:
+        buy_venue = None
+        sell_venue = None
+        buy_price_usdc = venue_a_price_usdc
+        sell_price_usdc = venue_b_price_usdc
+    else:
+        buy_venue = min(quotes, key=quotes.get)
+        sell_venue = max(quotes, key=quotes.get)
+        buy_price_usdc = quotes[buy_venue]
+        sell_price_usdc = quotes[sell_venue]
+
+    gross_spread_usdc = sell_price_usdc - buy_price_usdc
+    gross_spread_percent = (
+        gross_spread_usdc / buy_price_usdc
+    ) * 100.0
+
+    return {
+        "buy_venue": buy_venue,
+        "buy_price_usdc": buy_price_usdc,
+        "sell_venue": sell_venue,
+        "sell_price_usdc": sell_price_usdc,
+        "gross_spread_usdc": gross_spread_usdc,
+        "gross_spread_percent": gross_spread_percent,
+    }
+
+
+def evaluate_two_venue_opportunity(
+    venue_a_name,
+    venue_a_price_usdc,
+    venue_b_name,
+    venue_b_price_usdc,
+    trade_size_usdc=DEFAULT_TRADE_SIZE_USDC,
+    buy_fee_bps=0,
+    sell_fee_bps=0,
+    slippage_bps=DEFAULT_SLIPPAGE_BPS,
+    transaction_cost_usdc=DEFAULT_TRANSACTION_COST_USDC,
+):
+    route = compare_venue_quotes(
+        venue_a_name=venue_a_name,
+        venue_a_price_usdc=venue_a_price_usdc,
+        venue_b_name=venue_b_name,
+        venue_b_price_usdc=venue_b_price_usdc,
+    )
+
+    if route["buy_venue"] is None:
+        return {
+            **route,
+            "trade_size_usdc": trade_size_usdc,
+            "net_profit_usdc": None,
+            "meets_minimum_profit": False,
+            "opportunity": False,
+        }
+
+    calculation = calculate_arbitrage_opportunity(
+        trade_size_usdc=trade_size_usdc,
+        buy_price_usdc=route["buy_price_usdc"],
+        sell_price_usdc=route["sell_price_usdc"],
+        buy_fee_bps=buy_fee_bps,
+        sell_fee_bps=sell_fee_bps,
+        slippage_bps=slippage_bps,
+        transaction_cost_usdc=transaction_cost_usdc,
+    )
+
+    return {
+        **route,
+        "trade_size_usdc": trade_size_usdc,
+        "net_profit_usdc": calculation["net_profit_usdc"],
+        "meets_minimum_profit": calculation["meets_minimum_profit"],
+        "opportunity": calculation["meets_minimum_profit"],
+    }
+
+
 def engine_status():
     return {
         "simulation_mode": SIMULATION_MODE,
