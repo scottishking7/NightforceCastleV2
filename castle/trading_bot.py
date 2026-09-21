@@ -434,6 +434,42 @@ def build_demo_close_preflight(symbol=DEFAULT_SYMBOL):
     }
 
 
+def execute_demo_order(
+    symbol,
+    order_type,
+    arm_token,
+    stop_loss_points=DEFAULT_STOP_LOSS_POINTS,
+):
+
+    require_demo_execution_armed(arm_token)
+
+    preflight = build_demo_order_preflight(
+        symbol,
+        order_type,
+        stop_loss_points,
+    )
+
+    result = mt5.order_send(preflight["request"])
+
+    if result is None:
+        raise ValueError(
+            f"MT5 order send failed: {mt5.last_error()}"
+        )
+
+    if result.retcode != mt5.TRADE_RETCODE_DONE:
+        raise ValueError(
+            "MT5 demo order was not fully executed: "
+            f"{result.retcode} {result.comment}"
+        )
+
+    return {
+        "direction": preflight["direction"],
+        "request": preflight["request"],
+        "check_result": preflight["check_result"],
+        "result": result,
+    }
+
+
 def trading_bot():
 
     while True:
