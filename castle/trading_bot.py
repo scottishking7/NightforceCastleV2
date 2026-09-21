@@ -131,6 +131,39 @@ def get_open_castle_position(symbol=DEFAULT_SYMBOL):
     return castle_positions[0]
 
 
+def verify_open_castle_position(
+    request,
+):
+
+    position = get_open_castle_position(request["symbol"])
+
+    if position.symbol != request["symbol"]:
+        raise ValueError(
+            "Post-execution verification failed: "
+            "position symbol does not match request."
+        )
+
+    if position.magic != CASTLE_MAGIC_NUMBER:
+        raise ValueError(
+            "Post-execution verification failed: "
+            "position magic number does not match Castle."
+        )
+
+    if position.type != request["type"]:
+        raise ValueError(
+            "Post-execution verification failed: "
+            "position direction does not match request."
+        )
+
+    if abs(position.volume - request["volume"]) > 1e-8:
+        raise ValueError(
+            "Post-execution verification failed: "
+            "position volume does not match request."
+        )
+
+    return position
+
+
 def require_fresh_market_tick(
     symbol=DEFAULT_SYMBOL,
     max_age_seconds=MAX_EXECUTION_TICK_AGE_SECONDS,
@@ -462,11 +495,16 @@ def execute_demo_order(
             f"{result.retcode} {result.comment}"
         )
 
+    position = verify_open_castle_position(
+        preflight["request"]
+    )
+
     return {
         "direction": preflight["direction"],
         "request": preflight["request"],
         "check_result": preflight["check_result"],
         "result": result,
+        "position": position,
     }
 
 
