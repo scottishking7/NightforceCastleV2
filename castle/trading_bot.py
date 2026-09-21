@@ -543,7 +543,7 @@ def build_demo_close_preflight(symbol=DEFAULT_SYMBOL):
         "price": close_price,
         "deviation": 20,
         "magic": CASTLE_MAGIC_NUMBER,
-        "comment": "Nightforce demo close preflight",
+        "comment": "Nightforce demo close",
         "type_time": mt5.ORDER_TIME_GTC,
         "type_filling": mt5.ORDER_FILLING_FOK,
     }
