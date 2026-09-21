@@ -11,6 +11,8 @@ DEFAULT_MAX_LOT = 0.10
 DEFAULT_STOP_LOSS_POINTS = 200
 FIRST_DEMO_MAX_LOT = 0.01
 MAX_EXECUTION_TICK_AGE_SECONDS = 60
+POSITION_VERIFICATION_ATTEMPTS = 5
+POSITION_VERIFICATION_DELAY_SECONDS = 0.2
 CASTLE_MAGIC_NUMBER = 26092026
 DEMO_EXECUTION_ARM_TOKEN = "ARM_DEMO_EXECUTION"
 
@@ -129,6 +131,38 @@ def get_open_castle_position(symbol=DEFAULT_SYMBOL):
         )
 
     return castle_positions[0]
+
+
+def retry_position_verification(
+    verification_function,
+    *args,
+    attempts=POSITION_VERIFICATION_ATTEMPTS,
+    delay_seconds=POSITION_VERIFICATION_DELAY_SECONDS,
+):
+
+    if attempts <= 0:
+        raise ValueError(
+            "Position verification attempts must be greater than zero."
+        )
+
+    if delay_seconds < 0:
+        raise ValueError(
+            "Position verification delay cannot be negative."
+        )
+
+    last_error = None
+
+    for attempt in range(attempts):
+        try:
+            return verification_function(*args)
+
+        except ValueError as exc:
+            last_error = exc
+
+            if attempt < attempts - 1:
+                time.sleep(delay_seconds)
+
+    raise last_error
 
 
 def verify_open_castle_position(
@@ -522,8 +556,9 @@ def execute_demo_order(
             f"{result.retcode} {result.comment}"
         )
 
-    position = verify_open_castle_position(
-        preflight["request"]
+    position = retry_position_verification(
+        verify_open_castle_position,
+        preflight["request"],
     )
 
     return {
@@ -557,8 +592,9 @@ def execute_demo_close(
             f"{result.retcode} {result.comment}"
         )
 
-    close_verified = verify_closed_castle_position(
-        preflight["request"]["symbol"]
+    close_verified = retry_position_verification(
+        verify_closed_castle_position,
+        preflight["request"]["symbol"],
     )
 
     return {
