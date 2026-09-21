@@ -470,6 +470,37 @@ def execute_demo_order(
     }
 
 
+def execute_demo_close(
+    symbol,
+    arm_token,
+):
+
+    require_demo_execution_armed(arm_token)
+
+    preflight = build_demo_close_preflight(symbol)
+
+    result = mt5.order_send(preflight["request"])
+
+    if result is None:
+        raise ValueError(
+            f"MT5 close order send failed: {mt5.last_error()}"
+        )
+
+    if result.retcode != mt5.TRADE_RETCODE_DONE:
+        raise ValueError(
+            "MT5 demo close was not fully executed: "
+            f"{result.retcode} {result.comment}"
+        )
+
+    return {
+        "direction": preflight["direction"],
+        "position": preflight["position"],
+        "request": preflight["request"],
+        "check_result": preflight["check_result"],
+        "result": result,
+    }
+
+
 def trading_bot():
 
     while True:
