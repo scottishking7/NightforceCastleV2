@@ -22,14 +22,14 @@ DEFAULT_TRANSACTION_COST_USDC = 0.01
 DEFAULT_MIN_NET_PROFIT_USDC = 0.10
 
 
-def calculate_arbitrage_opportunity(
+def validate_arbitrage_inputs(
     trade_size_usdc,
     buy_price_usdc,
     sell_price_usdc,
-    buy_fee_bps=0,
-    sell_fee_bps=0,
-    slippage_bps=DEFAULT_SLIPPAGE_BPS,
-    transaction_cost_usdc=DEFAULT_TRANSACTION_COST_USDC,
+    buy_fee_bps,
+    sell_fee_bps,
+    slippage_bps,
+    transaction_cost_usdc,
 ):
     values = {
         "trade_size_usdc": trade_size_usdc,
@@ -56,6 +56,26 @@ def calculate_arbitrage_opportunity(
 
     if sell_price_usdc == 0:
         raise ValueError("sell_price_usdc must be greater than zero.")
+
+
+def calculate_arbitrage_opportunity(
+    trade_size_usdc,
+    buy_price_usdc,
+    sell_price_usdc,
+    buy_fee_bps=0,
+    sell_fee_bps=0,
+    slippage_bps=DEFAULT_SLIPPAGE_BPS,
+    transaction_cost_usdc=DEFAULT_TRANSACTION_COST_USDC,
+):
+    validate_arbitrage_inputs(
+        trade_size_usdc=trade_size_usdc,
+        buy_price_usdc=buy_price_usdc,
+        sell_price_usdc=sell_price_usdc,
+        buy_fee_bps=buy_fee_bps,
+        sell_fee_bps=sell_fee_bps,
+        slippage_bps=slippage_bps,
+        transaction_cost_usdc=transaction_cost_usdc,
+    )
 
     buy_fee_rate = buy_fee_bps / 10000.0
     sell_fee_rate = sell_fee_bps / 10000.0
@@ -171,6 +191,16 @@ def evaluate_two_venue_opportunity(
         venue_a_price_usdc=venue_a_price_usdc,
         venue_b_name=venue_b_name,
         venue_b_price_usdc=venue_b_price_usdc,
+    )
+
+    validate_arbitrage_inputs(
+        trade_size_usdc=trade_size_usdc,
+        buy_price_usdc=route["buy_price_usdc"],
+        sell_price_usdc=route["sell_price_usdc"],
+        buy_fee_bps=buy_fee_bps,
+        sell_fee_bps=sell_fee_bps,
+        slippage_bps=slippage_bps,
+        transaction_cost_usdc=transaction_cost_usdc,
     )
 
     if route["buy_venue"] is None:
