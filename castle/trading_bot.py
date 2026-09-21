@@ -10,7 +10,9 @@ DEFAULT_RISK_PERCENT = 1.0
 DEFAULT_MAX_LOT = 0.10
 DEFAULT_STOP_LOSS_POINTS = 200
 FIRST_DEMO_MAX_LOT = 0.01
-MAX_EXECUTION_TICK_AGE_SECONDS = 60
+TICK_ACTIVITY_TIMEOUT_SECONDS = 5.0
+TICK_ACTIVITY_POLL_SECONDS = 0.5
+MAX_TICK_ADVANCE_SECONDS = 10.0
 POSITION_VERIFICATION_ATTEMPTS = 5
 POSITION_VERIFICATION_DELAY_SECONDS = 0.2
 CASTLE_MAGIC_NUMBER = 26092026
@@ -227,38 +229,77 @@ def verify_closed_castle_position(
 
 def require_fresh_market_tick(
     symbol=DEFAULT_SYMBOL,
-    max_age_seconds=MAX_EXECUTION_TICK_AGE_SECONDS,
+    timeout_seconds=TICK_ACTIVITY_TIMEOUT_SECONDS,
+    poll_seconds=TICK_ACTIVITY_POLL_SECONDS,
+    max_advance_seconds=MAX_TICK_ADVANCE_SECONDS,
 ):
 
-    if max_age_seconds <= 0:
-        raise ValueError("Maximum tick age must be greater than zero.")
+    if timeout_seconds <= 0:
+        raise ValueError(
+            "Tick activity timeout must be greater than zero."
+        )
 
-    tick = mt5.symbol_info_tick(symbol)
+    if poll_seconds <= 0:
+        raise ValueError(
+            "Tick activity poll interval must be greater than zero."
+        )
 
-    if tick is None:
+    if max_advance_seconds <= 0:
+        raise ValueError(
+            "Maximum tick advance must be greater than zero."
+        )
+
+    first_tick = mt5.symbol_info_tick(symbol)
+
+    if first_tick is None:
         raise ValueError(
             f"Could not retrieve market price: {symbol}"
         )
 
-    if tick.time <= 0:
+    if first_tick.time_msc <= 0:
         raise ValueError(
             f"Execution blocked: invalid market tick time for {symbol}."
         )
 
-    tick_age_seconds = time.time() - tick.time
+    deadline = time.monotonic() + timeout_seconds
 
-    if tick_age_seconds < -5:
-        raise ValueError(
-            f"Execution blocked: market tick time is in the future for {symbol}."
-        )
+    while time.monotonic() < deadline:
+        time.sleep(poll_seconds)
 
-    if tick_age_seconds > max_age_seconds:
-        raise ValueError(
-            f"Execution blocked: stale market tick for {symbol} "
-            f"({tick_age_seconds:.1f} seconds old)."
-        )
+        updated_tick = mt5.symbol_info_tick(symbol)
 
-    return tick
+        if updated_tick is None:
+            continue
+
+        if updated_tick.time_msc <= 0:
+            raise ValueError(
+                f"Execution blocked: invalid updated market tick time for {symbol}."
+            )
+
+        tick_advance_seconds = (
+            updated_tick.time_msc - first_tick.time_msc
+        ) / 1000.0
+
+        if tick_advance_seconds < 0:
+            raise ValueError(
+                f"Execution blocked: market tick moved backwards for {symbol}."
+            )
+
+        if tick_advance_seconds == 0:
+            continue
+
+        if tick_advance_seconds > max_advance_seconds:
+            raise ValueError(
+                f"Execution blocked: implausible market tick advance for {symbol} "
+                f"({tick_advance_seconds:.1f} seconds)."
+            )
+
+        return updated_tick
+
+    raise ValueError(
+        f"Execution blocked: no fresh market tick detected for {symbol} "
+        f"within {timeout_seconds:.1f} seconds."
+    )
 
 
 def calculate_position_size(
