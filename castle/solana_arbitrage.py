@@ -12,6 +12,7 @@ Phase 1:
 
 import json
 import math
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -24,6 +25,8 @@ DEFAULT_TRADE_SIZE_USDC = 100.0
 DEFAULT_SLIPPAGE_BPS = 50
 DEFAULT_TRANSACTION_COST_USDC = 0.01
 DEFAULT_MIN_NET_PROFIT_USDC = 0.10
+
+MAX_QUOTE_SEPARATION_SECONDS = 2.0
 
 
 def validate_arbitrage_inputs(
@@ -549,6 +552,63 @@ def compare_route_pool_overlap(quote_a, quote_b):
         "pool_ids_b": pool_ids_b,
         "shared_pool_ids": shared_pool_ids,
         "route_overlap": bool(shared_pool_ids),
+    }
+
+
+def fetch_timed_quote(fetch_function, *args, **kwargs):
+    if not callable(fetch_function):
+        raise ValueError("fetch_function must be callable.")
+
+    started_at = time.monotonic()
+    quote = fetch_function(*args, **kwargs)
+    completed_at = time.monotonic()
+
+    if not isinstance(quote, dict):
+        raise RuntimeError(
+            "Timed quote fetch must return a quote dictionary."
+        )
+
+    return {
+        "quote": quote,
+        "started_at": started_at,
+        "captured_at": completed_at,
+        "request_duration_seconds": completed_at - started_at,
+    }
+
+
+def validate_quote_separation(
+    captured_at_a,
+    captured_at_b,
+    max_separation_seconds=MAX_QUOTE_SEPARATION_SECONDS,
+):
+    values = {
+        "captured_at_a": captured_at_a,
+        "captured_at_b": captured_at_b,
+        "max_separation_seconds": max_separation_seconds,
+    }
+
+    for name, value in values.items():
+        if (
+            not isinstance(value, (int, float))
+            or isinstance(value, bool)
+            or not math.isfinite(value)
+        ):
+            raise ValueError(f"{name} must be a finite number.")
+
+    if captured_at_a < 0 or captured_at_b < 0:
+        raise ValueError("quote capture times cannot be negative.")
+
+    if max_separation_seconds <= 0:
+        raise ValueError(
+            "max_separation_seconds must be greater than zero."
+        )
+
+    separation_seconds = abs(captured_at_b - captured_at_a)
+
+    return {
+        "separation_seconds": separation_seconds,
+        "max_separation_seconds": max_separation_seconds,
+        "fresh_enough": separation_seconds <= max_separation_seconds,
     }
 
 
