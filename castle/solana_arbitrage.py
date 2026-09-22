@@ -612,6 +612,76 @@ def validate_quote_separation(
     }
 
 
+def compare_quote_outputs(quote_a, quote_b):
+    if not isinstance(quote_a, dict) or not isinstance(quote_b, dict):
+        raise ValueError("quotes must be dictionaries.")
+
+    required_fields = (
+        "source",
+        "input_mint",
+        "output_mint",
+        "in_amount",
+        "out_amount",
+    )
+
+    for quote in (quote_a, quote_b):
+        for field in required_fields:
+            if field not in quote:
+                raise ValueError(
+                    f"quote is missing required field: {field}"
+                )
+
+    if quote_a["input_mint"] != quote_b["input_mint"]:
+        raise ValueError("quote input mints do not match.")
+
+    if quote_a["output_mint"] != quote_b["output_mint"]:
+        raise ValueError("quote output mints do not match.")
+
+    if quote_a["in_amount"] != quote_b["in_amount"]:
+        raise ValueError("quote input amounts do not match.")
+
+    out_amount_a = quote_a["out_amount"]
+    out_amount_b = quote_b["out_amount"]
+
+    for name, value in (
+        ("quote_a out_amount", out_amount_a),
+        ("quote_b out_amount", out_amount_b),
+    ):
+        if (
+            not isinstance(value, int)
+            or isinstance(value, bool)
+            or value <= 0
+        ):
+            raise ValueError(f"{name} must be a positive integer.")
+
+    if out_amount_a >= out_amount_b:
+        better_source = quote_a["source"]
+        better_out_amount = out_amount_a
+        lower_out_amount = out_amount_b
+    else:
+        better_source = quote_b["source"]
+        better_out_amount = out_amount_b
+        lower_out_amount = out_amount_a
+
+    difference_amount = better_out_amount - lower_out_amount
+    difference_percent = (
+        difference_amount / lower_out_amount
+    ) * 100.0
+
+    return {
+        "source_a": quote_a["source"],
+        "source_b": quote_b["source"],
+        "input_mint": quote_a["input_mint"],
+        "output_mint": quote_a["output_mint"],
+        "in_amount": quote_a["in_amount"],
+        "out_amount_a": out_amount_a,
+        "out_amount_b": out_amount_b,
+        "better_source": better_source,
+        "difference_amount": difference_amount,
+        "difference_percent": difference_percent,
+    }
+
+
 def capture_venue_quote_pair(
     input_mint,
     output_mint,
