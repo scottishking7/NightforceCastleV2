@@ -10,7 +10,11 @@ Phase 1:
 - No blockchain execution
 """
 
+import json
 import math
+import urllib.error
+import urllib.parse
+import urllib.request
 
 
 SIMULATION_MODE = True
@@ -228,6 +232,144 @@ def evaluate_two_venue_opportunity(
         "net_profit_usdc": calculation["net_profit_usdc"],
         "meets_minimum_profit": calculation["meets_minimum_profit"],
         "opportunity": calculation["meets_minimum_profit"],
+    }
+
+
+HTTP_TIMEOUT_SECONDS = 5
+
+
+def fetch_json_read_only(url, timeout=HTTP_TIMEOUT_SECONDS):
+    if not isinstance(url, str) or not url.strip():
+        raise ValueError("url must be a non-empty string.")
+
+    if not isinstance(timeout, (int, float)) or timeout <= 0:
+        raise ValueError("timeout must be greater than zero.")
+
+    request = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/json",
+            "User-Agent": "NightforceCastle-SolanaResearch/1.0",
+        },
+        method="GET",
+    )
+
+    try:
+        with urllib.request.urlopen(
+            request,
+            timeout=timeout,
+        ) as response:
+            raw_body = response.read()
+
+    except urllib.error.HTTPError as exc:
+        raise RuntimeError(
+            f"Read-only HTTP request failed with status {exc.code}."
+        ) from exc
+
+    except urllib.error.URLError as exc:
+        raise RuntimeError(
+            f"Read-only HTTP request failed: {exc.reason}"
+        ) from exc
+
+    except TimeoutError as exc:
+        raise RuntimeError(
+            "Read-only HTTP request timed out."
+        ) from exc
+
+    try:
+        return json.loads(raw_body.decode("utf-8"))
+
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise RuntimeError(
+            "Read-only HTTP response was not valid JSON."
+        ) from exc
+
+
+JUPITER_ORDER_URL = "https://api.jup.ag/swap/v2/order"
+
+
+def fetch_jupiter_quote(
+    input_mint,
+    output_mint,
+    amount,
+    timeout=HTTP_TIMEOUT_SECONDS,
+):
+    if not isinstance(input_mint, str) or not input_mint.strip():
+        raise ValueError("input_mint must be a non-empty string.")
+
+    if not isinstance(output_mint, str) or not output_mint.strip():
+        raise ValueError("output_mint must be a non-empty string.")
+
+    input_mint = input_mint.strip()
+    output_mint = output_mint.strip()
+
+    if input_mint == output_mint:
+        raise ValueError("input_mint and output_mint must be different.")
+
+    if not isinstance(amount, int) or isinstance(amount, bool) or amount <= 0:
+        raise ValueError("amount must be a positive integer.")
+
+    query = urllib.parse.urlencode(
+        {
+            "inputMint": input_mint,
+            "outputMint": output_mint,
+            "amount": amount,
+        }
+    )
+    data = fetch_json_read_only(
+        f"{JUPITER_ORDER_URL}?{query}",
+        timeout=timeout,
+    )
+
+    if not isinstance(data, dict):
+        raise RuntimeError("Jupiter quote response must be a JSON object.")
+
+    if data.get("errorCode") is not None:
+        raise RuntimeError(
+            f"Jupiter quote error: {data.get('errorMessage') or data['errorCode']}"
+        )
+
+    if data.get("inputMint") != input_mint:
+        raise RuntimeError(
+            "Jupiter quote response input mint does not match the request."
+        )
+
+    if data.get("outputMint") != output_mint:
+        raise RuntimeError(
+            "Jupiter quote response output mint does not match the request."
+        )
+
+    try:
+        in_amount = int(data["inAmount"])
+        out_amount = int(data["outAmount"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise RuntimeError(
+            "Jupiter quote response contained invalid amounts."
+        ) from exc
+
+    if in_amount <= 0 or out_amount <= 0:
+        raise RuntimeError(
+            "Jupiter quote response amounts must be greater than zero."
+        )
+
+    if data.get("transaction") is not None:
+        raise RuntimeError(
+            "Jupiter returned transaction material in read-only mode."
+        )
+
+    return {
+        "source": "Jupiter",
+        "router": data.get("router"),
+        "input_mint": data.get("inputMint"),
+        "output_mint": data.get("outputMint"),
+        "in_amount": in_amount,
+        "out_amount": out_amount,
+        "in_usd_value": data.get("inUsdValue"),
+        "out_usd_value": data.get("outUsdValue"),
+        "price_impact_pct": data.get("priceImpactPct"),
+        "slippage_bps": data.get("slippageBps"),
+        "route_plan": data.get("routePlan"),
+        "transaction_present": data.get("transaction") is not None,
     }
 
 
