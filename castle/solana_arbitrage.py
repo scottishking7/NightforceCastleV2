@@ -715,11 +715,17 @@ def capture_venue_quote_pair(
         raydium_timed["quote"],
     )
 
+    quote_comparison = compare_quote_outputs(
+        jupiter_timed["quote"],
+        raydium_timed["quote"],
+    )
+
     return {
         "jupiter": jupiter_timed,
         "raydium": raydium_timed,
         "freshness": freshness,
         "route_overlap": route_overlap,
+        "quote_comparison": quote_comparison,
         "safe_for_comparison": (
             freshness["fresh_enough"]
             and not route_overlap["route_overlap"]
