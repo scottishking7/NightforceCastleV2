@@ -762,6 +762,56 @@ def capture_venue_quote_pair(
     }
 
 
+def run_paper_scan_cycle(
+    input_mint,
+    output_mint,
+    amount,
+    jupiter_fetcher=fetch_jupiter_quote,
+    raydium_fetcher=fetch_raydium_quote,
+    max_separation_seconds=MAX_QUOTE_SEPARATION_SECONDS,
+):
+    quote_pair = capture_venue_quote_pair(
+        input_mint,
+        output_mint,
+        amount,
+        jupiter_fetcher=jupiter_fetcher,
+        raydium_fetcher=raydium_fetcher,
+        max_separation_seconds=max_separation_seconds,
+    )
+
+    comparison = quote_pair["quote_comparison"]
+
+    start_separation_seconds = abs(
+        quote_pair["jupiter"]["started_at"]
+        - quote_pair["raydium"]["started_at"]
+    )
+
+    return {
+        "mode": "paper",
+        "execution_enabled": False,
+        "input_mint": comparison["input_mint"],
+        "output_mint": comparison["output_mint"],
+        "in_amount": comparison["in_amount"],
+        "jupiter_out_amount": comparison["out_amount_a"],
+        "raydium_out_amount": comparison["out_amount_b"],
+        "better_source": comparison["better_source"],
+        "difference_amount": comparison["difference_amount"],
+        "difference_percent": comparison["difference_percent"],
+        "request_start_separation_seconds": (
+            start_separation_seconds
+        ),
+        "quote_capture_separation_seconds": (
+            quote_pair["freshness"]["separation_seconds"]
+        ),
+        "fresh_enough": quote_pair["freshness"]["fresh_enough"],
+        "route_overlap": quote_pair["route_overlap"]["route_overlap"],
+        "shared_pool_ids": quote_pair["route_overlap"]["shared_pool_ids"],
+        "safe_for_paper_comparison": (
+            quote_pair["safe_for_comparison"]
+        ),
+    }
+
+
 def engine_status():
     return {
         "simulation_mode": SIMULATION_MODE,
