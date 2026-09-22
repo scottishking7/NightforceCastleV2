@@ -492,6 +492,66 @@ def fetch_raydium_quote(
     }
 
 
+def extract_route_pool_ids(quote):
+    if not isinstance(quote, dict):
+        raise ValueError("quote must be a dictionary.")
+
+    source = quote.get("source")
+    route_plan = quote.get("route_plan")
+
+    if source not in {"Jupiter", "Raydium"}:
+        raise ValueError("quote source must be Jupiter or Raydium.")
+
+    if not isinstance(route_plan, list) or not route_plan:
+        raise ValueError("quote must contain a non-empty route plan.")
+
+    pool_ids = []
+
+    for step in route_plan:
+        if not isinstance(step, dict):
+            raise ValueError("route plan steps must be dictionaries.")
+
+        if source == "Jupiter":
+            swap_info = step.get("swapInfo")
+
+            if not isinstance(swap_info, dict):
+                raise ValueError(
+                    "Jupiter route step must contain swapInfo."
+                )
+
+            pool_id = swap_info.get("ammKey")
+
+        else:
+            pool_id = step.get("poolId")
+
+        if not isinstance(pool_id, str) or not pool_id.strip():
+            raise ValueError(
+                f"{source} route step contained no valid pool identifier."
+            )
+
+        pool_ids.append(pool_id.strip())
+
+    return tuple(pool_ids)
+
+
+def compare_route_pool_overlap(quote_a, quote_b):
+    pool_ids_a = extract_route_pool_ids(quote_a)
+    pool_ids_b = extract_route_pool_ids(quote_b)
+
+    shared_pool_ids = tuple(
+        sorted(set(pool_ids_a).intersection(pool_ids_b))
+    )
+
+    return {
+        "source_a": quote_a["source"],
+        "source_b": quote_b["source"],
+        "pool_ids_a": pool_ids_a,
+        "pool_ids_b": pool_ids_b,
+        "shared_pool_ids": shared_pool_ids,
+        "route_overlap": bool(shared_pool_ids),
+    }
+
+
 def engine_status():
     return {
         "simulation_mode": SIMULATION_MODE,
