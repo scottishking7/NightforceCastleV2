@@ -612,6 +612,51 @@ def validate_quote_separation(
     }
 
 
+def capture_venue_quote_pair(
+    input_mint,
+    output_mint,
+    amount,
+    jupiter_fetcher=fetch_jupiter_quote,
+    raydium_fetcher=fetch_raydium_quote,
+    max_separation_seconds=MAX_QUOTE_SEPARATION_SECONDS,
+):
+    jupiter_timed = fetch_timed_quote(
+        jupiter_fetcher,
+        input_mint,
+        output_mint,
+        amount,
+    )
+
+    raydium_timed = fetch_timed_quote(
+        raydium_fetcher,
+        input_mint,
+        output_mint,
+        amount,
+    )
+
+    freshness = validate_quote_separation(
+        jupiter_timed["captured_at"],
+        raydium_timed["captured_at"],
+        max_separation_seconds=max_separation_seconds,
+    )
+
+    route_overlap = compare_route_pool_overlap(
+        jupiter_timed["quote"],
+        raydium_timed["quote"],
+    )
+
+    return {
+        "jupiter": jupiter_timed,
+        "raydium": raydium_timed,
+        "freshness": freshness,
+        "route_overlap": route_overlap,
+        "safe_for_comparison": (
+            freshness["fresh_enough"]
+            and not route_overlap["route_overlap"]
+        ),
+    }
+
+
 def engine_status():
     return {
         "simulation_mode": SIMULATION_MODE,
