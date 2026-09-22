@@ -10,6 +10,7 @@ Phase 1:
 - No blockchain execution
 """
 
+import concurrent.futures
 import json
 import math
 import time
@@ -576,6 +577,40 @@ def fetch_timed_quote(fetch_function, *args, **kwargs):
     }
 
 
+def fetch_parallel_timed_quotes(
+    fetch_function_a,
+    fetch_function_b,
+    *args,
+    **kwargs,
+):
+    if not callable(fetch_function_a):
+        raise ValueError("fetch_function_a must be callable.")
+
+    if not callable(fetch_function_b):
+        raise ValueError("fetch_function_b must be callable.")
+
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=2
+    ) as executor:
+        future_a = executor.submit(
+            fetch_timed_quote,
+            fetch_function_a,
+            *args,
+            **kwargs,
+        )
+        future_b = executor.submit(
+            fetch_timed_quote,
+            fetch_function_b,
+            *args,
+            **kwargs,
+        )
+
+        result_a = future_a.result()
+        result_b = future_b.result()
+
+    return result_a, result_b
+
+
 def validate_quote_separation(
     captured_at_a,
     captured_at_b,
@@ -690,14 +725,8 @@ def capture_venue_quote_pair(
     raydium_fetcher=fetch_raydium_quote,
     max_separation_seconds=MAX_QUOTE_SEPARATION_SECONDS,
 ):
-    jupiter_timed = fetch_timed_quote(
+    jupiter_timed, raydium_timed = fetch_parallel_timed_quotes(
         jupiter_fetcher,
-        input_mint,
-        output_mint,
-        amount,
-    )
-
-    raydium_timed = fetch_timed_quote(
         raydium_fetcher,
         input_mint,
         output_mint,
