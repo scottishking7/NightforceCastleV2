@@ -373,6 +373,125 @@ def fetch_jupiter_quote(
     }
 
 
+RAYDIUM_SWAP_QUOTE_URL = (
+    "https://transaction-v1.raydium.io/compute/swap-base-in"
+)
+RAYDIUM_DEFAULT_SLIPPAGE_BPS = 50
+
+
+def fetch_raydium_quote(
+    input_mint,
+    output_mint,
+    amount,
+    slippage_bps=RAYDIUM_DEFAULT_SLIPPAGE_BPS,
+    timeout=HTTP_TIMEOUT_SECONDS,
+):
+    if not isinstance(input_mint, str) or not input_mint.strip():
+        raise ValueError("input_mint must be a non-empty string.")
+
+    if not isinstance(output_mint, str) or not output_mint.strip():
+        raise ValueError("output_mint must be a non-empty string.")
+
+    input_mint = input_mint.strip()
+    output_mint = output_mint.strip()
+
+    if input_mint == output_mint:
+        raise ValueError("input_mint and output_mint must be different.")
+
+    if not isinstance(amount, int) or isinstance(amount, bool) or amount <= 0:
+        raise ValueError("amount must be a positive integer.")
+
+    if (
+        not isinstance(slippage_bps, int)
+        or isinstance(slippage_bps, bool)
+        or slippage_bps < 0
+        or slippage_bps > 10000
+    ):
+        raise ValueError(
+            "slippage_bps must be an integer between 0 and 10000."
+        )
+
+    query = urllib.parse.urlencode(
+        {
+            "inputMint": input_mint,
+            "outputMint": output_mint,
+            "amount": amount,
+            "slippageBps": slippage_bps,
+            "txVersion": "V0",
+        }
+    )
+
+    data = fetch_json_read_only(
+        f"{RAYDIUM_SWAP_QUOTE_URL}?{query}",
+        timeout=timeout,
+    )
+
+    if not isinstance(data, dict):
+        raise RuntimeError(
+            "Raydium quote response must be a JSON object."
+        )
+
+    if data.get("success") is not True:
+        raise RuntimeError(
+            f"Raydium quote error: {data.get('msg') or 'unknown error'}"
+        )
+
+    quote = data.get("data")
+
+    if not isinstance(quote, dict):
+        raise RuntimeError(
+            "Raydium quote response contained invalid quote data."
+        )
+
+    if quote.get("inputMint") != input_mint:
+        raise RuntimeError(
+            "Raydium quote response input mint does not match the request."
+        )
+
+    if quote.get("outputMint") != output_mint:
+        raise RuntimeError(
+            "Raydium quote response output mint does not match the request."
+        )
+
+    try:
+        in_amount = int(quote["inputAmount"])
+        out_amount = int(quote["outputAmount"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise RuntimeError(
+            "Raydium quote response contained invalid amounts."
+        ) from exc
+
+    if in_amount != amount:
+        raise RuntimeError(
+            "Raydium quote response input amount does not match the request."
+        )
+
+    if out_amount <= 0:
+        raise RuntimeError(
+            "Raydium quote output amount must be greater than zero."
+        )
+
+    route_plan = quote.get("routePlan")
+
+    if not isinstance(route_plan, list) or not route_plan:
+        raise RuntimeError(
+            "Raydium quote response contained no route plan."
+        )
+
+    return {
+        "source": "Raydium",
+        "swap_type": quote.get("swapType"),
+        "input_mint": quote.get("inputMint"),
+        "output_mint": quote.get("outputMint"),
+        "in_amount": in_amount,
+        "out_amount": out_amount,
+        "other_amount_threshold": quote.get("otherAmountThreshold"),
+        "slippage_bps": quote.get("slippageBps"),
+        "price_impact_pct": quote.get("priceImpactPct"),
+        "route_plan": route_plan,
+    }
+
+
 def engine_status():
     return {
         "simulation_mode": SIMULATION_MODE,
